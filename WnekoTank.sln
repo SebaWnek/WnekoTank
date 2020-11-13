@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30523.141
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WnekoTankControlApp", "WnekoTankControlApp\WnekoTankControlApp.csproj", "{FF74B234-05D6-4245-9679-E01912F82855}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WnekoTankMeadow", "WnekoTankMeadow\WnekoTankMeadow.csproj", "{D658593E-3D43-458F-B881-15D4D7641942}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF74B234-05D6-4245-9679-E01912F82855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF74B234-05D6-4245-9679-E01912F82855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF74B234-05D6-4245-9679-E01912F82855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF74B234-05D6-4245-9679-E01912F82855}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D658593E-3D43-458F-B881-15D4D7641942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D658593E-3D43-458F-B881-15D4D7641942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D658593E-3D43-458F-B881-15D4D7641942}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D658593E-3D43-458F-B881-15D4D7641942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D658593E-3D43-458F-B881-15D4D7641942}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D658593E-3D43-458F-B881-15D4D7641942}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {695FC23C-2A08-4456-81CF-2D0E53BB5C58}
+	EndGlobalSection
+EndGlobal
