@@ -16,7 +16,7 @@ namespace WnekoTankControlApp
 
         public ComPortCommunication()
         {
-            port = new SerialPort("COM4", 921600, Parity.None, 8, StopBits.One);
+            port = new SerialPort("COM3", 921600, Parity.None, 8, StopBits.One);
             port.DataReceived += Port_DataReceived;
             port.Open();
             port.WriteLine("ACK");
@@ -39,8 +39,11 @@ namespace WnekoTankControlApp
         {
             messageEvent += handler;
         }
-        
 
-        
+        internal void Close()
+        {
+            port.Close();
+            port.Dispose();
+        }
     }
 }
