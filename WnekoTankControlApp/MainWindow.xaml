@@ -602,11 +602,11 @@
         <Button x:Name="stopBtn" Grid.Column="1" Grid.Row="3" Content="STOP" Click="stopBtn_Click" Margin="0,21,0,14"/>
         <StackPanel Grid.Row="0" Grid.Column="1" >
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="PortBox" Text="COM4" Width="100"/>
+                <TextBox x:Name="PortBox" Text="COM3" Width="100"/>
                 <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
                 <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click"/>
             </StackPanel>
-            <Slider IsEnabled="False" 
+            <Slider IsEnabled="True" 
                 x:Name="angleSlider" 
                 Maximum="90" 
                 Minimum="-90" 

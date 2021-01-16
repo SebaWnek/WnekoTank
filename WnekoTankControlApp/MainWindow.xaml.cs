@@ -50,13 +50,13 @@ namespace WnekoTankControlApp
 
         private void gear1btn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = "GEA+055";
+            string msg = "GEA+053";
             queue.SendMessage(msg);
         }
 
         private void gear2btn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = "GEA-020";
+            string msg = "GEA-018";
             queue.SendMessage(msg);
         }
 
@@ -91,6 +91,7 @@ namespace WnekoTankControlApp
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             communication?.ClosePort();
+            Environment.Exit(0);
         }
 
         //From: https://stackoverflow.com/questions/2984803/how-to-automatically-scroll-scrollviewer-only-if-the-user-did-not-change-scrol
