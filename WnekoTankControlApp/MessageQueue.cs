@@ -20,6 +20,8 @@ namespace WnekoTankControlApp
             comPort = com;
             comPort.SubscribeToMessages(DataReceived);
             DisplayMessage = display;
+            Thread sender = new Thread(SendMessagesFromQueue);
+            sender.Start();
         }
 
         private void DataReceived(object sender, MessageEventArgs e)
@@ -34,11 +36,13 @@ namespace WnekoTankControlApp
 
         public void SendMessage(string msg)
         {
+            DisplayMessage.Invoke("Queueing: " + msg);
             queue.Add(msg);
         }
 
         public void SendEmergencyMessage(string msg)
         {
+            DisplayMessage.Invoke("Sending EMERGNECY: " + msg);
             comPort.SendMessage(msg);
         }
 
@@ -48,6 +52,7 @@ namespace WnekoTankControlApp
             {
                 canTransmit.WaitOne();
                 string msg = queue.Take();
+                DisplayMessage.Invoke("Sending: " + msg);
                 comPort.SendMessage(msg);
             }
         }

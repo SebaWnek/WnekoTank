@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WnekoTankControlApp
 {
@@ -14,12 +15,19 @@ namespace WnekoTankControlApp
         EventHandler<MessageEventArgs> messageEvent;
 
 
-        public ComPortCommunication()
+        public ComPortCommunication(string portNum)
         {
-            port = new SerialPort("COM4", 921600, Parity.None, 8, StopBits.One);
-            port.DataReceived += Port_DataReceived;
-            port.Open();
-            port.WriteLine("ACK");
+            try
+            {
+                port = new SerialPort(portNum, 921600, Parity.None, 8, StopBits.One);
+                port.DataReceived += Port_DataReceived;
+                port.Open();
+                port.WriteLine("ACK");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -40,7 +48,10 @@ namespace WnekoTankControlApp
             messageEvent += handler;
         }
 
-
-
+        public void ClosePort()
+        {
+            port.Close();
+            port.Dispose();
+        }
     }
 }

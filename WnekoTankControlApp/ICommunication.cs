@@ -6,5 +6,6 @@ namespace WnekoTankControlApp
     {
         void SendMessage(string msg);
         void SubscribeToMessages(EventHandler<MessageEventArgs> handler);
+        void ClosePort();
     }
 }

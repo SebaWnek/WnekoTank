@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WnekoTankControlApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="800" Width="800"
         WindowState="Maximized"
         Closing="Window_Closing">
     <Window.Resources>
@@ -600,9 +600,14 @@
             <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="gear2btn_Click"/>
         </Grid>
         <Button x:Name="stopBtn" Grid.Column="1" Grid.Row="3" Content="STOP" Click="stopBtn_Click" Margin="0,21,0,14"/>
-        <Slider IsEnabled="False" 
+        <StackPanel Grid.Row="0" Grid.Column="1" >
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="PortBox" Text="COM4" Width="100"/>
+                <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
+                <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click"/>
+            </StackPanel>
+            <Slider IsEnabled="False" 
                 x:Name="angleSlider" 
-                Grid.Row="0" Grid.Column="1" 
                 Maximum="90" 
                 Minimum="-90" 
                 Value="0" 
@@ -610,8 +615,9 @@
                 TickFrequency="1" 
                 IsSnapToTickEnabled="True" 
                 Thumb.DragCompleted="angleSlider_DragCompleted"/>
+        </StackPanel>
         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ElementName=angleSlider, Path=Value}" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-        <ScrollViewer Grid.Row="4" Grid.Column="1" ScrollChanged="ScrollViewer_ScrollChanged">
+        <ScrollViewer x:Name="ScrollView" Grid.Row="4" Grid.Column="1" ScrollChanged="ScrollViewer_ScrollChanged">
             <TextBlock x:Name="outputBox" />
         </ScrollViewer>
     </Grid>
