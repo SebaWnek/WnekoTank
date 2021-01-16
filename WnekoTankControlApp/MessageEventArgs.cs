@@ -2,10 +2,10 @@
 
 namespace WnekoTankControlApp
 {
-    internal class ComMessageEventArgs : EventArgs
+    internal class MessageEventArgs : EventArgs
     { 
         public string Message { get; }
-        public ComMessageEventArgs(string msg)
+        public MessageEventArgs(string msg)
         {
             Message = msg;
         }

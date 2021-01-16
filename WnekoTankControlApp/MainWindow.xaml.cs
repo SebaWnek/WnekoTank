@@ -24,17 +24,19 @@ namespace WnekoTankControlApp
         string newSpeed = "SPD";
         string newTurn = "TRN";
         string newGear = "GEA";
-        ComPortCommunication comPort;
+        ICommunication communication;
+        MessageQueue queue;
         public MainWindow()
         {
             InitializeComponent();
-             comPort = new ComPortCommunication();
-            comPort.SubscrideToMessages(Port_DataReceived);
+            communication = new ComPortCommunication();
+            queue = new MessageQueue(communication, DisplayMessage);
+            //comPort.SubscribeToMessages(Port_DataReceived);
         }
 
-        private void Port_DataReceived(object sender, ComMessageEventArgs e)
+        public void DisplayMessage(string msg)
         {
-            Dispatcher.Invoke(() => outputBox.Text += e.Message + "\r\n");
+            Dispatcher.Invoke(() => outputBox.Text += msg + "\r\n");
         }
 
         private void turnSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -50,41 +52,41 @@ namespace WnekoTankControlApp
         private void gear1btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = "GEA+055";
-            comPort.SendMessage(msg);
+            queue.SendMessage(msg);
         }
 
         private void gear2btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = "GEA-020";
-            comPort.SendMessage(msg);
+            queue.SendMessage(msg);
         }
 
         private void angleSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             int angle = (int)angleSlider.Value;
             string msg = newGear + (angle >= 0 ? "+" : "") + angle.ToString("D3");
-            comPort.SendMessage(msg);
+            queue.SendMessage(msg);
         }
 
         private void stopBtn_Click(object sender, RoutedEventArgs e)
         {
             //speedSlider.Value = 0;
             //turnSlider.Value = 0;
-            comPort.SendMessage("STP0");
+            queue.SendEmergencyMessage("STP0");
         }
 
         private void speedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int speed = (int)e.NewValue;
             string msg = newSpeed + (speed >= 0 ? "+" : "") + speed.ToString("D3");
-            comPort.SendMessage(msg);
+            queue.SendMessage(msg);
         }
 
         private void turnSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int turn = (int)e.NewValue;
             string msg = newTurn + (turn >= 0 ? "+" : "") + turn.ToString("D3");
-            comPort.SendMessage(msg);
+            queue.SendMessage(msg);
         }
     }
 }

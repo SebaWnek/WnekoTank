@@ -63,14 +63,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ComMessageEventArgs.cs" />
+    <Compile Include="MessageEventArgs.cs" />
     <Compile Include="ComPortCommunication.cs" />
+    <Compile Include="ICommunication.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

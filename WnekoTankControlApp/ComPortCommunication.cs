@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace WnekoTankControlApp
 {
-    class ComPortCommunication
+    class ComPortCommunication : ICommunication
     {
         private SerialPort port;
-        EventHandler<ComMessageEventArgs> messageEvent;
-        
+        EventHandler<MessageEventArgs> messageEvent;
+
 
         public ComPortCommunication()
         {
@@ -25,7 +25,7 @@ namespace WnekoTankControlApp
         private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string message = port.ReadLine();
-            messageEvent?.Invoke(this, new ComMessageEventArgs(message));
+            messageEvent?.Invoke(this, new MessageEventArgs(message));
         }
 
         public SerialPort Port { get => port; }
@@ -35,12 +35,12 @@ namespace WnekoTankControlApp
             port.WriteLine(msg);
         }
 
-        public void SubscrideToMessages(EventHandler<ComMessageEventArgs> handler)
+        public void SubscribeToMessages(EventHandler<MessageEventArgs> handler)
         {
             messageEvent += handler;
         }
-        
 
-        
+
+
     }
 }
