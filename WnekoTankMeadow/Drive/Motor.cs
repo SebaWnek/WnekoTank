@@ -54,6 +54,13 @@ namespace WnekoTankMeadow
             CurrentPort.DutyCycle = newSpeed / 100.01f;
         }
 
+        internal void Stop()
+        {
+            baseSpeed = 0;
+            turnModifier = 0;
+            currentSpeed = 0;
+        }
+
         public void SetTurn(int turnRate)
         {
             turnModifier = baseSpeed >= 0 ? turnRate : -turnRate;

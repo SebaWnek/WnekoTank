@@ -13,6 +13,8 @@ namespace WnekoTankMeadow
     {
         private IPwmPort pwm;
         private Servo servo;
+        int gear1 = 53;
+        int gear2 = -18;
 
         public GearBox(IPwmPort gearPwm)
         {
@@ -21,7 +23,13 @@ namespace WnekoTankMeadow
             servo = new Servo(pwm, config);
         }
 
-        public async void SetGear(int angle)
+        public void SetGear(int gear)
+        {
+            if (gear == 1) SetAngle(gear1);
+            else SetAngle(gear2);
+        }
+
+        public async void SetAngle(int angle)
         {
             servo.RotateTo(angle + 90);
             await Task.Delay(500);

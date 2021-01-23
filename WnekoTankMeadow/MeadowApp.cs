@@ -13,13 +13,14 @@ namespace WnekoTankMeadow
 {
     public class MeadowApp : App<F7Micro, MeadowApp>
     {
-        ComController com;
+        ITankCommunication com;
         RgbPwmLed onboardLed;
         II2cBus bus;
         MotorController motor;
         Pca9685 motors;
         Pca9685 servos;
-
+        MethodsDictionary dict;
+        MethodsQueue queue;
 
         public MeadowApp()
         {
@@ -48,11 +49,26 @@ namespace WnekoTankMeadow
 
             motor = new MotorController(motors.CreatePwmPort(12, 0), motors.CreatePwmPort(13, 0), motors.CreatePwmPort(14, 0), motors.CreatePwmPort(15, 0), servos.CreatePwmPort(15));
             
-            com = new ComController(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One), motor);
+            com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
 
+            dict = new MethodsDictionary();
+            queue = new MethodsQueue(com, dict);
+
+            RegisterMethods();
         }
 
-
+        private void RegisterMethods()
+        {
+            dict.RegisterMetod(CommandList.setGear, new Action<string>(motor.SetGear));
+            dict.RegisterMetod(CommandList.setLinearSpeed, new Action<string>(motor.SetLinearSpeed));
+            dict.RegisterMetod(CommandList.setTurn, new Action<string>(motor.SetTurn));
+            dict.RegisterMetod(CommandList.stop, new Action<string>(motor.Break));
+            dict.RegisterMetod(CommandList.wait, new Action<string>(HelperMethods.Wait));
+            dict.RegisterMetod(CommandList.startInvoking, new Action<string>(queue.StartInvoking));
+            dict.RegisterMetod(CommandList.stopInvoking, new Action<string>(queue.StopInvoking));
+            dict.RegisterMetod(CommandList.enumerateQueue, new Action<string>(queue.EnumerateQueue));
+            dict.RegisterMetod(CommandList.clearQueue, new Action<string>(queue.ClearQueue));
+        }
     }
 }

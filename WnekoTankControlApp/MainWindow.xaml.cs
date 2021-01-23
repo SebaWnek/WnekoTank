@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WnekoTankMeadow;
 
 namespace WnekoTankControlApp
 {
@@ -21,9 +22,7 @@ namespace WnekoTankControlApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        string newSpeed = "SPD";
-        string newTurn = "TRN";
-        string newGear = "GEA";
+        CommandsList comList = new CommandsList();
         ICommunication communication;
         MessageQueue queue;
         private Boolean AutoScroll = true;
@@ -50,41 +49,66 @@ namespace WnekoTankControlApp
 
         private void gear1btn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = "GEA+055";
+            string msg = comList.GetCode("setGear") + "1";
             queue.SendMessage(msg);
         }
 
         private void gear2btn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = "GEA-020";
+            string msg = comList.GetCode("setGear") +"2";
             queue.SendMessage(msg);
         }
 
-        private void angleSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
-        {
-            int angle = (int)angleSlider.Value;
-            string msg = newGear + (angle >= 0 ? "+" : "") + angle.ToString("D3");
-            queue.SendMessage(msg);
-        }
+        //private void angleSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        //{
+        //    int angle = (int)angleSlider.Value;
+        //    string msg = setGear + (angle >= 0 ? "+" : "") + angle.ToString("D3");
+        //    queue.SendMessage(msg);
+        //}
 
         private void stopBtn_Click(object sender, RoutedEventArgs e)
         {
             //speedSlider.Value = 0;
             //turnSlider.Value = 0;
-            queue.SendEmergencyMessage("STP0");
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stop") + "0";
+            queue.SendEmergencyMessage(msg);
         }
 
         private void speedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int speed = (int)e.NewValue;
-            string msg = newSpeed + (speed >= 0 ? "+" : "") + speed.ToString("D3");
+            string msg = comList.GetCode("setLinearSpeed") + speed.ToString();
             queue.SendMessage(msg);
         }
 
         private void turnSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int turn = (int)e.NewValue;
-            string msg = newTurn + (turn >= 0 ? "+" : "") + turn.ToString("D3");
+            string msg = comList.GetCode("setTurn") + turn.ToString();
+            queue.SendMessage(msg);
+        }
+
+        private void queueStart_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("startInvoking") + "0";
+            queue.SendMessage(msg);
+        }
+
+        private void queueStop_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("stopInvoking") + "0";
+            queue.SendMessage(msg);
+        }
+
+        private void listQueue_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("enumerateQueue") + "0";
+            queue.SendMessage(msg);
+        }
+
+        private void waitButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("wait") + waitBox.Text;
             queue.SendMessage(msg);
         }
 
@@ -93,7 +117,24 @@ namespace WnekoTankControlApp
             communication?.ClosePort();
         }
 
-        //From: https://stackoverflow.com/questions/2984803/how-to-automatically-scroll-scrollviewer-only-if-the-user-did-not-change-scrol
+        private void DisconnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            communication?.ClosePort();
+            communication = null;
+            queue = null;
+        }
+
+        private void ConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            communication = new ComPortCommunication(PortBox.Text);
+            queue = new MessageQueue(communication, DisplayMessage);
+        }
+        private void clearQueue_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        //Based on: https://stackoverflow.com/questions/2984803/how-to-automatically-scroll-scrollviewer-only-if-the-user-did-not-change-scrol
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // User scroll event : set or unset auto-scroll mode
@@ -117,19 +158,6 @@ namespace WnekoTankControlApp
                 // Autoscroll
                 ScrollView.ScrollToVerticalOffset(ScrollView.ExtentHeight);
             }
-        }
-
-        private void DisconnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            communication?.ClosePort();
-            communication = null;
-            queue = null;
-        }
-
-        private void ConnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            communication = new ComPortCommunication(PortBox.Text);
-            queue = new MessageQueue(communication, DisplayMessage);
         }
     }
 }

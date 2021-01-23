@@ -16,9 +16,19 @@ namespace WnekoTankMeadow
             gearbox = new GearBox(gearPwm);
         }
 
+        public void SetGear(string gear)
+        {
+            gearbox.SetGear(int.Parse(gear));
+        }
+
         public void SetGear(int gear)
         {
             gearbox.SetGear(gear);
+        }
+
+        public void SetLinearSpeed(string speed)
+        {
+            SetLinearSpeed(int.Parse(speed));
         }
 
         public void SetLinearSpeed(int speed)
@@ -28,16 +38,26 @@ namespace WnekoTankMeadow
             rightMotor.SetSpeed(speed);
         }
 
+        public void SetTurn(string turn)
+        {
+            SetTurn(int.Parse(turn));
+        }
+
         public void SetTurn(int turn)
         {
             leftMotor.SetTurn(turn);
             rightMotor.SetTurn(-turn);
         }
 
+        public void Break(string empty)
+        {
+            Break();
+        }
+
         public void Break()
         {
-            leftMotor.SetTurn(0);
-            rightMotor.SetTurn(0);
+            leftMotor.Stop();
+            rightMotor.Stop();
         }
     }
 }

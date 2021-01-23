@@ -63,6 +63,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommandsList.cs" />
     <Compile Include="MessageEventArgs.cs" />
     <Compile Include="ComPortCommunication.cs" />
     <Compile Include="ICommunication.cs" />
@@ -97,6 +98,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WnekoTankMeadow\WnekoTankMeadow.csproj">
+      <Project>{d658593e-3d43-458f-b881-15d4d7641942}</Project>
+      <Name>WnekoTankMeadow</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
