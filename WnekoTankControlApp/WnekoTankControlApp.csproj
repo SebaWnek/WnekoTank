@@ -63,17 +63,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommandsList.cs" />
-    <Compile Include="MessageEventArgs.cs" />
-    <Compile Include="ComPortCommunication.cs" />
-    <Compile Include="ICommunication.cs" />
+    <Compile Include="CommandControl\CommandsList.cs" />
+    <Compile Include="MainWindow\MainWindowButtons.cs" />
+    <Compile Include="MainWindow\MainWindowSliders.cs" />
+    <Compile Include="CommandControl\MessageEventArgs.cs" />
+    <Compile Include="CommandControl\ComDevices\ComPortCommunication.cs" />
+    <Compile Include="CommandControl\ICommunication.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MessageQueue.cs" />
+    <Compile Include="CommandControl\MessageQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

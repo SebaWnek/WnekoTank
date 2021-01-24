@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace WnekoTankMeadow
 {
+    /// <summary>
+    /// Represents one DC motor controlled by PWM
+    /// </summary>
     class Motor
     {
         int baseSpeed = 0;
@@ -17,6 +20,12 @@ namespace WnekoTankMeadow
         private IPwmPort forwardPwm;
         private IPwmPort backPwm;
         private IPwmPort _currentPwmPort;
+        /// <summary>
+        /// Using property asures that all the time there is only one PWM signal, 
+        /// as all methods use this property and there could be only one port assigned,
+        /// and also that when changing direction there is short period without signal on both ports, 
+        /// as motor controllers H-bridges could be damaged when receiving signal on both PWM ports 
+        /// </summary>
         private IPwmPort CurrentPort
         {
             get { return _currentPwmPort; }
@@ -28,6 +37,11 @@ namespace WnekoTankMeadow
             }
         }
 
+        /// <summary>
+        /// Main constructor
+        /// </summary>
+        /// <param name="forward">PWM port for forward signal</param>
+        /// <param name="back">PWM port for backward signal</param>
         public Motor(IPwmPort forward, IPwmPort back)
         {
             forwardPwm = forward;
@@ -35,6 +49,12 @@ namespace WnekoTankMeadow
             _currentPwmPort = forward;
         }
 
+        /// <summary>
+        /// Sets correct motor speed.
+        /// Checks if linear speed has the same sign as turnmodifier,
+        /// To determine if turnmodifier should be added or substracted 
+        /// </summary>
+        /// <param name="speed">Sets motor speed</param>
         public void SetSpeed(int speed)
         {
             turnModifier = baseSpeed * speed >= 0 ? turnModifier : -turnModifier;
@@ -42,6 +62,10 @@ namespace WnekoTankMeadow
             ChangeSpeed();
         }
 
+        /// <summary>
+        /// Calculates new speed, determines if it needs to use forward or backward PWM port,
+        /// Selectr correct one and sets correct duty cycle 
+        /// </summary>
         private void ChangeSpeed()
         {
             int newSpeed = baseSpeed + turnModifier;
@@ -54,13 +78,21 @@ namespace WnekoTankMeadow
             CurrentPort.DutyCycle = newSpeed / 100.01f;
         }
 
+        /// <summary>
+        /// Stop motor ASAP
+        /// </summary>
         internal void Stop()
         {
             baseSpeed = 0;
             turnModifier = 0;
             currentSpeed = 0;
+            CurrentPort.DutyCycle = 0;
         }
 
+        /// <summary>
+        /// Changes turnmodifier, checks if it's same sign as base speed and determines if it should be added or substracted
+        /// </summary>
+        /// <param name="turnRate"></param>
         public void SetTurn(int turnRate)
         {
             turnModifier = baseSpeed >= 0 ? turnRate : -turnRate;

@@ -11,14 +11,17 @@ using Meadow.Hardware;
 
 namespace WnekoTankMeadow
 {
+    /// <summary>
+    /// Main class
+    /// </summary>
     public class MeadowApp : App<F7Micro, MeadowApp>
     {
         ITankCommunication com;
         RgbPwmLed onboardLed;
         II2cBus bus;
         MotorController motor;
-        Pca9685 motors;
-        Pca9685 servos;
+        Pca9685 pwm1600;
+        Pca9685 pwm50;
         MethodsDictionary dict;
         MethodsQueue queue;
 
@@ -29,6 +32,9 @@ namespace WnekoTankMeadow
 
         }
 
+        /// <summary>
+        /// Initializes all hardware and software classes
+        /// </summary>
         void Initialize()
         {
             Console.WriteLine("Initialize hardware...");
@@ -42,12 +48,12 @@ namespace WnekoTankMeadow
 
             bus = Device.CreateI2cBus();
 
-            motors = new Pca9685(bus, 65, 1600);
-            motors.Initialize();
-            servos = new Pca9685(bus, 64, 50);
-            servos.Initialize();
+            pwm1600 = new Pca9685(bus, 65, 1600);
+            pwm1600.Initialize();
+            pwm50 = new Pca9685(bus, 64, 50);
+            pwm50.Initialize();
 
-            motor = new MotorController(motors.CreatePwmPort(12, 0), motors.CreatePwmPort(13, 0), motors.CreatePwmPort(14, 0), motors.CreatePwmPort(15, 0), servos.CreatePwmPort(15));
+            motor = new MotorController(pwm1600.CreatePwmPort(12, 0), pwm1600.CreatePwmPort(13, 0), pwm1600.CreatePwmPort(14, 0), pwm1600.CreatePwmPort(15, 0), pwm50.CreatePwmPort(15));
             
             com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
@@ -58,6 +64,9 @@ namespace WnekoTankMeadow
             RegisterMethods();
         }
 
+        /// <summary>
+        /// Register possible methods and their corresponding protocol codes in methods dictionary
+        /// </summary>
         private void RegisterMethods()
         {
             dict.RegisterMetod(CommandList.setGear, new Action<string>(motor.SetGear));
@@ -69,6 +78,7 @@ namespace WnekoTankMeadow
             dict.RegisterMetod(CommandList.stopInvoking, new Action<string>(queue.StopInvoking));
             dict.RegisterMetod(CommandList.enumerateQueue, new Action<string>(queue.EnumerateQueue));
             dict.RegisterMetod(CommandList.clearQueue, new Action<string>(queue.ClearQueue));
+            dict.RegisterMetod(CommandList.handshake, new Action<string>(HelperMethods.HandShake));
         }
     }
 }

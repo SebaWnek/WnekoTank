@@ -1,5 +1,8 @@
 ﻿namespace WnekoTankMeadow
 {
+    /// <summary>
+    /// Communication protocol codes
+    /// </summary>
     public static class CommandList
     {
         public static string emergencyPrefix = "EMG";
@@ -12,5 +15,6 @@
         public static string stopInvoking = "QSP";
         public static string enumerateQueue = "QEN";
         public static string clearQueue = "QCL";
+        public static string handshake = "HSK";
     }
 }

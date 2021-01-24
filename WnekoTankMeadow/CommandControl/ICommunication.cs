@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace WnekoTankMeadow
 {
+    /// <summary>
+    /// Interface for communication devices. They must allow sending messages to PC and accepting delegate that will handle incomming messages
+    /// </summary>
     interface ITankCommunication
     {
         void SendMessage(string msg);
