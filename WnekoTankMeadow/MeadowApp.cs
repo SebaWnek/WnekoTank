@@ -4,6 +4,7 @@ using System.Threading;
 using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation;
+using Meadow.Foundation.Displays.Lcd;
 using Meadow.Foundation.ICs.IOExpanders;
 using Meadow.Foundation.Leds;
 using Meadow.Foundation.Servos;
@@ -24,6 +25,8 @@ namespace WnekoTankMeadow
         Pca9685 pwm50;
         MethodsDictionary dict;
         MethodsQueue queue;
+        Mcp23x08 expander1;
+        I2cCharacterDisplay display;
 
         public MeadowApp()
         {
@@ -53,8 +56,13 @@ namespace WnekoTankMeadow
             pwm50 = new Pca9685(bus, 64, 50);
             pwm50.Initialize();
 
+            expander1 = new Mcp23x08(bus, 32, Device.CreateDigitalInputPort(Device.Pins.D02, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20));
+
+            display = new I2cCharacterDisplay(bus, 39, 2, 16);
+            display.Write("I'm alive!");
+
             motor = new MotorController(pwm1600.CreatePwmPort(12, 0), pwm1600.CreatePwmPort(13, 0), pwm1600.CreatePwmPort(14, 0), pwm1600.CreatePwmPort(15, 0), pwm50.CreatePwmPort(15));
-            
+
             com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
 
