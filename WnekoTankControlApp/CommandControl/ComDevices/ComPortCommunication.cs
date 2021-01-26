@@ -23,16 +23,9 @@ namespace WnekoTankControlApp
         /// <param name="portNum">Name of COM port to be used</param>
         public ComPortCommunication(string portNum)
         {
-            try
-            {
                 port = new SerialPort(portNum, 921600, Parity.None, 8, StopBits.One);
                 port.DataReceived += Port_DataReceived;
                 port.Open();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         /// <summary>

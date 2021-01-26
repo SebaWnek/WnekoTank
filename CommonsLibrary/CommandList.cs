@@ -1,4 +1,4 @@
-﻿namespace WnekoTankMeadow
+﻿namespace CommonsLibrary
 {
     /// <summary>
     /// Communication protocol codes
@@ -16,5 +16,7 @@
         public static string enumerateQueue = "QEN";
         public static string clearQueue = "QCL";
         public static string handshake = "HSK";
+        public static string moveForwardBy = "MFW";
+        public static string softStop = "STS";
     }
 }

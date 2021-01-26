@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WnekoTankControlApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1200"
+        Title="MainWindow" Height="1080" Width="1920"
         WindowState="Maximized"
         Closing="Window_Closing">
     <Window.Resources>
@@ -635,23 +635,23 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="9*"/>
         </Grid.ColumnDefinitions>
-    
-    <TabControl Grid.Column="1">
-        <TabItem Header="Basic controlls">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="2*"/>
-                    <RowDefinition Height="2*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="2*"/>
-                    <RowDefinition Height="5*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Slider x:Name="speedSlider" 
+
+        <TabControl Grid.Column="1">
+            <TabItem Header="Basic controlls">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="5*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Slider x:Name="speedSlider" 
                         Grid.Row="1" Grid.Column="2" 
                         Grid.RowSpan="4"
                         Orientation="Vertical"
@@ -662,8 +662,8 @@
                         IsSnapToTickEnabled="True" 
                         ValueChanged="speedSlider_ValueChanged" 
                         Thumb.DragCompleted="speedSlider_DragCompleted" HorizontalAlignment="Center"/>
-                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ElementName=turnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <Slider x:Name="turnSlider" Grid.Row="1" 
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ElementName=turnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <Slider x:Name="turnSlider" Grid.Row="1" 
                         Grid.Column="0" Maximum="100" 
                         Grid.RowSpan="4"
                         Orientation="Vertical"
@@ -675,16 +675,16 @@
                         ValueChanged="turnSlider_ValueChanged" 
                         Thumb.DragCompleted="turnSlider_DragCompleted" 
                         HorizontalAlignment="Center"/>
-                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding ElementName=speedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <Grid Grid.Row="3" Grid.Column="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Button x:Name="gear1btn" Grid.Column="0" Content="gear 1" Click="gear1btn_Click"/>
-                    <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="gear2btn_Click"/>
-                </Grid>
-                <Button x:Name="stopBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="stopBtn_Click" Margin="0,21,0,14"/>
+                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding ElementName=speedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <Grid Grid.Row="3" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="gear1btn" Grid.Column="0" Content="gear 1" Click="gear1btn_Click"/>
+                        <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="gear2btn_Click"/>
+                    </Grid>
+                    <Button x:Name="stopBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="stopBtn_Click" Margin="0,21,0,14"/>
                     <StackPanel Grid.Row="0" Grid.Column="1" >
 
                         <!--<Slider IsEnabled="False" 
@@ -698,33 +698,33 @@
                         Thumb.DragCompleted="angleSlider_DragCompleted"/>-->
                     </StackPanel>
                 </Grid>
-        </TabItem>
-        <TabItem Header="Commands">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="6*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="391*"/>
-                    <ColumnDefinition Width="393*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Grid.ColumnSpan="2">
-                    <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
-                        <TextBox x:Name="PortBox" Text="COM3" Width="100"/>
-                        <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
-                        <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click"/>
+            </TabItem>
+            <TabItem Header="Commands">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="6*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="391*"/>
+                        <ColumnDefinition Width="393*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
+                        <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
+                            <TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>
+                            <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
+                            <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click"/>
+                        </StackPanel>
+                        <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="handshakeButton_Click" HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="handshakeButton_Click" HorizontalAlignment="Left"/>
-                </StackPanel>
-                <StackPanel Grid.Row="0" Grid.Column="2">
-                    <Button x:Name="queueStart" Content="Start Queue" Click="queueStart_Click"/>
-                    <Button x:Name="queueStop" Content="Stop Queue" Click="queueStop_Click"/>
-                    <Button x:Name="listQueue" Content="Enumerate Queue" Click="listQueue_Click"/>
-                    <Button x:Name="clearQueue" Content="Clear Queue" Click="clearQueue_Click"/>
-                </StackPanel>
-                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="10">
+                        <Button x:Name="queueStart" Content="Start Queue" Click="queueStart_Click" Height="30"/>
+                        <Button x:Name="queueStop" Content="Stop Queue" Click="queueStop_Click" Height="30"/>
+                        <Button x:Name="listQueue" Content="Enumerate Queue" Click="listQueue_Click" Height="30"/>
+                        <Button x:Name="clearQueue" Content="Clear Queue" Click="clearQueue_Click" Height="30"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>
@@ -732,7 +732,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="setSpeedButton" Grid.Column="0" Content="Set speed:" Click="setSpeedButton_Click"/>
-                            <TextBox x:Name="setSpeedBox" Grid.Column="1" Text="{Binding ElementName=setSpeedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                            <TextBox x:Name="setSpeedBox" Grid.Column="1" Text="{Binding ElementName=setSpeedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Padding="5"/>
                             <Slider x:Name="setSpeedSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True"/>
                         </Grid>
                         <Grid>
@@ -742,25 +742,56 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Button x:Name="setTurnButton" Grid.Column="0" Content="Set turn:" Click="setTurnButton_Click"/>
-                            <TextBox x:Name="setTurnBox" Grid.Column="1" Text="{Binding ElementName=setTurnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                            <TextBox x:Name="setTurnBox" Grid.Column="1" Text="{Binding ElementName=setTurnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Padding="5"/>
                             <Slider x:Name="setTurnSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True"/>
                         </Grid>
+                        <Separator Margin="0,10" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="30"/>
+                            </Grid.RowDefinitions>
+                            <Button x:Name="moveForwardByButton" Grid.Column="0" Content="Move forward by:" Click="moveForwardByButton_Click"/>
+                            <TextBox x:Name="moveForwardByDistBox" Grid.Column="1" Text="{Binding ElementName=moveForwardByDistSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="100" Grid.Row="0"/>
+                            <Slider x:Name="moveForwardByDistSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="0.1" IsSnapToTickEnabled="True" Grid.Row="0"/>
+                            <Label Grid.Row="1">At speed:</Label>
+                            <TextBox x:Name="moveForwardBySpeedBox" Grid.Column="1" Text="{Binding ElementName=moveForwardBySpeedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="100" Grid.Row="1"/>
+                            <Slider x:Name="moveForwardBySpeedSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True" Grid.Row="1"/>
+                            <Label Grid.Row="2">Gear:</Label>
+                            <CheckBox x:Name="moveForwardBySendGearCheckbox" Grid.Row="2" Grid.Column="1" Content="Send?" Margin="0,7"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,7">
+                                <RadioButton x:Name="firstGearRadio" Content="First gear" IsChecked="True"/>
+                                <RadioButton x:Name="secondGearRadio" Content="Second gear" Margin="20,0,0,0"/>
+                                <CheckBox x:Name="shouldStopAfterCheckBox" Content="Should stop after?" IsChecked="True" Margin="50,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
-                <StackPanel Grid.Row="1" Grid.Column="2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button x:Name="waitButton" Grid.Column="0" Content="Wait:" Click="waitButton_Click"/>
-                        <TextBox x:Name="waitBox" Grid.Column="1" Text="{Binding ElementName=waitSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                        <Slider x:Name="waitSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="60" TickFrequency="1" IsSnapToTickEnabled="True"/>
-                    </Grid>
-                </StackPanel>
-            </Grid>
-        </TabItem>
-    </TabControl>
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="waitButton" Grid.Column="0" Content="Wait:" Click="waitButton_Click"/>
+                            <TextBox x:Name="waitBox" Grid.Column="1" Text="{Binding ElementName=waitSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Padding="5"/>
+                            <Slider x:Name="waitSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="60" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                        </Grid>
+                        <Separator Margin="0,10"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="stopButton2" Content="Stop ASAP" Click="stopBtn_Click" Height="30" Width="100"/>
+                            <Button x:Name="softStopButton" Content="Soft stop" Click="softStopButton_Click" Height="30" Width="100"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
         <ScrollViewer x:Name="ScrollView" Grid.Column="0" ScrollChanged="ScrollViewer_ScrollChanged">
             <TextBlock x:Name="outputBox" />
         </ScrollViewer>

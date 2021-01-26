@@ -13,6 +13,8 @@ namespace WnekoTankMeadow
     /// </summary>
     class Motor
     {
+        int slowingRate = 50;
+
         int baseSpeed = 0;
         int turnModifier = 0;
         int currentSpeed = 0;
@@ -70,8 +72,8 @@ namespace WnekoTankMeadow
         {
             int newSpeed = baseSpeed + turnModifier;
 
-            if (newSpeed >= 0) CurrentPort = forwardPwm;
-            else CurrentPort = backPwm;
+            if (newSpeed >= 0 && CurrentPort != forwardPwm) CurrentPort = forwardPwm;
+            else if (newSpeed <0 && CurrentPort != backPwm) CurrentPort = backPwm;
             currentSpeed = newSpeed;
             newSpeed = Math.Abs(newSpeed);
             newSpeed = newSpeed > 100 ? 100 : newSpeed;
@@ -97,6 +99,20 @@ namespace WnekoTankMeadow
         {
             turnModifier = baseSpeed >= 0 ? turnRate : -turnRate;
             ChangeSpeed();
+        }
+
+        /// <summary>
+        /// Stops motor gently 
+        /// </summary>
+        internal void SoftStop()
+        {
+            int sign = Math.Sign(currentSpeed);
+            int absSpeed = Math.Abs(currentSpeed);
+            for (int i = absSpeed; i > 0; i -= 10)
+            {
+                currentSpeed = i;
+                Thread.Sleep(slowingRate);
+            }
         }
     }
 }

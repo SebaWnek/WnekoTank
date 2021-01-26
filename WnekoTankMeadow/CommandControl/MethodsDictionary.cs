@@ -18,7 +18,7 @@ namespace WnekoTankMeadow
         /// </summary>
         /// <param name="code">3 letter code</param>
         /// <param name="action">Delegate for selected method</param>
-        public void RegisterMetod(string code, Action<string> action)
+        public void RegisterMethod(string code, Action<string> action)
         {
             methods.Add(code, action);
         }

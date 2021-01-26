@@ -14,4 +14,7 @@
     <PackageReference Include="Meadow.Foundation.ICs.IOExpanders.PCA9685" Version="0.1.24" />
     <PackageReference Include="Meadow.Foundation.Servo" Version="0.8.30" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommonsLibrary\CommonsLibrary.csproj" />
+  </ItemGroup>
 </Project>

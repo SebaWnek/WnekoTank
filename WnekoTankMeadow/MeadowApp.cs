@@ -9,6 +9,8 @@ using Meadow.Foundation.ICs.IOExpanders;
 using Meadow.Foundation.Leds;
 using Meadow.Foundation.Servos;
 using Meadow.Hardware;
+using WnekoTankMeadow.Drive;
+using CommonsLibrary;
 
 namespace WnekoTankMeadow
 {
@@ -61,15 +63,26 @@ namespace WnekoTankMeadow
             display = new I2cCharacterDisplay(bus, 39, 2, 16);
             display.Write("I'm alive!");
 
-            motor = new MotorController(pwm1600.CreatePwmPort(12, 0), pwm1600.CreatePwmPort(13, 0), pwm1600.CreatePwmPort(14, 0), pwm1600.CreatePwmPort(15, 0), pwm50.CreatePwmPort(15));
+            motor = new MotorController(pwm1600.CreatePwmPort(12, 0),
+                                        pwm1600.CreatePwmPort(13, 0),
+                                        pwm1600.CreatePwmPort(14, 0),
+                                        pwm1600.CreatePwmPort(15, 0),
+                                        pwm50.CreatePwmPort(15),
+                                        Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20),
+                                        Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20));
 
             com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
-
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
 
             RegisterMethods();
+
+            TestThings();
+
+        }
+        private void TestThings()
+        {
         }
 
         /// <summary>
@@ -77,16 +90,18 @@ namespace WnekoTankMeadow
         /// </summary>
         private void RegisterMethods()
         {
-            dict.RegisterMetod(CommandList.setGear, new Action<string>(motor.SetGear));
-            dict.RegisterMetod(CommandList.setLinearSpeed, new Action<string>(motor.SetLinearSpeed));
-            dict.RegisterMetod(CommandList.setTurn, new Action<string>(motor.SetTurn));
-            dict.RegisterMetod(CommandList.stop, new Action<string>(motor.Break));
-            dict.RegisterMetod(CommandList.wait, new Action<string>(HelperMethods.Wait));
-            dict.RegisterMetod(CommandList.startInvoking, new Action<string>(queue.StartInvoking));
-            dict.RegisterMetod(CommandList.stopInvoking, new Action<string>(queue.StopInvoking));
-            dict.RegisterMetod(CommandList.enumerateQueue, new Action<string>(queue.EnumerateQueue));
-            dict.RegisterMetod(CommandList.clearQueue, new Action<string>(queue.ClearQueue));
-            dict.RegisterMetod(CommandList.handshake, new Action<string>(HelperMethods.HandShake));
+            dict.RegisterMethod(CommandList.setGear, new Action<string>(motor.SetGear));
+            dict.RegisterMethod(CommandList.setLinearSpeed, new Action<string>(motor.SetLinearSpeed));
+            dict.RegisterMethod(CommandList.setTurn, new Action<string>(motor.SetTurn));
+            dict.RegisterMethod(CommandList.stop, new Action<string>(motor.Break));
+            dict.RegisterMethod(CommandList.wait, new Action<string>(HelperMethods.Wait));
+            dict.RegisterMethod(CommandList.startInvoking, new Action<string>(queue.StartInvoking));
+            dict.RegisterMethod(CommandList.stopInvoking, new Action<string>(queue.StopInvoking));
+            dict.RegisterMethod(CommandList.enumerateQueue, new Action<string>(queue.EnumerateQueue));
+            dict.RegisterMethod(CommandList.clearQueue, new Action<string>(queue.ClearQueue));
+            dict.RegisterMethod(CommandList.handshake, new Action<string>(HelperMethods.HandShake));
+            dict.RegisterMethod(CommandList.moveForwardBy, new Action<string>(motor.MoveForwardBy));
+            dict.RegisterMethod(CommandList.softStop, new Action<string>(motor.SoftBreak));
         }
     }
 }

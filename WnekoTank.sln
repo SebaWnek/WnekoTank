@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WnekoTankControlApp", "WnekoTankControlApp\WnekoTankControlApp.csproj", "{FF74B234-05D6-4245-9679-E01912F82855}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WnekoTankMeadow", "WnekoTankMeadow\WnekoTankMeadow.csproj", "{D658593E-3D43-458F-B881-15D4D7641942}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WnekoTankMeadow", "WnekoTankMeadow\WnekoTankMeadow.csproj", "{D658593E-3D43-458F-B881-15D4D7641942}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonsLibrary", "CommonsLibrary\CommonsLibrary.csproj", "{6507ADAC-5AFD-4768-8A89-668D33F7704B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{D658593E-3D43-458F-B881-15D4D7641942}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D658593E-3D43-458F-B881-15D4D7641942}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D658593E-3D43-458F-B881-15D4D7641942}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{6507ADAC-5AFD-4768-8A89-668D33F7704B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6507ADAC-5AFD-4768-8A89-668D33F7704B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6507ADAC-5AFD-4768-8A89-668D33F7704B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6507ADAC-5AFD-4768-8A89-668D33F7704B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
