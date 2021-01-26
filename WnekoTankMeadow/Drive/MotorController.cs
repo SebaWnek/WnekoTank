@@ -166,7 +166,7 @@ namespace WnekoTankMeadow
         /// </summary>
         /// <param name="speed">Speed to travel at</param>
         /// <param name="distance">Distance to travel</param>
-        public void MoveForwardBy(int speed, float distance, byte shouldBreak, byte gear = 0)
+        public void MoveForwardBy(int speed, float distance, byte shouldBreak, byte gear)
         {
             if(gear > 0) SetGear(gear);
             int turns = (int)Math.Round(distance * 1000 / circumference);
