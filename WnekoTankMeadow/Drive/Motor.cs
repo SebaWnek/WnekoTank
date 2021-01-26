@@ -110,9 +110,10 @@ namespace WnekoTankMeadow
             int absSpeed = Math.Abs(currentSpeed);
             for (int i = absSpeed; i > 0; i -= 10)
             {
-                currentSpeed = i;
+                currentSpeed = sign * i;
                 Thread.Sleep(slowingRate);
             }
+            Stop();
         }
     }
 }
