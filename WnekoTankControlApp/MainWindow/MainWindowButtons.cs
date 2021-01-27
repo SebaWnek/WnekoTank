@@ -14,83 +14,146 @@ namespace WnekoTankControlApp
     /// </summary>
     public partial class MainWindow
     {
+        private void Send(string msg)
+        {
+            try
+            {
+                queue.SendMessage(msg);
+            }
+            catch (Exception ex)
+            {
+                if(ex is NullReferenceException) MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
+                else MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        private void SendEmergency(string msg)
+        {
+            try
+            {
+                queue.SendEmergencyMessage(msg);
+            }
+            catch (Exception ex)
+            {
+                if (ex is NullReferenceException) MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
+                else MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+
+
+
+
         private void gear1btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("setGear") + "1";
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
         private void gear2btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("setGear") + "2";
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
-        private void stopBtn_Click(object sender, RoutedEventArgs e)
+        private void stopEmergencyBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stop") + "0";
-            queue.SendEmergencyMessage(msg);
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stop");
+            SendEmergency(msg);
             clearQueue_Click(this, null);
         }
 
         private void softStopButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("softStop") + "0";
-            queue.SendMessage(msg);
+            Send(msg);
+        }
+        private void stopNormalButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("stop") + "0";
+            Send(msg);
         }
 
         private void queueStart_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("startInvoking") + "0";
-            queue.SendMessage(msg);
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("startInvoking");
+            Send(msg);
         }
 
         private void queueStop_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stopInvoking") + "0";
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stopInvoking");
             string msg2 = comList.GetCode("handshake");
-            queue.SendMessage(msg);
-            queue.SendMessage(msg2);
+            Send(msg);
+            Send(msg2);
         }
 
         private void listQueue_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("enumerateQueue") + "0";
-            queue.SendMessage(msg);
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("enumerateQueue");
+            Send(msg);
         }
 
         private void waitButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("wait") + waitBox.Text;
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
         private void setSpeedButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("setLinearSpeed") + setSpeedBox.Text;
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
         private void setTurnButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("setTurn") + setTurnBox.Text;
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
         private void handshakeButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("handshake");
-            queue.SendEmergencyMessage(msg);
+            SendEmergency(msg);
+        }
+
+        private void tempPresBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("tempPres");
+            Send(msg);
+        }
+
+        private void positionButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("position");
+            Send(msg);
+        }
+
+        private void calibrateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("calibrate");
+            Send(msg);
+        }
+
+        private void checkCalibrationBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("checkCalibration");
+            Send(msg);
         }
 
         private void DisconnectButton_Click(object sender, RoutedEventArgs e)
         {
+            ConnectButton.IsEnabled = true;
+            DisconnectButton.IsEnabled = false;
             communication?.ClosePort();
             communication = null;
             queue = null;
         }
 
-        private void ConnectButton_Click(object sender, RoutedEventArgs e)
+        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -101,17 +164,21 @@ namespace WnekoTankControlApp
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+            ConnectButton.IsEnabled = false;
+            DisconnectButton.IsEnabled = true;
+            outputBox.Text += "Connecting... \r\n";
             queue = new MessageQueue(communication, DisplayMessage);
-            Thread.Sleep(1000);
-            queue.SendMessage(CommandList.handshake);
-            Thread.Sleep(1000);
-            queue.SendMessage(CommandList.handshake);
+
+            await Task.Delay(1000);
+            Send(CommandList.handshake);
+            await Task.Delay(1000);
+            Send(CommandList.handshake);
         }
 
         private void clearQueue_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("clearQueue") + "0";
-            queue.SendEmergencyMessage(msg);
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("clearQueue");
+            SendEmergency(msg);
         }
 
         private void moveForwardByButton_Click(object sender, RoutedEventArgs e)
@@ -125,7 +192,7 @@ namespace WnekoTankControlApp
                 msg += (bool)firstGearRadio.IsChecked ? ";1" : ";2";
             }
             else msg += ";0";
-            queue.SendMessage(msg);
+            Send(msg);
         }
     }
 }

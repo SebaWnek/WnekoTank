@@ -26,14 +26,14 @@ namespace WnekoTankControlApp
         {
             int speed = (int)e.NewValue;
             string msg = comList.GetCode("setLinearSpeed") + speed.ToString();
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
         private void turnSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int turn = (int)e.NewValue;
             string msg = comList.GetCode("setTurn") + turn.ToString();
-            queue.SendMessage(msg);
+            Send(msg);
         }
 
     }

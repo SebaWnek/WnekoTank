@@ -10,6 +10,7 @@ using Meadow.Foundation.Leds;
 using Meadow.Foundation.Servos;
 using Meadow.Hardware;
 using WnekoTankMeadow.Drive;
+using WnekoTankMeadow.Sensors;
 using CommonsLibrary;
 
 namespace WnekoTankMeadow
@@ -29,6 +30,8 @@ namespace WnekoTankMeadow
         MethodsQueue queue;
         Mcp23x08 expander1;
         I2cCharacterDisplay display;
+        TempPressureSensor tempPresSensor;
+        PositionSensor positionSensor;
 
         public MeadowApp()
         {
@@ -53,6 +56,7 @@ namespace WnekoTankMeadow
 
             bus = Device.CreateI2cBus();
 
+
             pwm1600 = new Pca9685(bus, 65, 1600);
             pwm1600.Initialize();
             pwm50 = new Pca9685(bus, 64, 50);
@@ -75,6 +79,9 @@ namespace WnekoTankMeadow
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
+
+            tempPresSensor = new TempPressureSensor(com, bus);
+            positionSensor = new PositionSensor(com, bus);
 
             RegisterMethods();
 
@@ -102,6 +109,10 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.handshake, new Action<string>(HelperMethods.HandShake));
             dict.RegisterMethod(CommandList.moveForwardBy, new Action<string>(motor.MoveForwardBy));
             dict.RegisterMethod(CommandList.softStop, new Action<string>(motor.SoftBreak));
+            dict.RegisterMethod(CommandList.tempPres, new Action<string>(tempPresSensor.Read));
+            dict.RegisterMethod(CommandList.position, new Action<string>(positionSensor.Read));
+            dict.RegisterMethod(CommandList.calibrate, new Action<string>(positionSensor.Calibrate));
+            dict.RegisterMethod(CommandList.checkCalibration, new Action<string>(positionSensor.CheckCalibration));
         }
     }
 }

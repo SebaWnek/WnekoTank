@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WnekoTankControlApp
 {
@@ -53,8 +54,16 @@ namespace WnekoTankControlApp
         /// <param name="msg">Message</param>
         public void SendMessage(string msg)
         {
-            DisplayMessage.Invoke("Queueing: " + msg);
-            queue.Add(msg);
+            try
+            {
+                DisplayMessage.Invoke("Queueing: " + msg);
+                queue.Add(msg);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
         /// <summary>
@@ -63,8 +72,17 @@ namespace WnekoTankControlApp
         /// <param name="msg">Message</param>
         public void SendEmergencyMessage(string msg)
         {
-            DisplayMessage.Invoke("Sending EMERGNECY: " + msg);
-            comPort.SendMessage(msg);
+            try
+            {
+                DisplayMessage.Invoke("Sending EMERGNECY: " + msg);
+                comPort.SendMessage(msg);
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
         /// <summary>

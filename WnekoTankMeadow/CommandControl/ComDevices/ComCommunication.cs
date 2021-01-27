@@ -15,6 +15,9 @@ namespace WnekoTankMeadow
     {
         ISerialMessagePort port;
         EventHandler<MessageEventArgs> messageEvent;
+
+        public object locker => new object();
+
         /// <summary>
         /// Main constructor
         /// </summary>
@@ -33,21 +36,25 @@ namespace WnekoTankMeadow
         /// <param name="e"></param>
         private void Port_MessageReceived(object sender, SerialMessageData e)
         {
-            string msg = Encoding.ASCII.GetString(e.Message);
+            string msg;
+            lock (locker)
+            {
+                msg = Encoding.ASCII.GetString(e.Message);
 #if DEBUG
-            foreach (byte b in e.Message)
-            {
-                Console.WriteLine(b);
-            }
-            Console.WriteLine($"Received {msg}");
-            foreach(byte b in Encoding.ASCII.GetBytes($"ACK:{msg}"))
-            {
-                Console.WriteLine(b);
-            }
-            Console.WriteLine($"Trying to send ACK:{msg}");
+                foreach (byte b in e.Message)
+                {
+                    Console.WriteLine(b);
+                }
+                Console.WriteLine($"Received {msg}");
+                foreach (byte b in Encoding.ASCII.GetBytes($"ACK:{msg}"))
+                {
+                    Console.WriteLine(b);
+                }
+                Console.WriteLine($"Trying to send ACK:{msg}");
 #endif
-            port.Write(Encoding.ASCII.GetBytes($"ACK:{msg}"));
-            messageEvent.Invoke(this, new MessageEventArgs(msg));
+                port.Write(Encoding.ASCII.GetBytes($"ACK:{msg}"));
+            }
+            messageEvent.Invoke(this, new MessageEventArgs(msg)); 
         }
 
         /// <summary>
@@ -56,7 +63,10 @@ namespace WnekoTankMeadow
         /// <param name="msg">Message to be sent</param>
         public void SendMessage(string msg)
         {
-            port.Write(Encoding.ASCII.GetBytes(msg));
+            lock (locker)
+            {
+                port.Write(Encoding.ASCII.GetBytes(msg)); 
+            }
         }
 
         /// <summary>
@@ -65,7 +75,10 @@ namespace WnekoTankMeadow
         /// <param name="handler">Delegate of method to be registered</param>
         public void SubscribeToMessages(EventHandler<MessageEventArgs> handler)
         {
-            messageEvent += handler;
+            lock (locker)
+            {
+                messageEvent += handler; 
+            }
         }
     }
 }

@@ -18,5 +18,9 @@
         public static string handshake = "HSK";
         public static string moveForwardBy = "MFW";
         public static string softStop = "STS";
+        public static string tempPres = "TPR";
+        public static string position = "POS";
+        public static string calibrate = "CAL";
+        public static string checkCalibration = "CCL";
     }
 }

@@ -35,7 +35,15 @@ namespace WnekoTankControlApp
         /// <param name="e">Message from serial port</param>
         private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            string message = port.ReadLine();
+            int previous = 0;
+            int count = port.BytesToRead;
+            while(previous != count)
+            {
+                previous = count;
+                count = port.BytesToRead;
+                Thread.Sleep(50);
+            }
+            string message = port.ReadExisting();
             messageEvent?.Invoke(this, new MessageEventArgs(message));
         }
 

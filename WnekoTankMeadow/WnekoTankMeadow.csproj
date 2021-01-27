@@ -12,6 +12,8 @@
     <PackageReference Include="Meadow.Foundation.Displays.Lcd.CharacterDisplay" Version="0.8.20" />
     <PackageReference Include="Meadow.Foundation.ICs.IOExpanders.Mcp23x08" Version="0.1.27" />
     <PackageReference Include="Meadow.Foundation.ICs.IOExpanders.PCA9685" Version="0.1.24" />
+    <PackageReference Include="Meadow.Foundation.Sensors.Atmospheric.Bme280" Version="0.5.31" />
+    <PackageReference Include="Meadow.Foundation.Sensors.Motion.Bno055" Version="0.1.29" />
     <PackageReference Include="Meadow.Foundation.Servo" Version="0.8.30" />
   </ItemGroup>
   <ItemGroup>
