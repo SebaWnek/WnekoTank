@@ -8,17 +8,20 @@ namespace WnekoTankMeadow
     /// <summary>
     /// Class responsible for all movement operations, connecting all driving subsystems
     /// </summary>
-    public class MotorController
+    class MotorController
     {
         Motor leftMotor;
         Motor rightMotor;
         GearBox gearbox;
         HallEffectCounter rightCounter;
         HallEffectCounter leftCounter;
+        PositionSensor positionSensor;
         int teethCount = 14;
         float chainPitch = 12.7f; //08b chain, half inch pitch, in mm
         float circumference;
-        AutoResetEvent autoReset;
+        AutoResetEvent moveForwardResetEvent;
+        AutoResetEvent turnResetEvent;
+        CancellationTokenSource turnTokenSource;
 
         /// <summary>
         /// Main constructor
@@ -28,8 +31,16 @@ namespace WnekoTankMeadow
         /// <param name="rightForwardPwm">PWM port responsible for right motor moving forward</param>
         /// <param name="rightBackPwm">PWM port responsible for right motor moving backward</param>
         /// <param name="gearPwm">PWM port responsible for controling gear changing servo</param>
-        public MotorController(IPwmPort leftForwardPwm, IPwmPort leftBackPwm, IPwmPort rightForwardPwm, IPwmPort rightBackPwm, IPwmPort gearPwm, IDigitalInputPort leftCounterPort, IDigitalInputPort righCounterPort)
+        public MotorController(IPwmPort rightForwardPwm,
+                               IPwmPort rightBackPwm,
+                               IPwmPort leftForwardPwm,
+                               IPwmPort leftBackPwm,
+                               IPwmPort gearPwm,
+                               IDigitalInputPort leftCounterPort,
+                               IDigitalInputPort righCounterPort,
+                               PositionSensor posSens)
         {
+            positionSensor = posSens; 
             circumference = teethCount * chainPitch;
             leftMotor = new Motor(leftForwardPwm, leftBackPwm);
             rightMotor = new Motor(rightForwardPwm, rightBackPwm);
@@ -43,10 +54,14 @@ namespace WnekoTankMeadow
             leftCounter.RegisterForCount(CountChanged);
 #endif
 
-            rightCounter.RegisterForLimitReached(StopEvent);
-            leftCounter.RegisterForLimitReached(StopEvent);
+            rightCounter.RegisterForLimitReached(MoveForwardStop);
+            leftCounter.RegisterForLimitReached(MoveForwardStop);
 
-            autoReset = new AutoResetEvent(false);
+            positionSensor.RegisterForHeadingChanged(HeadingChanged);
+
+            moveForwardResetEvent = new AutoResetEvent(false);
+            turnResetEvent = new AutoResetEvent(false);
+            turnTokenSource = new CancellationTokenSource();
         }
 
         /// <summary>
@@ -123,6 +138,10 @@ namespace WnekoTankMeadow
         /// </summary>
         public void Break()
         {
+            turnTokenSource.Cancel();
+            turnTokenSource = new CancellationTokenSource();
+            turnResetEvent.Set();
+            moveForwardResetEvent.Set();
             leftMotor.Stop();
             rightMotor.Stop();
         }
@@ -170,10 +189,10 @@ namespace WnekoTankMeadow
         {
             if(gear > 0) SetGear(gear);
             int turns = (int)Math.Round(distance * 1000 / circumference);
-            rightCounter.SetCounter(turns);
-            leftCounter.SetCounter(turns);
+            rightCounter.SetTarget(turns);
+            leftCounter.SetTarget(turns);
             SetLinearSpeed(speed);
-            autoReset.WaitOne();
+            moveForwardResetEvent.WaitOne();
             if(shouldBreak == 1) Break();
         }
 
@@ -183,11 +202,10 @@ namespace WnekoTankMeadow
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void StopEvent(object sender, EventArgs e)
+        private void MoveForwardStop(object sender, EventArgs e)
         {
-            autoReset.Set();
-            leftCounter.DisableTarget();
-            rightCounter.DisableTarget();
+            moveForwardResetEvent.Set();
+            (sender as HallEffectCounter).DisableTarget();
         }
 
         /// <summary>
@@ -198,6 +216,36 @@ namespace WnekoTankMeadow
         private void CountChanged(object sender, int count)
         {
             Console.WriteLine((sender as HallEffectCounter).Name + ": " + count);
+        }
+
+        public void TurnBy(string args)
+        {
+            string[] arguments = args.Split(';');
+#if DEBUG
+            foreach (string arg in arguments)
+            {
+                Console.WriteLine(arg);
+            }
+#endif
+            TurnBy(int.Parse(arguments[0]), int.Parse(arguments[1]), byte.Parse(arguments[2]));
+        }
+
+        public void TurnBy(int d, int tr, byte gear)
+        {
+            if (gear > 0) SetGear(gear);
+            int degrees = d;
+            int turnRate = tr;
+            int direction = Math.Sign(degrees);
+            SetTurn(direction * turnRate);
+            positionSensor.StartCheckingAngle(degrees, turnTokenSource.Token);
+            turnResetEvent.WaitOne();
+            SetTurn(0);
+            turnTokenSource = new CancellationTokenSource();
+        }
+
+        private void HeadingChanged(object sender, EventArgs e)
+        {
+            turnResetEvent.Set();
         }
     }
 }

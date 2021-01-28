@@ -194,5 +194,18 @@ namespace WnekoTankControlApp
             else msg += ";0";
             Send(msg);
         }
+
+        private void turnByButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("turnBy");
+            msg += turnByAngleBox.Text;
+            msg += ';' + turnBySpeedBox.Text;
+            if ((bool)turnBySendGearCheckbox.IsChecked)
+            {
+                msg += (bool)firstGearRadio.IsChecked ? ";1" : ";2";
+            }
+            else msg += ";0";
+            Send(msg);
+        }
     }
 }

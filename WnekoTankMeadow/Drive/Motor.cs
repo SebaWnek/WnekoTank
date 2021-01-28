@@ -97,7 +97,7 @@ namespace WnekoTankMeadow
         /// <param name="turnRate"></param>
         public void SetTurn(int turnRate)
         {
-            turnModifier = baseSpeed >= 0 ? turnRate : -turnRate;
+            turnModifier = turnRate;
             ChangeSpeed();
         }
 

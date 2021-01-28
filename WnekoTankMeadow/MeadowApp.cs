@@ -67,14 +67,6 @@ namespace WnekoTankMeadow
             display = new I2cCharacterDisplay(bus, 39, 2, 16);
             display.Write("I'm alive!");
 
-            motor = new MotorController(pwm1600.CreatePwmPort(12, 0),
-                                        pwm1600.CreatePwmPort(13, 0),
-                                        pwm1600.CreatePwmPort(14, 0),
-                                        pwm1600.CreatePwmPort(15, 0),
-                                        pwm50.CreatePwmPort(15),
-                                        Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20),
-                                        Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20));
-
             com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
             dict = new MethodsDictionary();
@@ -83,6 +75,14 @@ namespace WnekoTankMeadow
             tempPresSensor = new TempPressureSensor(com, bus);
             positionSensor = new PositionSensor(com, bus);
 
+            motor = new MotorController(pwm1600.CreatePwmPort(12, 0),
+                                        pwm1600.CreatePwmPort(13, 0),
+                                        pwm1600.CreatePwmPort(14, 0),
+                                        pwm1600.CreatePwmPort(15, 0),
+                                        pwm50.CreatePwmPort(15),
+                                        Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20),
+                                        Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20),
+                                        positionSensor);
             RegisterMethods();
 
             TestThings();
@@ -113,6 +113,7 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.position, new Action<string>(positionSensor.Read));
             dict.RegisterMethod(CommandList.calibrate, new Action<string>(positionSensor.Calibrate));
             dict.RegisterMethod(CommandList.checkCalibration, new Action<string>(positionSensor.CheckCalibration));
+            dict.RegisterMethod(CommandList.turnBy, new Action<string>(motor.TurnBy));
         }
     }
 }
