@@ -37,7 +37,11 @@ namespace WnekoTankMeadow
         {
             Initialize();
             onboardLed.SetColor(Color.Green);
+            TestThings();
+        }
 
+        private void TestThings()
+        {
         }
 
         /// <summary>
@@ -83,13 +87,9 @@ namespace WnekoTankMeadow
                                         Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20),
                                         Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.PullDown, 20, 20),
                                         positionSensor);
+
+
             RegisterMethods();
-
-            TestThings();
-
-        }
-        private void TestThings()
-        {
         }
 
         /// <summary>

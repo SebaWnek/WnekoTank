@@ -27,6 +27,7 @@ namespace WnekoTankMeadow
             port = p;
             port.Open();
             port.MessageReceived += Port_MessageReceived;
+            SendMessage("Waiting for connection...");
         }
 
         /// <summary>

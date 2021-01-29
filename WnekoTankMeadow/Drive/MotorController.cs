@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using WnekoTankMeadow.Drive;
+using Meadow.Foundation.Controllers.Pid;
 
 namespace WnekoTankMeadow
 {
@@ -22,6 +23,7 @@ namespace WnekoTankMeadow
         AutoResetEvent moveForwardResetEvent;
         AutoResetEvent turnResetEvent;
         CancellationTokenSource turnTokenSource;
+        IdealPidController turnPid;
 
         /// <summary>
         /// Main constructor
@@ -40,7 +42,7 @@ namespace WnekoTankMeadow
                                IDigitalInputPort righCounterPort,
                                PositionSensor posSens)
         {
-            positionSensor = posSens; 
+            positionSensor = posSens;
             circumference = teethCount * chainPitch;
             leftMotor = new Motor(leftForwardPwm, leftBackPwm);
             rightMotor = new Motor(rightForwardPwm, rightBackPwm);
@@ -62,6 +64,13 @@ namespace WnekoTankMeadow
             moveForwardResetEvent = new AutoResetEvent(false);
             turnResetEvent = new AutoResetEvent(false);
             turnTokenSource = new CancellationTokenSource();
+
+            turnPid = new IdealPidController();
+            turnPid.ProportionalComponent = 1.8f;
+            turnPid.IntegralComponent = 0.05f;
+            turnPid.DerivativeComponent = 0.01f;
+            turnPid.OutputMax = 50;
+            turnPid.OutputMin = -50;
         }
 
         /// <summary>
@@ -187,13 +196,13 @@ namespace WnekoTankMeadow
         /// <param name="distance">Distance to travel</param>
         public void MoveForwardBy(int speed, float distance, byte shouldBreak, byte gear)
         {
-            if(gear > 0) SetGear(gear);
+            if (gear > 0) SetGear(gear);
             int turns = (int)Math.Round(distance * 1000 / circumference);
             rightCounter.SetTarget(turns);
             leftCounter.SetTarget(turns);
             SetLinearSpeed(speed);
             moveForwardResetEvent.WaitOne();
-            if(shouldBreak == 1) Break();
+            if (shouldBreak == 1) Break();
         }
 
 
@@ -227,7 +236,7 @@ namespace WnekoTankMeadow
                 Console.WriteLine(arg);
             }
 #endif
-            TurnBy(int.Parse(arguments[0]), int.Parse(arguments[1]), byte.Parse(arguments[2]));
+            TurnByPid(int.Parse(arguments[0]), int.Parse(arguments[1]), byte.Parse(arguments[2]));
         }
 
         public void TurnBy(int d, int tr, byte gear)
@@ -241,6 +250,52 @@ namespace WnekoTankMeadow
             turnResetEvent.WaitOne();
             SetTurn(0);
             turnTokenSource = new CancellationTokenSource();
+        }
+
+        public void TurnByPid(int d, int tr, byte gear)
+        {
+            CancellationToken token = turnTokenSource.Token;
+            int turnTimeDelta = 101 - 2* tr; //So when it turn at max turn rate of 50 it has max frequency and with slower turn rates it's not that needed
+            int angle = d;
+            int direction = Math.Sign(angle);
+            float previousHeading = positionSensor.Read()[0];
+            float currentHeading = positionSensor.Read()[0];
+            float turned = 0;
+            float deltaAngle = 0;
+            bool done = false;
+            float turnRate = tr;
+            turnPid.OutputMax = tr;
+            turnPid.OutputMin = -tr;
+            turnPid.TargetInput = d;
+            turnPid.OutputTuningInformation = true;
+            SetTurn((int)(direction * turnRate));
+            Console.WriteLine($"D: {deltaAngle}, t: {turned}, dir: {currentHeading}, tr: {turnRate}\r\n");
+            turnPid.CalculateControlOutput(); //to reset last update time
+            turnPid.ResetIntegrator();
+            while (!done)
+            {
+                if (token.IsCancellationRequested) break;
+                direction = Math.Sign(turnRate);
+                currentHeading = positionSensor.Read()[0];
+                deltaAngle = currentHeading - previousHeading;
+                if (Math.Abs(deltaAngle) > 180) //If angle is ok we only check once, if it's abnormal then we can spend more time as this will happen rarely 
+                {
+                    if (deltaAngle > 180) deltaAngle -= 360;
+                    if (deltaAngle < 180) deltaAngle += 360;
+                }
+                turned += deltaAngle;
+#if DEBUG
+#endif
+                turnPid.ActualInput = turned;
+                turnRate = turnPid.CalculateControlOutput();
+                Console.WriteLine($"D: {deltaAngle}, t: {turned}, dir: {currentHeading}, tr: {turnRate}\r\n");
+                if (Math.Abs(turnRate) < 0.2) break;
+                if (Math.Abs(turnRate) < 10) turnRate = Math.Sign(turnRate) * 10;
+                SetTurn((int)Math.Round(turnRate));
+                previousHeading = currentHeading;
+                Thread.Sleep(turnTimeDelta);
+            }
+            Break();
         }
 
         private void HeadingChanged(object sender, EventArgs e)
