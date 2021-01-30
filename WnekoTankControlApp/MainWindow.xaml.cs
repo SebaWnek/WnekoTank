@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,10 +26,17 @@ namespace WnekoTankControlApp
         CommandsList comList = new CommandsList();
         ICommunication communication;
         MessageQueue queue;
+        ObservableCollection<string> commandList = new ObservableCollection<string>();
         private Boolean AutoScroll = true;
         public MainWindow()
         {
             InitializeComponent();
+            queueList.ItemsSource = commandList;
+            commandList.Add(CommandList.emergencyPrefix + CommandList.stopInvoking);
+            commandList.Add(CommandList.emergencyPrefix + CommandList.clearQueue);
+            connectButtons = new List<Button>();
+            connectButtons.Add(ConnectButton);
+            connectButtons.Add(mockConnectButton);
         }
 
         /// <summary>

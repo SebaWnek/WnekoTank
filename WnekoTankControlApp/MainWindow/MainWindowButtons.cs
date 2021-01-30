@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using CommonsLibrary;
+using WnekoTankControlApp.CommandControl.ComDevices;
 
 namespace WnekoTankControlApp
 {
@@ -14,8 +17,15 @@ namespace WnekoTankControlApp
     /// </summary>
     public partial class MainWindow
     {
+        List<Button> connectButtons;
+        bool shouldQueue = false;
         private void Send(string msg)
         {
+            if (shouldQueue)
+            {
+                commandList.Add(msg);
+                return;
+            }
             try
             {
                 queue.SendMessage(msg);
@@ -146,7 +156,7 @@ namespace WnekoTankControlApp
 
         private void DisconnectButton_Click(object sender, RoutedEventArgs e)
         {
-            ConnectButton.IsEnabled = true;
+            foreach (Button btn in connectButtons) btn.IsEnabled = true;
             DisconnectButton.IsEnabled = false;
             communication?.ClosePort();
             communication = null;
@@ -164,7 +174,26 @@ namespace WnekoTankControlApp
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            ConnectButton.IsEnabled = false;
+            await Connect();
+        }
+
+        private async void MockConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                communication = new MockCommunication();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            await Connect();
+        }
+
+        private async Task Connect()
+        {
+            foreach (Button btn in connectButtons) btn.IsEnabled = false;
             DisconnectButton.IsEnabled = true;
             outputBox.Text += "Connecting... \r\n";
             queue = new MessageQueue(communication, DisplayMessage);
@@ -206,6 +235,45 @@ namespace WnekoTankControlApp
             }
             else msg += ";0";
             Send(msg);
+        }
+
+        private void startAddingButton_Click(object sender, RoutedEventArgs e)
+        {
+            shouldQueue = true;
+            stopAddingButton.IsEnabled = true;
+            startAddingButton.IsEnabled = false;
+        }
+
+        private void stopAddingButton_Click(object sender, RoutedEventArgs e)
+        {
+            shouldQueue = false;
+            stopAddingButton.IsEnabled = false;
+            startAddingButton.IsEnabled = true;
+        }
+
+        private void sendQueuedButton_Click(object sender, RoutedEventArgs e)
+        {
+            stopAddingButton_Click(null, null);
+            foreach (string msg in commandList) Send(msg);
+        }
+
+        private void clearQueuedButton_Click(object sender, RoutedEventArgs e)
+        {
+            commandList = new ObservableCollection<string>();
+        }
+
+        private void queueListHideButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (QueueColumn.Width.Value == 0)
+            {
+                QueueColumn.Width = new GridLength(1, GridUnitType.Star);
+                queueListHideButton.Content = ">>";
+            }
+            else
+            {
+                QueueColumn.Width = new GridLength(0, GridUnitType.Pixel);
+                queueListHideButton.Content = "<<";
+            }
         }
     }
 }
