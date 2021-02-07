@@ -717,6 +717,10 @@
                             <Label Width="150">Serial port over USB:</Label>
                             <TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>
                             <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
+                            <Label Width="70">Baud rate:</Label>
+
+                            <RadioButton x:Name="usbComRadio" Content="USB cable" IsChecked="True" Margin="5" GroupName="com"/>
+                            <RadioButton x:Name="hc12ComRadio" Content="Radio" Margin="5" GroupName="com"/>
                         </StackPanel>
                         <Separator Margin="10"/>
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
@@ -777,8 +781,8 @@
                             <Label Grid.Row="2">Gear:</Label>
                             <CheckBox x:Name="moveForwardBySendGearCheckbox" Grid.Row="2" Grid.Column="1" Content="Send?" Margin="0,7"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,7">
-                                <RadioButton x:Name="firstGearRadio" Content="First gear" IsChecked="True"/>
-                                <RadioButton x:Name="secondGearRadio" Content="Second gear" Margin="20,0,0,0"/>
+                                <RadioButton x:Name="firstGearRadio" Content="First gear" IsChecked="True" GroupName="gear"/>
+                                <RadioButton x:Name="secondGearRadio" Content="Second gear" Margin="20,0,0,0" GroupName="gear"/>
                                 <CheckBox x:Name="shouldStopAfterCheckBox" Content="Should stop after?" IsChecked="True" Margin="50,0,0,0"/>
                             </StackPanel>
                         </Grid> 
@@ -803,8 +807,8 @@
                             <Label Grid.Row="2">Gear:</Label>
                             <CheckBox x:Name="turnBySendGearCheckbox" Grid.Row="2" Grid.Column="1" Content="Send?" Margin="0,7"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,7">
-                                <RadioButton x:Name="firstGearTurnRadio" Content="First gear" IsChecked="True"/>
-                                <RadioButton x:Name="secondGearTurnRadio" Content="Second gear" Margin="20,0,0,0"/>
+                                <RadioButton x:Name="firstGearTurnRadio" Content="First gear" IsChecked="True" GroupName="turnGear"/>
+                                <RadioButton x:Name="secondGearTurnRadio" Content="Second gear" Margin="20,0,0,0" GroupName="turnGear"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

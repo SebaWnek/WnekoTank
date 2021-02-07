@@ -12,6 +12,7 @@ using Meadow.Hardware;
 using WnekoTankMeadow.Drive;
 using WnekoTankMeadow.Sensors;
 using CommonsLibrary;
+using WnekoTankMeadow.CommandControl.ComDevices;
 
 namespace WnekoTankMeadow
 {
@@ -42,6 +43,11 @@ namespace WnekoTankMeadow
 
         private void TestThings()
         {
+            //while (true)
+            //{
+            //    Thread.Sleep(1000);
+            //    com.SendMessage("AT");
+            //}
         }
 
         /// <summary>
@@ -71,7 +77,9 @@ namespace WnekoTankMeadow
             display = new I2cCharacterDisplay(bus, 39, 2, 16);
             display.Write("I'm alive!");
 
-            com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
+            //com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
+
+            com = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com1, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 115200, 8, Parity.None, StopBits.One));
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);

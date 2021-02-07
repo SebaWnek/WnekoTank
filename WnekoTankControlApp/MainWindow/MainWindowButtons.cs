@@ -165,9 +165,11 @@ namespace WnekoTankControlApp
 
         private async void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
+            string port = PortBox.Text;
             try
             {
-                communication = new ComPortCommunication(PortBox.Text);
+                if ((bool)usbComRadio.IsChecked) communication = new ComPortCommunication(port);
+                else communication = new HC12Communication(port);
             }
             catch (Exception ex)
             {
