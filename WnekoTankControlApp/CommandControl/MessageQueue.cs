@@ -100,5 +100,11 @@ namespace WnekoTankControlApp
                 comPort.SendMessage(msg);
             }
         }
+
+        public void ClearQueue()
+        {
+            queue = new BlockingCollection<string>();
+            DisplayMessage.Invoke("----------\nQUEUE CLEARED\n----------");
+        }
     }
 }

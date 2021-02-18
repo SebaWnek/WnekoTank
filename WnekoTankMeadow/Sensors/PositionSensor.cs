@@ -120,6 +120,13 @@ namespace WnekoTankMeadow.Drive
             return result;
         }
 
+        internal float ReadHeading()
+        {
+            byte[] data = bno.ReadRegisters(0x1a, 2);
+            float result = (short)((data[1] << 8) | data[0]) / representationInLSB;
+            return result;
+        }
+
         private void OnHeadingChanged()
         {
             headingChanged?.Invoke(this, null);
@@ -134,7 +141,7 @@ namespace WnekoTankMeadow.Drive
         {
             int angle = a;
             int direction = Math.Sign(angle);
-            float previousHeading = Read()[0];
+            float previousHeading = ReadHeading();
             float currentHeading = 0;
             float turned = 0;
             float deltaAngle;
@@ -142,7 +149,7 @@ namespace WnekoTankMeadow.Drive
             while (!done)
             {
                 if (token.IsCancellationRequested) break;
-                currentHeading = Read()[0];
+                currentHeading = ReadHeading();
                 deltaAngle = currentHeading - previousHeading;
                 if (direction == 1 && deltaAngle < 0) deltaAngle += 360;
                 if (direction == -1 && deltaAngle > 0) deltaAngle -= 360;

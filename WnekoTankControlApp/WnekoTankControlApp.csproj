@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="CommandControl\ComDevices\HC12Communication.cs" />
     <Compile Include="CommandControl\ComDevices\MockCommunication.cs" />
+    <Compile Include="CommandControl\ComDevices\WifiCommunication.cs" />
     <Compile Include="CommandControl\CommandsList.cs" />
     <Compile Include="MainWindow\MainWindowButtons.cs" />
     <Compile Include="MainWindow\MainWindowSliders.cs" />

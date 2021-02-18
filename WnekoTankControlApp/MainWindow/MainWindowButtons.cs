@@ -73,6 +73,8 @@ namespace WnekoTankControlApp
             string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stop");
             SendEmergency(msg);
             clearQueue_Click(this, null);
+            stabilizeOff.IsChecked = true;
+            SendEmergency(msg);
         }
 
         private void softStopButton_Click(object sender, RoutedEventArgs e)
@@ -223,6 +225,7 @@ namespace WnekoTankControlApp
                 msg += (bool)firstGearRadio.IsChecked ? ";1" : ";2";
             }
             else msg += ";0";
+            msg += (bool)moveForwardSoftBox.IsChecked ? ";1" : ";0";
             Send(msg);
         }
 
@@ -276,6 +279,41 @@ namespace WnekoTankControlApp
                 QueueColumn.Width = new GridLength(0, GridUnitType.Pixel);
                 queueListHideButton.Content = "<<";
             }
+        }
+
+        private void stabilizeOff_Checked(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("stabilize") + "0";
+            Send(msg);
+        }
+
+        private void stabilizeOn_Checked(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("stabilize") + "1";
+            Send(msg);
+        }
+
+        private void proximity_Checked(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("setProxSensors");
+            if ((bool)proximityNone.IsChecked) msg += "0";
+            else if ((bool)proximityStop.IsChecked) msg += "1";
+            else if ((bool)proximitySoftStop.IsChecked) msg += "2";
+            else if ((bool)proximityStopAndReturn.IsChecked) msg += "3";
+        }
+
+        private void proxReset_Click(object sender, RoutedEventArgs e)
+        {
+            queue.ClearQueue();
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("clearQueue");
+            SendEmergency(msg);
+            msg = comList.GetCode("emergencyPrefix") + comList.GetCode("startInvoking");
+            SendEmergency(msg);
+        }
+
+        private void sendQueueClearBtn_Click(object sender, RoutedEventArgs e)
+        {
+            queue.ClearQueue();
         }
     }
 }

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace WnekoTankMeadow.Drive
 {
+    enum Side { Left, Right }
+
     /// <summary>
     /// Allows use of Hall effect sensor for counting magnetic field changes,
     /// For example for counting wheel rotations to get distance traveled,
@@ -20,7 +22,7 @@ namespace WnekoTankMeadow.Drive
         private int targetCount = -1;
         //Allows to get current count since last reset
         public int Counter { get => counter; }
-        public string Name { get; set; }
+        public Side Name { get; set; }
 
         EventHandler LimitReached;
         EventHandler<int> CountChanged;
@@ -39,7 +41,7 @@ namespace WnekoTankMeadow.Drive
         private void Port_Changed(object sender, DigitalInputPortEventArgs e)
         {
             counter++;
-            if(CountChanged != null) OnCountChanged();
+            if (CountChanged != null) OnCountChanged();
             if (counter == targetCount && LimitReached != null) OnLimitReached();
         }
 

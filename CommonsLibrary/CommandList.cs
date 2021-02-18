@@ -23,5 +23,7 @@
         public static string calibrate = "CAL";
         public static string checkCalibration = "CCL";
         public static string turnBy = "TBY";
+        public static string stabilize = "STB";
+        public static string setProxSensors = "PXS";
     }
 }

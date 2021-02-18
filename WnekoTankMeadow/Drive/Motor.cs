@@ -13,7 +13,8 @@ namespace WnekoTankMeadow
     /// </summary>
     class Motor
     {
-        int slowingRate = 50;
+        int softSleepTime = 50;
+        int deltaV = 10;
 
         int baseSpeed = 0;
         int turnModifier = 0;
@@ -65,6 +66,27 @@ namespace WnekoTankMeadow
         }
 
         /// <summary>
+        /// Sets correct motor speed slowly
+        /// Checks if linear speed has the same sign as turnmodifier,
+        /// To determine if turnmodifier should be added or substracted 
+        /// </summary>
+        /// <param name="speed">Sets motor speed</param>
+        public void SetSpeedSoft(int speed)
+        {
+            int tmpSpeed = baseSpeed;
+            int deltaSpeed = speed - tmpSpeed;
+            int sign = Math.Sign(deltaSpeed);
+            int abs = Math.Abs(deltaSpeed);
+            for(int i = 0; i < abs; i += deltaV)
+            {
+                tmpSpeed += deltaV * sign;
+                if (i > abs) currentSpeed -= abs - currentSpeed;
+                SetSpeed(tmpSpeed);
+                Thread.Sleep(softSleepTime);
+            }
+        }
+
+        /// <summary>
         /// Calculates new speed, determines if it needs to use forward or backward PWM port,
         /// Selectr correct one and sets correct duty cycle 
         /// </summary>
@@ -73,7 +95,7 @@ namespace WnekoTankMeadow
             int newSpeed = baseSpeed + turnModifier;
 
             if (newSpeed >= 0 && CurrentPort != forwardPwm) CurrentPort = forwardPwm;
-            else if (newSpeed <0 && CurrentPort != backPwm) CurrentPort = backPwm;
+            else if (newSpeed < 0 && CurrentPort != backPwm) CurrentPort = backPwm;
             currentSpeed = newSpeed;
             newSpeed = Math.Abs(newSpeed);
             newSpeed = newSpeed > 100 ? 100 : newSpeed;
@@ -111,7 +133,7 @@ namespace WnekoTankMeadow
             for (int i = absSpeed; i > 0; i -= 10)
             {
                 currentSpeed = sign * i;
-                Thread.Sleep(slowingRate);
+                Thread.Sleep(softSleepTime);
             }
             Stop();
         }

@@ -681,9 +681,11 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Button x:Name="gear1btn" Grid.Column="0" Content="gear 1" Click="gear1btn_Click"/>
                         <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="gear2btn_Click"/>
+                        <Button x:Name="proxReset" Grid.Column="2" Content="Reset" Click="proxReset_Click"/>
                     </Grid>
                     <Button x:Name="stopEmergencyBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="stopEmergencyBtn_Click" Margin="0,21,0,14"/>
                     <StackPanel Grid.Row="0" Grid.Column="1" >
@@ -729,8 +731,8 @@
                         </StackPanel>
                         <Separator Margin="10"/>
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="top">
-                        <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="handshakeButton_Click" HorizontalAlignment="Left"/>
-                        <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click" IsEnabled="False" Width="100" HorizontalAlignment="Left"/>
+                            <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="handshakeButton_Click" HorizontalAlignment="Left"/>
+                            <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click" IsEnabled="False" Width="100" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
@@ -784,8 +786,15 @@
                                 <RadioButton x:Name="firstGearRadio" Content="First gear" IsChecked="True" GroupName="gear"/>
                                 <RadioButton x:Name="secondGearRadio" Content="Second gear" Margin="20,0,0,0" GroupName="gear"/>
                                 <CheckBox x:Name="shouldStopAfterCheckBox" Content="Should stop after?" IsChecked="True" Margin="50,0,0,0"/>
+                                <CheckBox x:Name="moveForwardSoftBox" Content="Soft?" IsChecked="True" Margin="50,0,0,0"/>
                             </StackPanel>
-                        </Grid> 
+                        </Grid>
+                        <Separator Margin="0,10" />
+                        <StackPanel Orientation="Horizontal">
+                            <Label Height="30">Stabilize direction:</Label>
+                            <RadioButton x:Name="stabilizeOff" Content="Off" GroupName="stabilize" Margin="20,7" Checked="stabilizeOff_Checked"/>
+                            <RadioButton x:Name="stabilizeOn" Content="On" Margin="0,7" GroupName="stabilize" Checked="stabilizeOn_Checked"/>
+                        </StackPanel>
                         <Separator Margin="0,10" />
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -834,6 +843,14 @@
                                 <Button x:Name="stopNormalButton" Content="Stop" Click="stopNormalButton_Click" Height="30" Width="100"/>
                                 <Button x:Name="softStopButton" Content="Soft stop" Click="softStopButton_Click" Height="30" Width="100"/>
                             </StackPanel>
+                            <Separator Margin="0,10"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Height="30">Proximity sensor Behavior:</Label>
+                                <RadioButton x:Name="proximityNone" Content="None" GroupName="proximity" Margin="20,7" Checked="proximity_Checked"/>
+                                <RadioButton x:Name="proximityStop" Content="Hard stop" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
+                                <RadioButton x:Name="proximitySoftStop" Content="Soft stop" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
+                                <RadioButton x:Name="proximityStopAndReturn" Content="Stop and reverse" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
+                            </StackPanel>
                         </StackPanel>
                         <StackPanel Grid.Row="1">
                             <Button x:Name="tempPresBtn" Content="Read temperature and preasure" Click="tempPresBtn_Click" Height="30"/>
@@ -863,8 +880,15 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <ScrollViewer x:Name="ScrollView" Grid.Column="0" ScrollChanged="ScrollViewer_ScrollChanged">
-            <TextBlock x:Name="outputBox" />
-        </ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="sendQueueClearBtn" Grid.Row="0" Content="Clear queue" Click="sendQueueClearBtn_Click"/>
+            <ScrollViewer x:Name="ScrollView" Grid.Row="1" ScrollChanged="ScrollViewer_ScrollChanged">
+                <TextBlock x:Name="outputBox" />
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>
