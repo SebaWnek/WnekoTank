@@ -58,10 +58,10 @@ namespace WnekoTankMeadow.Sensors
 
         public enum PGASettings
         {
-            gain40mV = 0b00,
-            gain80mV = 0b01,
-            gain160mV = 0b10,
-            gain320mV = 0b11
+            Gain40mV = 0b00,
+            Gain80mV = 0b01,
+            Gain160mV = 0b10,
+            Gain320mV = 0b11
         }
 
         I2cPeripheral ina219;
@@ -69,8 +69,12 @@ namespace WnekoTankMeadow.Sensors
 
         float scaleFactor = 0.04096f; //magic number from datasheet
         ushort LSBdivider = 32768;
-        float shuntVoltageLSB = 0.00001f;
-        float busVoltageLSB = 0.004f;
+
+        float shuntVoltageCorrection = 0f;
+        float busVoltageCorrection = 0.9120001f;
+
+        float shuntVoltageLSB = 10f / 1000000f;
+        float busVoltageLSB = 4f / 1000f;
         float calibrationScalingFactor;
         float maximumExpectedCurrent;
         float shuntResistance;
@@ -82,15 +86,22 @@ namespace WnekoTankMeadow.Sensors
         {
             ina219 = new I2cPeripheral(bus, address);
             if (config == null) configuration = new INA219Configuration();
-            else configuration = config;
+            else
+            {
+                configuration = config;
+                Configure();
+            }
         }
 
-        public INA219(float maxCurrent, float shuntResistor, float calibraitonScaling, II2cBus bus, byte address = 0x40, INA219Configuration config = null)
+        public INA219(float maxCurrent, float shuntResistor, float calibraitonScaling, II2cBus bus, byte address = 0x40, float shuntError = 0.08162f, float busError = 0.336f, INA219Configuration config = null)
             : this(bus, address, config)
         {
             maximumExpectedCurrent = maxCurrent;
             shuntResistance = shuntResistor;
             calibrationScalingFactor = calibraitonScaling;
+
+            float shuntVoltageCorrection = shuntError;
+            float busVoltageCorrection = busError;
             Calibrate();
         }
 
@@ -113,19 +124,66 @@ namespace WnekoTankMeadow.Sensors
             Calibrate();
         }
 
+        public void Calibrate(ushort calibration)
+        {
+            ina219.WriteUShort((byte)RegisterAddresses.Calibration, calibration, ByteOrder.BigEndian);
+        }
+
         public float ReadShuntVltage()
         {
-            ushort register = ina219.ReadUShort((byte)RegisterAddresses.ShuntVoltage, ByteOrder.BigEndian);
+            short register = (short)ina219.ReadUShort((byte)RegisterAddresses.ShuntVoltage, ByteOrder.BigEndian);
+            //short twoscomplement = CalculateTwosComplementShunt(register);
+#if DEBUG
+            Console.WriteLine();
+            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.ShuntVoltage));
+            Console.WriteLine(Convert.ToString(register, 10));
+            Console.WriteLine();
+#endif
             float voltage = register * shuntVoltageLSB;
             return voltage;
         }
 
         public float ReadBusVoltage()
         {
-            int register = ina219.ReadUShort((byte)RegisterAddresses.BusVoltage, ByteOrder.BigEndian);
-            register = register >> 3;
+            ushort register = ina219.ReadUShort((byte)RegisterAddresses.BusVoltage, ByteOrder.BigEndian);
+#if DEBUG
+            Console.WriteLine();
+            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.BusVoltage));
+#endif
+            register = (ushort)(register >> 3);
+#if DEBUG
+            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+            Console.WriteLine(Convert.ToString(register, 10));
+            Console.WriteLine();
+#endif
             float voltage = register * busVoltageLSB;
             return voltage;
+        }
+
+        public float ReadCurrent()
+        {
+            short register = (short)ina219.ReadUShort((byte)RegisterAddresses.Current, ByteOrder.BigEndian);
+#if DEBUG
+            Console.WriteLine();
+            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+            Console.WriteLine();
+#endif
+            float current = register * currentLSB;
+            return current;
+        }
+
+        public float ReadPower()
+        {
+            ushort register = ina219.ReadUShort((byte)RegisterAddresses.Power, ByteOrder.BigEndian);
+#if DEBUG
+            Console.WriteLine();
+            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+            Console.WriteLine();
+#endif
+            float power = register * powerLSB;
+            return power;
         }
 
         public void EnumerateRegisters()
@@ -134,13 +192,18 @@ namespace WnekoTankMeadow.Sensors
             for (byte i = 0; i <= 5; i++)
             {
                 ushort tmp = ina219.ReadUShort(i, ByteOrder.BigEndian);
-                Console.WriteLine(Convert.ToString(tmp, 2) + " - " + tmp);
+                Console.WriteLine(Convert.ToString(tmp, 2).PadLeft(16, '0') + " - " + Convert.ToString(tmp, 16) + " - " + tmp);
             }
         }
 
         public void Configure(INA219Configuration configuration)
         {
             this.configuration = configuration;
+            Configure();
+        }
+
+        public void Configure()
+        {
             int config = 0;
             config = config | (byte)configuration.Mode;
             config = config | ((byte)configuration.ShuntADC << 3);
@@ -148,14 +211,20 @@ namespace WnekoTankMeadow.Sensors
             config = config | ((byte)configuration.Pga << 11);
             config = config | ((byte)configuration.BusVoltageRange << 13);
 #if DEBUG
-            Console.WriteLine($"Writing configuration:\n{Convert.ToString(config, 16)}\n{Convert.ToString(config, 2)}");
+            Console.WriteLine($"Writing configuration:\n{Convert.ToString(config, 16)}\n{Convert.ToString(config, 2).PadLeft(16, '0')}");
 #endif
+            ina219.WriteUShort((byte)RegisterAddresses.Configuration, (ushort)config, ByteOrder.BigEndian);
+        }
+
+        public void Configure(ushort config)
+        {
             ina219.WriteUShort((byte)RegisterAddresses.Configuration, (ushort)config, ByteOrder.BigEndian);
         }
 
         public void ResetToFactory()
         {
-            Configure(new INA219Configuration());
+            //Configure(new INA219Configuration());
+            ina219.WriteUShort((byte)RegisterAddresses.Configuration, 0b1000000000000000, ByteOrder.BigEndian);
         }
         internal class INA219Configuration
         {
@@ -167,7 +236,7 @@ namespace WnekoTankMeadow.Sensors
             public INA219Configuration()
             {
                 busVoltageRange = BusVoltageRangeSettings.range32v;
-                pga = PGASettings.gain320mV;
+                pga = PGASettings.Gain320mV;
                 busADC = ADCsettings.Mode12;
                 shuntADC = ADCsettings.Mode12;
                 mode = ModeSettings.ShuntBusContinuous;
@@ -187,6 +256,35 @@ namespace WnekoTankMeadow.Sensors
             internal ADCsettings ShuntADC { get => shuntADC; set => shuntADC = value; }
             internal ModeSettings Mode { get => mode; set => mode = value; }
         }
+
+        //public short CalculateTwosComplementShunt(ushort data)
+        //{
+        //    if((data & 0b1000000000000000) == 0)
+        //    {
+        //        return (short)data;
+        //    }
+
+        //    ushort mask = 0;
+        //    int result;
+        //    switch (configuration.Pga)
+        //    {
+        //        case PGASettings.Gain40mV:
+        //            mask = 0b0000111111111111;
+        //            break;
+        //        case PGASettings.Gain80mV:
+        //            mask = 0b0001111111111111;
+        //            break;
+        //        case PGASettings.Gain160mV:
+        //            mask = 0b0011111111111111;
+        //            break;
+        //        case PGASettings.Gain320mV:
+        //            mask = 0b0111111111111111;
+        //            break;
+        //    }
+        //    result = data & mask;
+        //    result = (~data + 1) & mask;
+        //    return (short)result;
+        //}
     }
 
 }

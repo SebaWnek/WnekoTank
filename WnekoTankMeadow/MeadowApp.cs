@@ -13,6 +13,7 @@ using WnekoTankMeadow.Drive;
 using WnekoTankMeadow.Sensors;
 using CommonsLibrary;
 using WnekoTankMeadow.CommandControl.ComDevices;
+using WnekoTankMeadow.Others;
 
 namespace WnekoTankMeadow
 {
@@ -30,7 +31,7 @@ namespace WnekoTankMeadow
         MethodsDictionary dict;
         MethodsQueue queue;
         Mcp23x08 expander1;
-        I2cCharacterDisplay display;
+        Display16x2 display;
         TempPressureSensor tempPresSensor;
         PositionSensor positionSensor;
         ProximitySensorsArray proxSensors;
@@ -55,24 +56,29 @@ namespace WnekoTankMeadow
 
         private void TestThings()
         {
-            Console.WriteLine("testin ina219");
+            Console.WriteLine("testing ina219");
             INA219.INA219Configuration configuration = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
-                                                                                      INA219.PGASettings.gain320mV,
+                                                                                      INA219.PGASettings.Gain320mV,
                                                                                       INA219.ADCsettings.Samples128,
                                                                                       INA219.ADCsettings.Samples128,
-                                                                                      INA219.ModeSettings.ShuntVoltageContinuous);
-            INA219 ina = new INA219(bus, 0x41, configuration);
+                                                                                      INA219.ModeSettings.ShuntBusContinuous);
+            INA219 ina = new INA219(bus, 0x41);
             Thread.Sleep(100);
             ina.ResetToFactory();
-            Thread.Sleep(100);
             ina.Calibrate(3.2f, 0.1f);
             Thread.Sleep(100);
+            //ina.EnumerateRegisters();
+            Thread.Sleep(1000);
+            //ina.Configure(configuration);
+            Thread.Sleep(1000);
             ina.EnumerateRegisters();
             while (true)
             {
-                Console.WriteLine($"Shunt voltage: {ina.ReadShuntVltage()}");
-                Console.WriteLine($"Bus voltage: {ina.ReadBusVoltage()}");
-                Thread.Sleep(1000);
+                Console.WriteLine($"Shunt voltage: {ina.ReadShuntVltage()}V");
+                Console.WriteLine($"Bus voltage: {ina.ReadBusVoltage()}V");
+                Console.WriteLine($"Current: {ina.ReadCurrent()}A");
+                Console.WriteLine($"Power: {ina.ReadPower()}W");
+                Thread.Sleep(2000);
             }
         }
 
@@ -106,14 +112,14 @@ namespace WnekoTankMeadow
             bus = Device.CreateI2cBus();
 
 
-            pwm1600 = new Pca9685(bus, 65, 1600);
+            pwm1600 = new Pca9685(bus, 97, 1600);
             pwm1600.Initialize();
-            pwm50 = new Pca9685(bus, 64, 50);
+            pwm50 = new Pca9685(bus, 96, 50);
             pwm50.Initialize();
 
             expander1 = new Mcp23x08(bus, 32, Device.CreateDigitalInputPort(Device.Pins.D02, InterruptMode.EdgeBoth));
 
-            display = new I2cCharacterDisplay(bus, 39, 2, 16);
+            display = new Display16x2(bus, 39);
             display.Write("I'm alive!");
 
             //com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
@@ -123,8 +129,10 @@ namespace WnekoTankMeadow
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
 
-            tempPresSensor = new TempPressureSensor(com, bus);
-            positionSensor = new PositionSensor(com, bus);
+            tempPresSensor = new TempPressureSensor(bus);
+            tempPresSensor.RegisterSender(com.SendMessage);
+            positionSensor = new PositionSensor(bus, 40);
+            positionSensor.RegisterSender(com.SendMessage);
 
             motor = new MotorController(
                                         pwm1600.CreatePwmPort(14, 0),
@@ -143,8 +151,8 @@ namespace WnekoTankMeadow
                 new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP5, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, center", queue, motor),
                 new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP4, InterruptMode.EdgeRising), Direction.Backward, StopBehavior.Stop, "Back, center", queue, motor)
             });
-            proxSensors.Register(ReportToControl);
-            proxSensors.Register(ShowOnDisplay);
+            proxSensors.Register(com.SendMessage);
+            proxSensors.Register(display.Write);
 
             RegisterMethods();
         }
@@ -173,26 +181,6 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.turnBy, new Action<string>(motor.TurnBy));
             dict.RegisterMethod(CommandList.stabilize, new Action<string>(motor.StabilizeDirection));
             dict.RegisterMethod(CommandList.setProxSensors, new Action<string>(proxSensors.SetBehavior));
-        }
-
-        private void ReportToControl(object o, string s)
-        {
-            ReportToControl(s);
-        }
-
-        private void ReportToControl(string s)
-        {
-            com.SendMessage(s);
-        }
-
-        private void ShowOnDisplay(object o, string s)
-        {
-            ShowOnDisplay(s);
-        }
-
-        private void ShowOnDisplay(string s)
-        {
-            display.Write(s);
         }
     }
 }

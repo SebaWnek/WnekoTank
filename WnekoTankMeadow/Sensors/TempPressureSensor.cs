@@ -11,12 +11,20 @@ namespace WnekoTankMeadow.Sensors
     class TempPressureSensor
     {
         Bme280 sensor;
-        ITankCommunication communication;
+        Action<string> sendMessage;
 
-        public TempPressureSensor(ITankCommunication com, II2cBus bus, Bme280.I2cAddress address = Bme280.I2cAddress.Adddress0x76)
+        public TempPressureSensor(Action<string> send, II2cBus bus, Bme280.I2cAddress address = Bme280.I2cAddress.Adddress0x76)
         {
             sensor = new Bme280(bus, address);
-            communication = com;
+        }
+        public TempPressureSensor(II2cBus bus, Bme280.I2cAddress address = Bme280.I2cAddress.Adddress0x76)
+        {
+            sensor = new Bme280(bus, address);
+        }
+
+        public void RegisterSender(Action<string> sender)
+        {
+            sendMessage += sender;
         }
 
         public string GetTemperaturePreasure()
@@ -32,7 +40,7 @@ namespace WnekoTankMeadow.Sensors
         internal void Read(string oemptybj)
         {
             string msg = GetTemperaturePreasure();
-            communication.SendMessage(msg);
+            sendMessage(msg);
         }
     }
 }

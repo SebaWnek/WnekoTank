@@ -81,5 +81,10 @@ namespace WnekoTankMeadow
                 messageEvent += handler; 
             }
         }
+
+        public void SendMessage(object sender, string msg)
+        {
+            SendMessage(msg);
+        }
     }
 }

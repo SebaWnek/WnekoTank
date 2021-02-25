@@ -11,6 +11,7 @@ namespace WnekoTankMeadow
     /// </summary>
     interface ITankCommunication
     {
+        void SendMessage(object sender, string msg);
         void SendMessage(string msg);
         void SubscribeToMessages(EventHandler<MessageEventArgs> handler);
         object locker { get; }

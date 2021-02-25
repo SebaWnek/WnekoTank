@@ -13,19 +13,23 @@ namespace WnekoTankMeadow.Drive
     class PositionSensor
     {
         Bno055 sensor;
-        ITankCommunication communication;
+        Action<string> sendMessage;
         I2cPeripheral bno;
         float representationInLSB = 16;
         Stopwatch stopwatch = new Stopwatch();
         EventHandler headingChanged;
         private int turnTimeDelta = 100;
 
-        public PositionSensor(ITankCommunication com, II2cBus bus, byte address = 40)
+        public PositionSensor(II2cBus bus, byte address = 40)
         {
             sensor = new Bno055(bus, address);
             sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
-            communication = com;
             bno = new I2cPeripheral(bus, address);
+        }
+
+        public PositionSensor(Action<string> sender, II2cBus bus, byte address = 40) : this(bus, address)
+        {
+            sendMessage += sender;
         }
         /// <summary>
         /// https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bno055-ds000.pdf
@@ -43,6 +47,11 @@ namespace WnekoTankMeadow.Drive
             sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
         }
 
+        public void RegisterSender(Action<string> sender)
+        {
+            sendMessage += sender;
+        }
+
         public void Calibrate(string empty)
         {
             Calibrate();
@@ -53,7 +62,7 @@ namespace WnekoTankMeadow.Drive
             byte resetAddress = 0x3F;
             byte resetByte = 0b00100000;
             byte[] cal;
-            communication.SendMessage("Reseting BNO055");
+            sendMessage("Reseting BNO055");
             bno.WriteRegister(resetAddress, resetByte);
             Thread.Sleep(1000);
             RemapAxis();
@@ -61,14 +70,14 @@ namespace WnekoTankMeadow.Drive
             for (int i = 0; i < 60; i++) //Timeout after one minute
             {
                 cal = CheckCalibration();
-                communication.SendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+                sendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #if DEBUG
                 Console.WriteLine($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #endif
                 if (cal[1] == 3 && cal[2] == 3 && cal[3] == 3)
                 {
                     Thread.Sleep(100);
-                    communication.SendMessage($"Done! S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+                    sendMessage($"Done! S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #if DEBUG
                     Console.WriteLine($"Done! S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #endif
@@ -76,7 +85,7 @@ namespace WnekoTankMeadow.Drive
                 }
                 Thread.Sleep(1000);
             }
-            communication.SendMessage("Not calibrated!");
+            sendMessage("Not calibrated!");
 #if DEBUG
             Console.WriteLine("Not calibrated!");
 #endif
@@ -85,7 +94,7 @@ namespace WnekoTankMeadow.Drive
         public void CheckCalibration(string empty)
         {
             byte[] cal = CheckCalibration();
-            communication.SendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+            sendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #if DEBUG
             Console.WriteLine($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #endif
@@ -105,7 +114,7 @@ namespace WnekoTankMeadow.Drive
         {
             float[] position = Read();
             string msg = $"Hading: {position[0]}deg,\r\nRoll: {position[1]}deg,\r\nPitch: {position[2]}deg";
-            communication.SendMessage(msg);
+            sendMessage(msg);
         }
 
         internal float[] Read()

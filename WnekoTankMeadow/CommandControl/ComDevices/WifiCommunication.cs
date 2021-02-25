@@ -28,6 +28,11 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
             messageEvent += handler;
         }
 
+        public void SendMessage(object sender, string msg)
+        {
+            SendMessage(msg);
+        }
+
         public WifiCommunication()
         {
             Device.InitWiFiAdapter().Wait();

@@ -19,7 +19,4 @@
   <ItemGroup>
     <ProjectReference Include="..\CommonsLibrary\CommonsLibrary.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Others\" />
-  </ItemGroup>
 </Project>
