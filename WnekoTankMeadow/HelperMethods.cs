@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -28,7 +29,6 @@ namespace WnekoTankMeadow
         /// <param name="empty">Does nothing, Only to have signature compatible with the one accepted by MethodsQueue</param>
         public static void HandShake(string empty)
         {
-
         }
     }
 }

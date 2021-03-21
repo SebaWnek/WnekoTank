@@ -42,15 +42,15 @@ namespace WnekoTankMeadow
             {
                 msg = Encoding.ASCII.GetString(e.Message);
 #if DEBUG
-                foreach (byte b in e.Message)
-                {
-                    Console.WriteLine(b);
-                }
+                //foreach (byte b in e.Message)
+                //{
+                //    Console.WriteLine(b);
+                //}
                 Console.WriteLine($"Received {msg}");
-                foreach (byte b in Encoding.ASCII.GetBytes($"ACK:{msg}"))
-                {
-                    Console.WriteLine(b);
-                }
+                //foreach (byte b in Encoding.ASCII.GetBytes($"ACK:{msg}"))
+                //{
+                //    Console.WriteLine(b);
+                //}
                 Console.WriteLine($"Trying to send ACK:{msg}");
 #endif
                 port.Write(Encoding.ASCII.GetBytes($"ACK:{msg}"));

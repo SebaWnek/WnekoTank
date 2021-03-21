@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="1080" Width="1920"
         WindowState="Maximized"
+        Loaded="Window_Loaded"
         Closing="Window_Closing">
     <Window.Resources>
         <!--Control colors.-->
@@ -820,6 +821,94 @@
                                 <RadioButton x:Name="secondGearTurnRadio" Content="Second gear" Margin="20,0,0,0" GroupName="turnGear"/>
                             </StackPanel>
                         </Grid>
+                        <Separator Margin="10"/>
+                        <Label>Camera gimbal contorls:</Label>
+                        <TabControl Height="450">
+                            <TabItem Header="Sliders">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Margin="5">Vertical angle:</Label>
+                                    <TextBox x:Name="gimbalVerAngBox" Margin="5" Grid.Column="1" Text="{Binding ElementName=gimbalVerAngSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5"  Grid.Row="0"/>
+                                    <Slider x:Name="gimbalVerAngSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Grid.Row="0" Thumb.DragCompleted="gimbalSlider_ValueChanged" Margin="0,5"/>
+                                    <Label Grid.Row="1" Margin="5">Horizontal angle:</Label>
+                                    <TextBox x:Name="gimbalHorAngBox" Margin="5" Grid.Column="1" Text="{Binding ElementName=gimbalHorAngSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Grid.Row="1"/>
+                                    <Slider x:Name="gimbalHorAngSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" Grid.Row="1" Thumb.DragCompleted="gimbalSlider_ValueChanged" Margin="0,5"/>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Graphical">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Canvas x:Name="CameraTargetCanvas" Background="LightGray" Grid.Column="2" Grid.Row="0" Grid.RowSpan="4">
+                                        <Ellipse x:Name="CameraTarget" Fill="red" Stroke="Black" Width="50" Height="50"
+                                                     MouseLeftButtonDown="CameraTarget_MouseLeftButtonDown" 
+                                                     MouseLeftButtonUp="CameraTarget_MouseLeftButtonUp"
+                                                     Loaded="CameraTarget_Loaded"/>
+                                    </Canvas>
+                                    <Label Grid.Row="0" Margin="5">Horizontal angle:</Label>
+                                    <Label Grid.Row="1" Margin="5">Vertical angle:</Label>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Margin="5" x:Name="gimbalHorAngCanvasBox" Text="0" IsEnabled="False"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Margin="5" x:Name="gimbalVerAngCanvasBox" Text="0" IsEnabled="False"/>
+                                    <Button x:Name="resetCameraCanvas" Content="Reset" Grid.Row="2" Click="resetCameraCanvas_Click"/>
+                                    <CheckBox x:Name="cameraCanvasContinuous" Content="Continuous?" IsChecked="False" 
+                                                  Grid.Row="2" Grid.Column="1" Margin="5,12"
+                                                  Checked="cameraCanvasContinuous_Checked" Unchecked="cameraCanvasContinuous_Unchecked"/>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Predefined">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="40"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Margin="5" Grid.Column="0">Horizontal</Label>
+                                    <Label Margin="5" Grid.Column="1">Vertical</Label>
+                                    <Label Margin="5" Grid.Column="2">Name</Label>
+                                    <TextBox x:Name="gimbalDefineXBox" Grid.Row="1" Grid.Column="0" Margin="5" Text="0"/>
+                                    <TextBox x:Name="gimbalDefineYBox" Grid.Row="1" Grid.Column="1" Margin="5" Text="0"/>
+                                    <TextBox x:Name="gimbalDefineNameBox" Grid.Row="1" Grid.Column="2" Margin="5"/>
+                                    <Button x:Name="gimbalDefineAddButton" Grid.Row="1" Content="Add" Grid.Column="3" Click="gimbalDefineAddButton_Click"/>
+                                    <DataGrid x:Name="predefinedDataGrid" Grid.Row="2" Grid.ColumnSpan="5" ItemsSource="{Binding PredefinedPositionsList}" 
+                                              AutoGenerateColumns="False" SelectionChanged="predefinedDataGrid_SelectionChanged">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding Path=X}" Header="Horizontal angle" Width="100"/>
+                                            <DataGridTextColumn Binding="{Binding Path=Y}" Header="Vertical angle" Width="100"/>
+                                            <DataGridTextColumn Binding="{Binding Path=Name}" Header="Name" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="gimbalStabilizeStartBtn" Content="Start stabilizng camera" Width="200" Click="gimbalStabilizeStartBtn_Click"/>
+                            <Button x:Name="gimbalStabilizeStopBtn" Content="Stop stabilizing camera" Width="200" Click="gimbalStabilizeStopBtn_Click"/>
+                        </StackPanel>
                     </StackPanel>
                     <Grid Grid.Row="1" Grid.Column="1">
                         <Grid.RowDefinitions>
@@ -851,6 +940,7 @@
                                 <RadioButton x:Name="proximitySoftStop" Content="Soft stop" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
                                 <RadioButton x:Name="proximityStopAndReturn" Content="Stop and reverse" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
                             </StackPanel>
+                            <Separator Margin="0,10"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1">
                             <Button x:Name="tempPresBtn" Content="Read temperature and preasure" Click="tempPresBtn_Click" Height="30"/>
@@ -864,6 +954,7 @@
                                 <Button x:Name="checkCalibrationBtn" Content="Check calibration" Click="checkCalibrationBtn_Click" Height="30" Grid.Column="1"/>
                                 <Button x:Name="positionButton" Content="Read position" Click="positionButton_Click" Height="30" Grid.Column="2"/>
                             </Grid>
+                            <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="diagnozeBtn_Click"/>
                         </StackPanel>
                     </Grid>
                     <StackPanel Grid.Column="2" Grid.RowSpan="3" Margin="5">

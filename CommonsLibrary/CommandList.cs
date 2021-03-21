@@ -25,5 +25,8 @@
         public static string turnBy = "TBY";
         public static string stabilize = "STB";
         public static string setProxSensors = "PXS";
+        public static string setGimbalAngle = "GSA";
+        public static string stabilizeGimbal = "GST";
+        public static string diagnoze = "DGZ";
     }
 }

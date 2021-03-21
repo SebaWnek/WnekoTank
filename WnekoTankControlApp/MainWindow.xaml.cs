@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,6 +40,12 @@ namespace WnekoTankControlApp
             connectButtons.Add(mockConnectButton);
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataContext = this;
+            PredefinedPositionsList.Add(new Position(0, 0, "Center"));
+        }
+
         /// <summary>
         /// Allows other classes to easily print text in main app window
         /// </summary>
@@ -47,7 +54,7 @@ namespace WnekoTankControlApp
         {
             Dispatcher.Invoke(() => outputBox.Text += msg + "\r\n");
         }
-        
+
         /// <summary>
         /// Makes sure on app closing communication port is closed and app is correctly stopped
         /// </summary>

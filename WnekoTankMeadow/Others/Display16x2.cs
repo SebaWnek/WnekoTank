@@ -28,7 +28,12 @@ namespace WnekoTankMeadow.Others
         {
             display.ClearLines();
             if (msg.Length <= 16) display.Write(msg);
-            else
+            else if (msg.Length > 16 && msg.Length <= 32)
+            {
+                display.WriteLine(msg.Substring(0, 16), 0);
+                display.WriteLine(msg.Substring(16, msg.Length - 16), 1);
+            }
+            else 
             {
                 display.WriteLine(msg.Substring(0, 16), 0);
                 display.WriteLine(msg.Substring(16, 16), 1);

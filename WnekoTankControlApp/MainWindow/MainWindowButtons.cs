@@ -300,6 +300,7 @@ namespace WnekoTankControlApp
             else if ((bool)proximityStop.IsChecked) msg += "1";
             else if ((bool)proximitySoftStop.IsChecked) msg += "2";
             else if ((bool)proximityStopAndReturn.IsChecked) msg += "3";
+            Send(msg);
         }
 
         private void proxReset_Click(object sender, RoutedEventArgs e)
@@ -314,6 +315,24 @@ namespace WnekoTankControlApp
         private void sendQueueClearBtn_Click(object sender, RoutedEventArgs e)
         {
             queue.ClearQueue();
+        }
+
+        private void gimbalStabilizeStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stabilizeGimbal") + "1";
+            Send(msg);
+        }
+
+        private void gimbalStabilizeStopBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stabilizeGimbal") + "0";
+            Send(msg);
+        }
+
+        private void diagnozeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("diagnoze");
+            Send(msg);
         }
     }
 }

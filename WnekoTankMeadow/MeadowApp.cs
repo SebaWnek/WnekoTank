@@ -14,6 +14,7 @@ using WnekoTankMeadow.Sensors;
 using CommonsLibrary;
 using WnekoTankMeadow.CommandControl.ComDevices;
 using WnekoTankMeadow.Others;
+using System.Diagnostics;
 
 namespace WnekoTankMeadow
 {
@@ -33,8 +34,9 @@ namespace WnekoTankMeadow
         Mcp23x08 expander1;
         Display16x2 display;
         TempPressureSensor tempPresSensor;
-        PositionSensor positionSensor;
+        BNO055 positionSensor;
         ProximitySensorsArray proxSensors;
+        CameraGimbal gimbal;
 
         public MeadowApp()
         {
@@ -52,6 +54,8 @@ namespace WnekoTankMeadow
             //    queue.ClearQueue();
             //    motor.Break();
             //}
+            //Console.WriteLine(positionSensor.Read().ToString());
+            motor.SetLinearSpeed(100);
         }
 
         private void TestThings()
@@ -62,7 +66,9 @@ namespace WnekoTankMeadow
                                                                                       INA219.ADCsettings.Samples128,
                                                                                       INA219.ADCsettings.Samples128,
                                                                                       INA219.ModeSettings.ShuntBusContinuous);
-            INA219 ina = new INA219(bus, 0x41);
+            Console.WriteLine("Trying to creaate INA");
+            INA219 ina = new INA219(bus, 0x45);
+            Console.WriteLine("Ina created!");
             Thread.Sleep(100);
             ina.ResetToFactory();
             ina.Calibrate(3.2f, 0.1f);
@@ -117,10 +123,10 @@ namespace WnekoTankMeadow
             pwm50 = new Pca9685(bus, 96, 50);
             pwm50.Initialize();
 
-            expander1 = new Mcp23x08(bus, 32, Device.CreateDigitalInputPort(Device.Pins.D02, InterruptMode.EdgeBoth));
-
             display = new Display16x2(bus, 39);
             display.Write("I'm alive!");
+
+            expander1 = new Mcp23x08(bus, 32, Device.CreateDigitalInputPort(Device.Pins.D02, InterruptMode.EdgeBoth));
 
             //com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
@@ -131,18 +137,20 @@ namespace WnekoTankMeadow
 
             tempPresSensor = new TempPressureSensor(bus);
             tempPresSensor.RegisterSender(com.SendMessage);
-            positionSensor = new PositionSensor(bus, 40);
+            positionSensor = new BNO055(bus, 0x28);
             positionSensor.RegisterSender(com.SendMessage);
 
             motor = new MotorController(
-                                        pwm1600.CreatePwmPort(14, 0),
-                                        pwm1600.CreatePwmPort(15, 0),
-                                        pwm1600.CreatePwmPort(12, 0),
-                                        pwm1600.CreatePwmPort(13, 0),
-                                        pwm50.CreatePwmPort(15),
+                                        pwm1600.CreatePwmPort(2, 0),
+                                        pwm1600.CreatePwmPort(3, 0),
+                                        pwm1600.CreatePwmPort(0, 0),
+                                        pwm1600.CreatePwmPort(1, 0),
+                                        pwm50.CreatePwmPort(0),
                                         Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
                                         Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
                                         positionSensor);
+
+            gimbal = new CameraGimbal(pwm50.CreatePwmPort(14), pwm50.CreatePwmPort(13), positionSensor);
 
             proxSensors = new ProximitySensorsArray(new ProximitySensor[]
             {
@@ -181,6 +189,29 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.turnBy, new Action<string>(motor.TurnBy));
             dict.RegisterMethod(CommandList.stabilize, new Action<string>(motor.StabilizeDirection));
             dict.RegisterMethod(CommandList.setProxSensors, new Action<string>(proxSensors.SetBehavior));
+            dict.RegisterMethod(CommandList.setGimbalAngle, new Action<string>(gimbal.SetAngle));
+            dict.RegisterMethod(CommandList.stabilizeGimbal, new Action<string>(gimbal.StartStabilizing));
+            dict.RegisterMethod(CommandList.diagnoze, new Action<string>(Diangoze));
+        }
+
+        public void Diangoze(string empty)
+        {
+            Process currentProcess = Process.GetCurrentProcess();
+#if DEBUG
+            Console.WriteLine(currentProcess.Id);
+            //Console.WriteLine(currentProcess.ProcessName);
+            Console.WriteLine(currentProcess.Threads.Count);
+#endif
+            ProcessThreadCollection currentThreads = currentProcess.Threads;
+
+            foreach (ProcessThread thread in currentThreads)
+            {
+#if DEBUG
+                Console.WriteLine(thread.Id.ToString());
+#endif
+                //com.SendMessage(thread.Id.ToString());
+                Thread.Sleep(20);
+            }
         }
     }
 }

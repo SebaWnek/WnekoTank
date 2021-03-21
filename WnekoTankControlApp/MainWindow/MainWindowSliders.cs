@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace WnekoTankControlApp
 {
@@ -36,5 +37,11 @@ namespace WnekoTankControlApp
             Send(msg);
         }
 
+        private void gimbalSlider_ValueChanged(object sender, DragCompletedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+            msg += gimbalVerAngSlider.Value + ";" + gimbalHorAngSlider.Value;
+            Send(msg);
+        }
     }
 }

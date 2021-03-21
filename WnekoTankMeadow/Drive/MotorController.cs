@@ -16,7 +16,7 @@ namespace WnekoTankMeadow
         GearBox gearbox;
         HallEffectCounter rightCounter;
         HallEffectCounter leftCounter;
-        PositionSensor positionSensor;
+        BNO055 positionSensor;
         int teethCount = 14;
         int magnetsCount = 1;
         float chainPitch = 12.7f; //08b chain, half inch pitch, in mm
@@ -52,7 +52,7 @@ namespace WnekoTankMeadow
                                IPwmPort gearPwm,
                                IDigitalInputPort leftCounterPort,
                                IDigitalInputPort righCounterPort,
-                               PositionSensor posSens)
+                               BNO055 posSens)
         {
             positionSensor = posSens;
             circumference = teethCount * chainPitch / magnetsCount;

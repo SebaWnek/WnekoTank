@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WnekoTankMeadow.Drive
 {
-    class PositionSensor
+    class BNO055 : IPositionSensor
     {
         Bno055 sensor;
         Action<string> sendMessage;
@@ -20,14 +20,14 @@ namespace WnekoTankMeadow.Drive
         EventHandler headingChanged;
         private int turnTimeDelta = 100;
 
-        public PositionSensor(II2cBus bus, byte address = 40)
+        public BNO055(II2cBus bus, byte address = 40)
         {
             sensor = new Bno055(bus, address);
             sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
             bno = new I2cPeripheral(bus, address);
         }
 
-        public PositionSensor(Action<string> sender, II2cBus bus, byte address = 40) : this(bus, address)
+        public BNO055(Action<string> sender, II2cBus bus, byte address = 40) : this(bus, address)
         {
             sendMessage += sender;
         }
@@ -117,7 +117,7 @@ namespace WnekoTankMeadow.Drive
             sendMessage(msg);
         }
 
-        internal float[] Read()
+        public float[] Read()
         {
             byte[] data = bno.ReadRegisters(0x1a, 6);
             float[] result = new float[]
