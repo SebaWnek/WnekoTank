@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CommonsLibrary;
+using MjpegProcessor;
 
 namespace WnekoTankControlApp
 {
@@ -44,6 +47,12 @@ namespace WnekoTankControlApp
         {
             DataContext = this;
             PredefinedPositionsList.Add(new Position(0, 0, "Center"));
+            mjpegLeft = new MjpegDecoder();
+            mjpegLeft.FrameReady += MjpegLeft_FrameReady;
+            mjpegLeft.Error += MjpegLeft_Error;
+            mjpegRight = new MjpegDecoder();
+            mjpegRight.FrameReady += MjpegRight_FrameReady;
+            mjpegRight.Error += MjpegRight_Error;
         }
 
         /// <summary>

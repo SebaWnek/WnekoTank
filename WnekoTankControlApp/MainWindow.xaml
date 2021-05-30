@@ -641,19 +641,38 @@
             <TabItem Header="Basic controlls">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="0.7*"/>
+                        <RowDefinition Height="4*"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="1*"/>
                         <RowDefinition Height="2*"/>
-                        <RowDefinition Height="5*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <StackPanel>
+                            <Button x:Name="browserLeftButton" Content="Start left:" Height="40" Click="browserLeftButton_Click" />
+                            <Button x:Name="browserLeftStopButton" Content="Stop left" Height="40" Click="browserLeftStopButton_Click"/>
+                        </StackPanel>
+                        <TextBox x:Name="browserLeftAddress" Text="http://192.168.1.245:81/stream" Height="30" Padding="4" Margin="10" Width="500"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <StackPanel>
+                            <Button x:Name="browserRightButton" Content="Start Right:" Height="40" Click="browserRightButton_Click" />
+                            <Button x:Name="browserRightStopButton" Content="StopRight" Height="40" Click="browserRightStopButton_Click"/>
+                        </StackPanel>
+                        <TextBox x:Name="browserRightAddress" Text="http://192.168.1.139:81/stream" Height="30" Padding="4" Margin="10" Width="500"/>
+                    </StackPanel>
+                    <Image x:Name="leftCameraImage"  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"/>
+                    <Image x:Name="rightCameraImage" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>
+                    <!--<WebBrowser x:Name="browserLeft"  Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" />
+                    <WebBrowser x:Name="browserRight" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" />-->
                     <Slider x:Name="speedSlider" 
-                        Grid.Row="1" Grid.Column="2" 
+                        Grid.Row="1" Grid.Column="3" 
                         Grid.RowSpan="4"
                         Orientation="Vertical"
                         Maximum="100" 
@@ -662,8 +681,8 @@
                         TickFrequency="10" 
                         IsSnapToTickEnabled="True" 
                         ValueChanged="speedSlider_ValueChanged" 
-                        Thumb.DragCompleted="speedSlider_DragCompleted" HorizontalAlignment="Center"/>
-                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ElementName=turnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        Thumb.DragCompleted="speedSlider_DragCompleted" HorizontalAlignment="Center" Margin="57,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ElementName=turnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" Margin="95,15,94,14"/>
                     <Slider x:Name="turnSlider" Grid.Row="1" 
                         Grid.Column="0" 
                         Maximum="100" 
@@ -676,9 +695,9 @@
                         IsSnapToTickEnabled="True"
                         ValueChanged="turnSlider_ValueChanged" 
                         Thumb.DragCompleted="turnSlider_DragCompleted" 
-                        HorizontalAlignment="Center"/>
-                    <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding ElementName=speedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <Grid Grid.Row="3" Grid.Column="1">
+                        HorizontalAlignment="Center" Margin="58,0,57,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=speedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" Margin="94,15,94,14"/>
+                    <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
@@ -688,8 +707,8 @@
                         <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="gear2btn_Click"/>
                         <Button x:Name="proxReset" Grid.Column="2" Content="Reset" Click="proxReset_Click"/>
                     </Grid>
-                    <Button x:Name="stopEmergencyBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="stopEmergencyBtn_Click" Margin="0,21,0,14"/>
-                    <StackPanel Grid.Row="0" Grid.Column="1" >
+                    <Button x:Name="stopEmergencyBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="stopEmergencyBtn_Click" Margin="0,21,0,14" Grid.ColumnSpan="2"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" >
 
                         <!--<Slider IsEnabled="False" 
                         x:Name="angleSlider" 
@@ -941,6 +960,36 @@
                                 <RadioButton x:Name="proximityStopAndReturn" Content="Stop and reverse" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
                             </StackPanel>
                             <Separator Margin="0,10"/>
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Margin="5" Content="Wide front light:"/>
+                                    <TextBox x:Name="wideLightBox" Margin="5" Grid.Column="1" Text="{Binding ElementName=wideLightSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5"/>
+                                    <Slider x:Name="wideLightSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Thumb.DragCompleted="wideLightSlider_DragCompleted" Margin="0,5"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Margin="5" Content="Narrow front light:"/>
+                                    <TextBox x:Name="narrowLightBox" Margin="5" Grid.Column="1" Text="{Binding ElementName=narrowLightSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5"/>
+                                    <Slider x:Name="narrowLightSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Thumb.DragCompleted="narrowLightSlider_DragCompleted" Margin="0,5"/>
+                                </Grid>
+                            </StackPanel>
+                            <Separator Margin="0,10"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Fans:" Margin="5,0"/>
+                                <CheckBox x:Name="motorsFanCheckBox" Content="Motors" Margin="10,6" IsChecked="False" Click="motorsFanCheckBox_Click"/>
+                                <CheckBox x:Name="ledsFanCheckBox" Content="LEDs"  Margin="10,6" IsChecked="False" Click="ledsFanCheckBox_Click"/>
+                                <CheckBox x:Name="inasFanCheckBox" Content="INAs"  Margin="10,6" IsChecked="False" Click="inasFanCheckBox_Click"/>
+                            </StackPanel>
+                            <Separator Margin="0,10"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1">
                             <Button x:Name="tempPresBtn" Content="Read temperature and preasure" Click="tempPresBtn_Click" Height="30"/>
@@ -954,7 +1003,14 @@
                                 <Button x:Name="checkCalibrationBtn" Content="Check calibration" Click="checkCalibrationBtn_Click" Height="30" Grid.Column="1"/>
                                 <Button x:Name="positionButton" Content="Read position" Click="positionButton_Click" Height="30" Grid.Column="2"/>
                             </Grid>
-                            <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="diagnozeBtn_Click"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="diagnozeBtn_Click"/>
+                                <Button x:Name="electricButton" Content="Get electric data" Grid.Column="1" Click="electricButton_Click"/>
+                            </Grid>
                         </StackPanel>
                     </Grid>
                     <StackPanel Grid.Column="2" Grid.RowSpan="3" Margin="5">

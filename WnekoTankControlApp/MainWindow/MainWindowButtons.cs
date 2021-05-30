@@ -334,5 +334,32 @@ namespace WnekoTankControlApp
             string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("diagnoze");
             Send(msg);
         }
+
+        private void electricButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("getElectricData");
+            Send(msg);
+        }
+
+        private void motorsFanCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanMotorsState");
+            msg += (bool)motorsFanCheckBox.IsChecked ? "1" : "0";
+            Send(msg);
+        }
+
+        private void ledsFanCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanLedState");
+            msg += (bool)ledsFanCheckBox.IsChecked ? "1" : "0";
+            Send(msg);
+        }
+
+        private void inasFanCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanInasState");
+            msg += (bool)inasFanCheckBox.IsChecked ? "1" : "0";
+            Send(msg);
+        }
     }
 }

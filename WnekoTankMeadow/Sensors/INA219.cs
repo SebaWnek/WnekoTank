@@ -82,9 +82,12 @@ namespace WnekoTankMeadow.Sensors
         float currentLSB;
         float powerLSB;
 
-        public INA219(II2cBus bus, byte address = 0x40, INA219Configuration config = null)
+        public string Name { get; set; }
+
+        public INA219(II2cBus bus, byte address = 0x40, INA219Configuration config = null, string name = "")
         {
             ina219 = new I2cPeripheral(bus, address);
+            Name = name;
             if (config == null) configuration = new INA219Configuration();
             else
             {
@@ -93,15 +96,12 @@ namespace WnekoTankMeadow.Sensors
             }
         }
 
-        public INA219(float maxCurrent, float shuntResistor, float calibraitonScaling, II2cBus bus, byte address = 0x40, float shuntError = 0.08162f, float busError = 0.336f, INA219Configuration config = null)
-            : this(bus, address, config)
+        public INA219(float maxCurrent, float shuntResistor, float calibraitonScaling, II2cBus bus, byte address = 0x40, INA219Configuration config = null, string name = "")
+            : this(bus, address, config, name)
         {
             maximumExpectedCurrent = maxCurrent;
             shuntResistance = shuntResistor;
             calibrationScalingFactor = calibraitonScaling;
-
-            float shuntVoltageCorrection = shuntError;
-            float busVoltageCorrection = busError;
             Calibrate();
         }
 
@@ -132,14 +132,13 @@ namespace WnekoTankMeadow.Sensors
         public float ReadShuntVltage()
         {
             short register = (short)ina219.ReadUShort((byte)RegisterAddresses.ShuntVoltage, ByteOrder.BigEndian);
-            //short twoscomplement = CalculateTwosComplementShunt(register);
-#if DEBUG
-            Console.WriteLine();
-            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.ShuntVoltage));
-            Console.WriteLine(Convert.ToString(register, 10));
-            Console.WriteLine();
-#endif
+//#if DEBUG
+//            Console.WriteLine();
+//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+//            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.ShuntVoltage));
+//            Console.WriteLine(Convert.ToString(register, 10));
+//            Console.WriteLine();
+//#endif
             float voltage = register * shuntVoltageLSB;
             return voltage;
         }
@@ -147,17 +146,17 @@ namespace WnekoTankMeadow.Sensors
         public float ReadBusVoltage()
         {
             ushort register = ina219.ReadUShort((byte)RegisterAddresses.BusVoltage, ByteOrder.BigEndian);
-#if DEBUG
-            Console.WriteLine();
-            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.BusVoltage));
-#endif
+//#if DEBUG
+//            Console.WriteLine();
+//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+//            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.BusVoltage));
+//#endif
             register = (ushort)(register >> 3);
-#if DEBUG
-            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-            Console.WriteLine(Convert.ToString(register, 10));
-            Console.WriteLine();
-#endif
+//#if DEBUG
+//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+//            Console.WriteLine(Convert.ToString(register, 10));
+//            Console.WriteLine();
+//#endif
             float voltage = register * busVoltageLSB;
             return voltage;
         }
@@ -165,11 +164,11 @@ namespace WnekoTankMeadow.Sensors
         public float ReadCurrent()
         {
             short register = (short)ina219.ReadUShort((byte)RegisterAddresses.Current, ByteOrder.BigEndian);
-#if DEBUG
-            Console.WriteLine();
-            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-            Console.WriteLine();
-#endif
+//#if DEBUG
+//            Console.WriteLine();
+//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+//            Console.WriteLine();
+//#endif
             float current = register * currentLSB;
             return current;
         }
@@ -177,11 +176,11 @@ namespace WnekoTankMeadow.Sensors
         public float ReadPower()
         {
             ushort register = ina219.ReadUShort((byte)RegisterAddresses.Power, ByteOrder.BigEndian);
-#if DEBUG
-            Console.WriteLine();
-            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-            Console.WriteLine();
-#endif
+//#if DEBUG
+//            Console.WriteLine();
+//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+//            Console.WriteLine();
+//#endif
             float power = register * powerLSB;
             return power;
         }

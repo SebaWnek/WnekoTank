@@ -43,5 +43,20 @@ namespace WnekoTankControlApp
             msg += gimbalVerAngSlider.Value + ";" + gimbalHorAngSlider.Value;
             Send(msg);
         }
+
+
+        private void wideLightSlider_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("ledWidePower");
+            msg += wideLightSlider.Value;
+            Send(msg);
+        }
+
+        private void narrowLightSlider_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("ledNarrowPower");
+            msg += narrowLightSlider.Value;
+            Send(msg);
+        }
     }
 }

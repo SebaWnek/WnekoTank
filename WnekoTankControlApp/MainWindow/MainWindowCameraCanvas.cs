@@ -16,7 +16,7 @@ namespace WnekoTankControlApp
     public partial class MainWindow
     {
         bool continuous = false;
-        int delay = 250;
+        int delay = 300;
         DispatcherTimer timer = new DispatcherTimer();
         ObservableCollection<Position> predefinedPositionsList = new ObservableCollection<Position>();
 
@@ -30,6 +30,8 @@ namespace WnekoTankControlApp
         double verRange;
         double horLSB;
         double verLSB;
+
+        string previousX = "", previousY = "";
 
         public ObservableCollection<Position> PredefinedPositionsList { get => predefinedPositionsList; set => predefinedPositionsList = value; }
 
@@ -52,9 +54,17 @@ namespace WnekoTankControlApp
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
-            msg += gimbalVerAngCanvasBox.Text + ";" + gimbalHorAngCanvasBox.Text;
-            Send(msg);
+            string currentX = gimbalHorAngCanvasBox.Text;
+            string currentY = gimbalVerAngCanvasBox.Text;
+
+            if (currentX != previousX && currentY != previousY)
+            {
+                string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+                msg += gimbalVerAngCanvasBox.Text + ";" + gimbalHorAngCanvasBox.Text;
+                Send(msg);
+                previousX = currentX;
+                previousY = currentY;
+            }
         }
 
         private void CameraTarget_MouseMove(object sender, MouseEventArgs e)
@@ -117,7 +127,7 @@ namespace WnekoTankControlApp
             double left = p.X - CameraTarget.Width / 2;
             double top = p.Y - CameraTarget.Height / 2;
             double horAngle = left * horLSB - horRange / 2;
-            double verAngle = top * verLSB - verRange / 2;
+            double verAngle = -1 * (top * verLSB - verRange / 2);
             if (horAngle < minX) horAngle = minX;
             if (horAngle > maxX) horAngle = maxX;
             if (verAngle < minY) verAngle = minY;
@@ -176,7 +186,7 @@ namespace WnekoTankControlApp
                 return;
             }
             string name = gimbalDefineNameBox.Text;
-            PredefinedPositionsList.Add(new Position(x,y,name));
+            PredefinedPositionsList.Add(new Position(x, y, name));
         }
 
         private void predefinedDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)

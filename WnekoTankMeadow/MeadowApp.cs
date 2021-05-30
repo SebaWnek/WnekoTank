@@ -32,12 +32,21 @@ namespace WnekoTankMeadow
         MethodsDictionary dict;
         MethodsQueue queue;
         Mcp23x08 expander1;
-        Display16x2 display;
+        Mcp23x08 expander2;
+        DisplayLCD displaySmall;
+        DisplayLCD displayBig;
         TempPressureSensor tempPresSensor;
         BNO055 positionSensor;
         ProximitySensorsArray proxSensors;
         CameraGimbal gimbal;
-
+        Buzzer buzzer;
+        INA219Array ina219s;
+        Fan motorsFans;
+        Fan inasFan;
+        Fan LEDsFans;
+        LedLamp wideLed;
+        LedLamp narrowLed;
+        Camera camera;
         public MeadowApp()
         {
             //try
@@ -55,50 +64,75 @@ namespace WnekoTankMeadow
             //    motor.Break();
             //}
             //Console.WriteLine(positionSensor.Read().ToString());
-            motor.SetLinearSpeed(100);
         }
 
         private void TestThings()
         {
-            Console.WriteLine("testing ina219");
-            INA219.INA219Configuration configuration = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
-                                                                                      INA219.PGASettings.Gain320mV,
-                                                                                      INA219.ADCsettings.Samples128,
-                                                                                      INA219.ADCsettings.Samples128,
-                                                                                      INA219.ModeSettings.ShuntBusContinuous);
-            Console.WriteLine("Trying to creaate INA");
-            INA219 ina = new INA219(bus, 0x45);
-            Console.WriteLine("Ina created!");
-            Thread.Sleep(100);
-            ina.ResetToFactory();
-            ina.Calibrate(3.2f, 0.1f);
-            Thread.Sleep(100);
-            //ina.EnumerateRegisters();
-            Thread.Sleep(1000);
-            //ina.Configure(configuration);
-            Thread.Sleep(1000);
-            ina.EnumerateRegisters();
-            while (true)
-            {
-                Console.WriteLine($"Shunt voltage: {ina.ReadShuntVltage()}V");
-                Console.WriteLine($"Bus voltage: {ina.ReadBusVoltage()}V");
-                Console.WriteLine($"Current: {ina.ReadCurrent()}A");
-                Console.WriteLine($"Power: {ina.ReadPower()}W");
-                Thread.Sleep(2000);
-            }
-        }
+            //LEDsFans.StartFan();
+            //Thread.Sleep(5000);
+            //LEDsFans.StopFan();
+            //motorsFans.StartFan();
+            //Thread.Sleep(5000);
+            //motorsFans.StopFan();
+            //inasFan.StartFan();
+            //Thread.Sleep(5000);
+            //inasFan.StopFan();
 
-        private void Test1_Changed(object sender, DigitalInputPortEventArgs e)
-        {
-            if (e.Value == true)
-            {
-                onboardLed.SetColor(Color.Blue);
-            }
-            else
-            {
-                onboardLed.SetColor(Color.Red);
-            }
-            Console.WriteLine($"Interrupt: {e.Value}");
+            //LEDsFans.StartFan();
+
+            //for (int i = 0; i <= 100; i++)
+            //{
+            //    wideLed.SetBrightnes(i);
+            //    Console.WriteLine(i);
+            //    Thread.Sleep(50);
+            //}
+            //Thread.Sleep(1000);
+            //wideLed.SetBrightnes(0);
+            //for (int i = 0; i <= 100; i++)
+            //{
+            //    narrowLed.SetBrightnes(i);
+            //    Console.WriteLine(i);
+            //    Thread.Sleep(50);
+            //}
+            //Thread.Sleep(1000);
+            //narrowLed.SetBrightnes(0);
+
+            //buzzer.BuzzPulse(500, 1000, 3);
+
+            //LEDsFans.StopFan();
+
+            //LEDsFans.StartFan();
+            //motorsFans.StartFan();
+            //inasFan.StartFan();
+            ////string test = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 ";
+            ////displayBig.Write(test);
+            ////displaySmall.Write(test);
+            ////Console.WriteLine("testing ina219");
+            ////INA219.INA219Configuration configuration = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
+            ////                                                                          INA219.PGASettings.Gain320mV,
+            ////                                                                          INA219.ADCsettings.Samples128,
+            ////                                                                          INA219.ADCsettings.Samples128,
+            ////                                                                          INA219.ModeSettings.ShuntBusContinuous);
+            ////Console.WriteLine("Trying to creaate INA");
+            ////INA219 ina = new INA219(bus, 0x41);
+            ////Console.WriteLine("Ina created!");
+            ////Thread.Sleep(100);
+            ////ina.ResetToFactory();
+            ////ina.Calibrate(3.2f, 0.1f);
+            ////Thread.Sleep(100);
+            //////ina.EnumerateRegisters();
+            ////Thread.Sleep(1000);
+            //////ina.Configure(configuration);
+            ////Thread.Sleep(1000);
+            ////ina.EnumerateRegisters();
+            ////while (true)
+            ////{
+            ////    Console.WriteLine($"Shunt voltage: {ina.ReadShuntVltage()}V");
+            ////    Console.WriteLine($"Bus voltage: {ina.ReadBusVoltage()}V");
+            ////    Console.WriteLine($"Current: {ina.ReadCurrent()}A");
+            ////    Console.WriteLine($"Power: {ina.ReadPower()}W");
+            ////    Thread.Sleep(2000);
+            ////}
         }
 
         /// <summary>
@@ -115,33 +149,97 @@ namespace WnekoTankMeadow
                 3.3f, 3.3f, 3.3f,
                 Meadow.Peripherals.Leds.IRgbLed.CommonType.CommonAnode);
 
-            bus = Device.CreateI2cBus();
+#if DEBUG
+            Console.WriteLine("Initializing bus");
+#endif
+            bus = Device.CreateI2cBus(400000);
 
+#if DEBUG
+            Console.WriteLine("Initializing display 1");
+#endif
+            displaySmall = new DisplayLCD(bus, 0x27, 2, 16);
+            displaySmall.Write("I'm alive!");
 
-            pwm1600 = new Pca9685(bus, 97, 1600);
+#if DEBUG
+            Console.WriteLine("Initializing display 2");
+#endif
+            displayBig = new DisplayLCD(bus, 0x23, 4, 20);
+            displayBig.Write("I'm alive!");
+
+#if DEBUG
+            Console.WriteLine("Initializing power sensors");
+#endif
+            displaySmall.Write("Initializing power sensors");
+            INA219.INA219Configuration config = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
+                                                                               INA219.PGASettings.Gain320mV,
+                                                                               INA219.ADCsettings.Samples128,
+                                                                               INA219.ADCsettings.Samples128,
+                                                                               INA219.ModeSettings.ShuntBusContinuous);
+            ina219s = new INA219Array(new INA219[]
+            {
+                new INA219(3.2f, 0.1f, 1, bus, 0x41, config, "C"),
+                new INA219(10f, 0.01f, 1, bus, 0x44, config, "L"),
+                new INA219(10f, 0.01f, 1, bus, 0x45, config, "R")
+            }, buzzer, displayBig, EmergencyDisable, com);
+            ina219s.StartMonitoringVoltage();
+
+#if DEBUG
+            Console.WriteLine("Initializing pca @1600Hz");
+#endif
+            displaySmall.Write("Initializing PWM @1600Hz");
+            pwm1600 = new Pca9685(bus, 0x61, 1600);
             pwm1600.Initialize();
-            pwm50 = new Pca9685(bus, 96, 50);
+#if DEBUG
+            Console.WriteLine("Initializing pca @50Hz");
+#endif
+            displaySmall.Write("Initializing PWM @50Hz");
+            pwm50 = new Pca9685(bus, 0x60, 50);
             pwm50.Initialize();
 
-            display = new Display16x2(bus, 39);
-            display.Write("I'm alive!");
+#if DEBUG
+            Console.WriteLine("Initializing expander 1");
+#endif
+            displaySmall.Write("Initializing expander 1");
+            expander1 = new Mcp23x08(bus, 0x20, Device.CreateDigitalInputPort(Device.Pins.D02, InterruptMode.EdgeBoth));
 
-            expander1 = new Mcp23x08(bus, 32, Device.CreateDigitalInputPort(Device.Pins.D02, InterruptMode.EdgeBoth));
+#if DEBUG
+            Console.WriteLine("Initializing expander 2");
+#endif
+            displaySmall.Write("Initializing expander 2");
+            expander2 = new Mcp23x08(bus, 0x21, Device.CreateDigitalInputPort(Device.Pins.D06, InterruptMode.EdgeBoth));
 
             //com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
-            com = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com1, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 115200, 8, Parity.None, StopBits.One));
+#if DEBUG
+            Console.WriteLine("Initializing hc12");
+#endif
+            displaySmall.Write("Initializing radio");
+            com = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4,
+                                                                       suffixDelimiter: new byte[] { 10 },
+                                                                       preserveDelimiter: true, 115200, 8, Parity.None,
+                                                                       StopBits.One));
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
 
+#if DEBUG
+            Console.WriteLine("Initializing temperature sensor");
+#endif
+            displaySmall.Write("Initializing temperature sensor");
             tempPresSensor = new TempPressureSensor(bus);
             tempPresSensor.RegisterSender(com.SendMessage);
+#if DEBUG
+            Console.WriteLine("Initializing position sensor");
+#endif
+            displaySmall.Write("Initializing position sensor");
             positionSensor = new BNO055(bus, 0x28);
             positionSensor.RegisterSender(com.SendMessage);
 
-            motor = new MotorController(
-                                        pwm1600.CreatePwmPort(2, 0),
+#if DEBUG
+            Console.WriteLine("Initializing motor controller");
+#endif
+            displaySmall.Write("Initializing motor controller");
+            motor = new MotorController(pwm1600.CreatePwmPort(2, 0),
                                         pwm1600.CreatePwmPort(3, 0),
                                         pwm1600.CreatePwmPort(0, 0),
                                         pwm1600.CreatePwmPort(1, 0),
@@ -150,19 +248,65 @@ namespace WnekoTankMeadow
                                         Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
                                         positionSensor);
 
-            gimbal = new CameraGimbal(pwm50.CreatePwmPort(14), pwm50.CreatePwmPort(13), positionSensor);
+#if DEBUG
+            Console.WriteLine("Initializing gimbal");
+#endif
+            displaySmall.Write("Initializing camera gimbal");
+            gimbal = new CameraGimbal(pwm50.CreatePwmPort(2), pwm50.CreatePwmPort(1), positionSensor);
 
+#if DEBUG
+            Console.WriteLine("Initializing proximity sensors");
+#endif
+            displaySmall.Write("Initializing proximity sensors");
             proxSensors = new ProximitySensorsArray(new ProximitySensor[]
             {
-                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP7, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, right", queue, motor),
-                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP6, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, left", queue, motor),
-                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP5, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, center", queue, motor),
-                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP4, InterruptMode.EdgeRising), Direction.Backward, StopBehavior.Stop, "Back, center", queue, motor)
+                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP7, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, right", queue, motor),
+                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP6, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, left", queue, motor),
+                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP5, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, center", queue, motor),
+                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP4, InterruptMode.EdgeRising), Direction.Backward, StopBehavior.Stop, "Back, center", queue, motor)
             });
             proxSensors.Register(com.SendMessage);
-            proxSensors.Register(display.Write);
+            proxSensors.Register(displaySmall.Write);
 
+#if DEBUG
+            Console.WriteLine("Initializing buzzer");
+#endif
+            displaySmall.Write("Initializing buzzer");
+            buzzer = new Buzzer(expander2.CreateDigitalOutputPort(expander2.Pins.GP3, false, OutputType.OpenDrain));
+            buzzer.Buzz();
+
+#if DEBUG
+            Console.WriteLine("Initializing fans");
+#endif
+            displaySmall.Write("Initializing fans");
+            LEDsFans = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP4), "LEDs' fans");
+            motorsFans = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP5), "Motors' fans");
+            inasFan = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP6), "INAs fan");
+
+#if DEBUG
+            Console.WriteLine("Initializing lamps");
+#endif
+            displaySmall.Write("Initializing lamps");
+            narrowLed = new LedLamp(pwm1600.CreatePwmPort(4, 0), LEDsFans, "Front, narrow");
+            wideLed = new LedLamp(pwm1600.CreatePwmPort(5, 0), LEDsFans, "Front, wide");
+
+#if DEBUG
+            Console.WriteLine("Initializing cameras");
+#endif
+            displaySmall.Write("Initializing cameras");
+            camera = new Camera(expander2.CreateDigitalOutputPort(expander2.Pins.GP7));
+            camera.SetCamera(true);
+
+#if DEBUG
+            Console.WriteLine("Finishing initialization");
+#endif
+            displaySmall.Write("Finishing initialization");
             RegisterMethods();
+#if DEBUG
+            Console.WriteLine("All hardware initialized!");
+#endif
+            displaySmall.Clear();
+            displaySmall.Write("Ready!");
         }
 
         /// <summary>
@@ -192,6 +336,13 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.setGimbalAngle, new Action<string>(gimbal.SetAngle));
             dict.RegisterMethod(CommandList.stabilizeGimbal, new Action<string>(gimbal.StartStabilizing));
             dict.RegisterMethod(CommandList.diagnoze, new Action<string>(Diangoze));
+            dict.RegisterMethod(CommandList.getElectricData, new Action<string>(ina219s.ReturnData));
+            dict.RegisterMethod(CommandList.fanInasState, new Action<string>(inasFan.SetState));
+            dict.RegisterMethod(CommandList.fanLedsState, new Action<string>(LEDsFans.SetState));
+            dict.RegisterMethod(CommandList.fanMotorsState, new Action<string>(motorsFans.SetState));
+            dict.RegisterMethod(CommandList.ledNarrowPower, new Action<string>(narrowLed.SetBrightnes));
+            dict.RegisterMethod(CommandList.ledWidePower, new Action<string>(wideLed.SetBrightnes));
+            //dict.RegisterMethod
         }
 
         public void Diangoze(string empty)
@@ -212,6 +363,14 @@ namespace WnekoTankMeadow
                 //com.SendMessage(thread.Id.ToString());
                 Thread.Sleep(20);
             }
+        }
+
+        private void EmergencyDisable()
+        {
+            motor.Break();
+            queue.LockQueue();
+            onboardLed.SetColor(Color.Red);
+            displaySmall.Write("BATTERY TOO LOW!!!CHARGE  ASAP!!");
         }
     }
 }

@@ -28,5 +28,13 @@
         public static string setGimbalAngle = "GSA";
         public static string stabilizeGimbal = "GST";
         public static string diagnoze = "DGZ";
+        public static string getElectricData = "ELD";
+        public static string fanLedsState = "FLS";
+        public static string fanInasState = "ILS";
+        public static string fanMotorsState = "MLS";
+        public static string ledWidePower = "LWP";
+        public static string ledNarrowPower = "LNP";
+        public static string cameraPower = "CAM";
+
     }
 }

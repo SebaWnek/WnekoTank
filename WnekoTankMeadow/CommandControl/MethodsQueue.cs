@@ -14,11 +14,12 @@ namespace WnekoTankMeadow
     /// </summary>
     class MethodsQueue
     {
-        MethodsDictionary dict; 
+        MethodsDictionary dict;
         private BlockingCollection<(Action<string>, string)> queue = new BlockingCollection<(Action<string>, string)>();
         private bool isWorking = false;
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         ITankCommunication communication;
+        bool isQueueLocked = false;
 
         /// <summary>
         /// Main constructor
@@ -124,6 +125,7 @@ namespace WnekoTankMeadow
         public void StartInvoking()
         {
             if (isWorking) return;
+            if (isQueueLocked) return;
             isWorking = true;
             Thread worker = new Thread(() =>
             {
@@ -156,6 +158,13 @@ namespace WnekoTankMeadow
             tokenSource.Dispose();
             tokenSource = new CancellationTokenSource();
             isWorking = false;
+        }
+
+        public void LockQueue()
+        {
+            isQueueLocked = true;
+            StopInvoking();
+            ClearQueue();
         }
     }
 }
