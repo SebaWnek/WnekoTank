@@ -260,13 +260,13 @@ namespace WnekoTankMeadow
             displaySmall.Write("Initializing proximity sensors");
             proxSensors = new ProximitySensorsArray(new ProximitySensor[]
             {
-                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP7, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, right", queue, motor),
-                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP6, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, left", queue, motor),
-                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP5, InterruptMode.EdgeRising), Direction.Forward, StopBehavior.Stop, "Front, center", queue, motor),
-                //new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP4, InterruptMode.EdgeRising), Direction.Backward, StopBehavior.Stop, "Back, center", queue, motor)
+                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP0, InterruptMode.EdgeRising, ResistorMode.InternalPullUp, 500, 500), Direction.Forward, StopBehavior.Stop, "Front, right", queue, motor),
+                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP1, InterruptMode.EdgeRising, ResistorMode.InternalPullUp, 500, 500), Direction.Forward, StopBehavior.Stop, "Front, left", queue, motor),
+                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP2, InterruptMode.EdgeRising, ResistorMode.InternalPullUp, 500, 500), Direction.Forward, StopBehavior.Stop, "Front, center", queue, motor),
+                new ProximitySensor(expander1.CreateDigitalInputPort(expander1.Pins.GP3, InterruptMode.EdgeRising, ResistorMode.InternalPullUp, 500, 500), Direction.Backward, StopBehavior.Stop, "Back, center", queue, motor)
             });
             proxSensors.Register(com.SendMessage);
-            proxSensors.Register(displaySmall.Write);
+            //proxSensors.Register(displaySmall.Write);
 
 #if DEBUG
             Console.WriteLine("Initializing buzzer");

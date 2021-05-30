@@ -22,6 +22,9 @@ namespace WnekoTankMeadow.Sensors
         bool[] signaled = new bool[3];
         Action emergencyDisable;
         ITankCommunication communication;
+#if DEBUG
+        bool printToConsole = false;
+#endif
 
         CancellationTokenSource source;
 
@@ -50,14 +53,20 @@ namespace WnekoTankMeadow.Sensors
                     if (token.IsCancellationRequested) break;
                     tmp[0] = !isDischarged ? $"Last meas: {DateTime.Now.ToLongTimeString()}" : "!BATTERY DISCHARGED!";
 #if DEBUG
-                    Console.WriteLine(tmp[0]);
+                    if (printToConsole)
+                    {
+                        Console.WriteLine(tmp[0]); 
+                    }
 #endif
                     for (int i = 0; i < inas.Length; i++)
                     {
                         voltages[i] = inas[i].ReadBusVoltage();
                         tmp[i + 1] = $"{inas[i].Name}:{voltages[i].ToString("n1")}V,{inas[i].ReadCurrent().ToString("n2")}A,{inas[i].ReadPower().ToString("n2")}W";
 #if DEBUG
-                        Console.WriteLine(tmp[i + 1]);
+                        if (printToConsole)
+                        {
+                            Console.WriteLine(tmp[i + 1]); 
+                        }
 #endif
                     }
                     display.WriteMultipleLines(tmp);

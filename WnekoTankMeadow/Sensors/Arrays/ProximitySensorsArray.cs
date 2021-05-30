@@ -11,7 +11,7 @@ namespace WnekoTankMeadow.Sensors
         ProximitySensor[] sensors;
         public ProximitySensorsArray(ProximitySensor[] s)
         {
-            sensors = s;    
+            sensors = s;
         }
 
         public void SetBehavior(string args)
