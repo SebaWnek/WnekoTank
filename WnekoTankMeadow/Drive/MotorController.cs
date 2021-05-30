@@ -222,9 +222,9 @@ namespace WnekoTankMeadow
 #endif
             int speed = int.Parse(arguments[0]);
             float distance = float.Parse(arguments[1]);
-            bool shouldBreak = bool.Parse(arguments[2]);
+            bool shouldBreak = arguments[2].StartsWith("1");
             byte gear = byte.Parse(arguments[3]);
-            bool softBreak = bool.Parse(arguments[4]);
+            bool softBreak = arguments[4].StartsWith("1");
             if (arguments[4] == "1" && distance > minSoftForwardDist)
             {
                 MoveForwardBySoft(speed, distance, shouldBreak, gear);
@@ -250,6 +250,8 @@ namespace WnekoTankMeadow
             moveForwardResetEventLeft.WaitOne();
             moveForwardResetEventRight.WaitOne();
             if (shouldBreak) Break();
+            rightCounter.DisableTarget();
+            leftCounter.DisableTarget();
         }
 
         /// <summary>
@@ -274,6 +276,8 @@ namespace WnekoTankMeadow
             moveForwardResetEventLeft.WaitOne();
             moveForwardResetEventRight.WaitOne();
             if (shouldBreak) Break();
+            rightCounter.DisableTarget();
+            leftCounter.DisableTarget();
         }
 
         /// <summary>

@@ -167,6 +167,18 @@ namespace WnekoTankMeadow
             displayBig.Write("I'm alive!");
 
 #if DEBUG
+            Console.WriteLine("Initializing hc12");
+#endif
+            displaySmall.Write("Initializing radio");
+            com = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4,
+                                                                       suffixDelimiter: new byte[] { 10 },
+                                                                       preserveDelimiter: true, 115200, 8, Parity.None,
+                                                                       StopBits.One));
+
+            dict = new MethodsDictionary();
+            queue = new MethodsQueue(com, dict);
+
+#if DEBUG
             Console.WriteLine("Initializing power sensors");
 #endif
             displaySmall.Write("Initializing power sensors");
@@ -212,18 +224,6 @@ namespace WnekoTankMeadow
             //com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
 #if DEBUG
-            Console.WriteLine("Initializing hc12");
-#endif
-            displaySmall.Write("Initializing radio");
-            com = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4,
-                                                                       suffixDelimiter: new byte[] { 10 },
-                                                                       preserveDelimiter: true, 115200, 8, Parity.None,
-                                                                       StopBits.One));
-
-            dict = new MethodsDictionary();
-            queue = new MethodsQueue(com, dict);
-
-#if DEBUG
             Console.WriteLine("Initializing temperature sensor");
 #endif
             displaySmall.Write("Initializing temperature sensor");
@@ -240,10 +240,10 @@ namespace WnekoTankMeadow
             Console.WriteLine("Initializing motor controller");
 #endif
             displaySmall.Write("Initializing motor controller");
-            motor = new MotorController(pwm1600.CreatePwmPort(2, 0),
-                                        pwm1600.CreatePwmPort(3, 0),
-                                        pwm1600.CreatePwmPort(0, 0),
+            motor = new MotorController(pwm1600.CreatePwmPort(3, 0),
+                                        pwm1600.CreatePwmPort(2, 0),
                                         pwm1600.CreatePwmPort(1, 0),
+                                        pwm1600.CreatePwmPort(0, 0),
                                         pwm50.CreatePwmPort(0),
                                         Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
                                         Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
@@ -324,7 +324,7 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.stopInvoking, new Action<string>(queue.StopInvoking));
             dict.RegisterMethod(CommandList.enumerateQueue, new Action<string>(queue.EnumerateQueue));
             dict.RegisterMethod(CommandList.clearQueue, new Action<string>(queue.ClearQueue));
-            dict.RegisterMethod(CommandList.handshake, new Action<string>(HelperMethods.HandShake));
+            dict.RegisterMethod(CommandList.handshake, new Action<string>(HandShake));
             dict.RegisterMethod(CommandList.moveForwardBy, new Action<string>(motor.MoveForwardBy));
             dict.RegisterMethod(CommandList.softStop, new Action<string>(motor.SoftBreak));
             dict.RegisterMethod(CommandList.tempPres, new Action<string>(tempPresSensor.Read));
@@ -372,6 +372,10 @@ namespace WnekoTankMeadow
             queue.LockQueue();
             onboardLed.SetColor(Color.Red);
             displaySmall.Write("BATTERY TOO LOW!!!CHARGE  ASAP!!");
+        }
+        public void HandShake(string empty)
+        {
+            buzzer.Buzz();
         }
     }
 }

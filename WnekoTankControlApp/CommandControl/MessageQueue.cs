@@ -18,6 +18,8 @@ namespace WnekoTankControlApp
         private ICommunication comPort;
         Action<string> DisplayMessage;
         BlockingCollection<string> queue = new BlockingCollection<string>();
+        Thread sender;
+        CancellationTokenSource source;
 
         /// <summary>
         /// Main constructor
@@ -29,7 +31,8 @@ namespace WnekoTankControlApp
             comPort = com;
             comPort.SubscribeToMessages(DataReceived);
             DisplayMessage = display;
-            Thread sender = new Thread(SendMessagesFromQueue);
+            source = new CancellationTokenSource();
+            sender = new Thread(SendMessagesFromQueue);
             sender.Start();
         }
 
@@ -92,8 +95,10 @@ namespace WnekoTankControlApp
         /// </summary>
         private void SendMessagesFromQueue()
         {
+            CancellationToken token = source.Token;
             while (true)
             {
+                if (token.IsCancellationRequested) return;
                 canTransmit.WaitOne();
                 string msg = queue.Take();
                 DisplayMessage.Invoke("Sending: " + msg);
@@ -103,7 +108,12 @@ namespace WnekoTankControlApp
 
         public void ClearQueue()
         {
+            source.Cancel();
+            source.Dispose();
+            source = new CancellationTokenSource();
             queue = new BlockingCollection<string>();
+            sender = new Thread(SendMessagesFromQueue);
+            sender.Start();
             DisplayMessage.Invoke("----------\nQUEUE CLEARED\n----------");
             canTransmit.Set();
         }

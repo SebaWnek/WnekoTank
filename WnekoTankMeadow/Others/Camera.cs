@@ -18,7 +18,7 @@ namespace WnekoTankMeadow.Others
 
         public void SetCamera(string msg)
         {
-            bool on = bool.Parse(msg);
+            bool on = msg.StartsWith("1");
         }
 
         public void SetCamera(bool on)

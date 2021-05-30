@@ -23,6 +23,7 @@ namespace WnekoTankMeadow.Drive
         //Allows to get current count since last reset
         public int Counter { get => counter; }
         public Side Name { get; set; }
+        bool enabled;
 
         EventHandler LimitReached;
         EventHandler<int> CountChanged;
@@ -40,9 +41,12 @@ namespace WnekoTankMeadow.Drive
         /// <param name="e">Args</param>
         private void Port_Changed(object sender, DigitalInputPortEventArgs e)
         {
-            counter++;
-            if (CountChanged != null) OnCountChanged();
-            if (counter == targetCount && LimitReached != null) OnLimitReached();
+            if (enabled)
+            {
+                counter++;
+                if (CountChanged != null) OnCountChanged();
+                if (counter == targetCount && LimitReached != null) OnLimitReached(); 
+            }
         }
 
         /// <summary>
@@ -74,7 +78,9 @@ namespace WnekoTankMeadow.Drive
         /// </summary>
         public void DisableTarget()
         {
+            ResetCount();
             targetCount = -1;
+            enabled = false;
         }
 
         /// <summary>
@@ -85,6 +91,7 @@ namespace WnekoTankMeadow.Drive
         {
             ResetCount();
             targetCount = target;
+            enabled = true;
         }
 
         /// <summary>
