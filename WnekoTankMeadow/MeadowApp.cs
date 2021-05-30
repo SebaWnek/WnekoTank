@@ -53,7 +53,7 @@ namespace WnekoTankMeadow
             //{
             Initialize();
             onboardLed.SetColor(Color.Green);
-            TestThings();
+            //TestThings();
             //}
             //catch (Exception e)
             //{
@@ -180,7 +180,8 @@ namespace WnekoTankMeadow
                 new INA219(3.2f, 0.1f, 1, bus, 0x41, config, "C"),
                 new INA219(10f, 0.01f, 1, bus, 0x44, config, "L"),
                 new INA219(10f, 0.01f, 1, bus, 0x45, config, "R")
-            }, buzzer, displayBig, EmergencyDisable, com);
+            }, buzzer, displayBig, EmergencyDisable);
+            ina219s.RegisterSender(com.SendMessage);
             ina219s.StartMonitoringVoltage();
 
 #if DEBUG
@@ -342,7 +343,7 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(CommandList.fanMotorsState, new Action<string>(motorsFans.SetState));
             dict.RegisterMethod(CommandList.ledNarrowPower, new Action<string>(narrowLed.SetBrightnes));
             dict.RegisterMethod(CommandList.ledWidePower, new Action<string>(wideLed.SetBrightnes));
-            //dict.RegisterMethod
+            
         }
 
         public void Diangoze(string empty)

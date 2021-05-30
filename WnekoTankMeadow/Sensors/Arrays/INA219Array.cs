@@ -21,21 +21,20 @@ namespace WnekoTankMeadow.Sensors
         bool isDischarged = false;
         bool[] signaled = new bool[3];
         Action emergencyDisable;
-        ITankCommunication communication;
+        Action<string> sendMessage;
 #if DEBUG
         bool printToConsole = false;
 #endif
 
         CancellationTokenSource source;
 
-        public INA219Array(INA219[] iNA219s, Buzzer buz, DisplayLCD dis, Action disable, ITankCommunication com, int del = 5000)
+        public INA219Array(INA219[] iNA219s, Buzzer buz, DisplayLCD dis, Action disable, int del = 5000)
         {
             inas = iNA219s;
             buzzer = buz;
             display = dis;
             delay = del;
             emergencyDisable = disable;
-            communication = com;
             source = new CancellationTokenSource();
         }
 
@@ -112,14 +111,14 @@ namespace WnekoTankMeadow.Sensors
         {
             buzzer.BuzzPulse(200, 800, 5);
             string msg = "Low Battery!\n\nLow Battery!\n\nLow Battery!";
-            communication.SendMessage(msg);
+            sendMessage(msg);
         }
 
         private void SignalDischarge()
         {
             buzzer.BuzzPulse(500, 500, int.MaxValue);
             string msg = "Battery discharged!\nCharge ASAP!\n\nBattery discharged!\nCharge ASAP!\n\nBattery discharged!\nCharge ASAP!\n\nBattery discharged!\nCharge ASAP!";
-            communication.SendMessage(msg);
+            sendMessage(msg);
         }
 
         public void ReturnData(string empty)
@@ -136,7 +135,12 @@ namespace WnekoTankMeadow.Sensors
                 powers[i] = inas[i].ReadPower();
                 msg += inas[i].Name + ":" + voltages[i] + "V;" + currents[i] + "A;" + powers[i] + "W\n";
             }
-            communication.SendMessage(msg);
+            sendMessage(msg);
+        }
+
+        internal void RegisterSender(Action<string> sender)
+        {
+            sendMessage += sender;
         }
     }
 }

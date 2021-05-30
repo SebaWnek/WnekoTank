@@ -210,7 +210,7 @@ namespace WnekoTankMeadow
         /// <summary>
         /// Move in straight line selected distance (at selected gear if present). Doesn't count turns, uses first sensor to reach limit
         /// </summary>
-        /// <param name="args">String with arguments. Separated by ";", 2 args - without gear, 3 args - with gear</param>
+        /// <param name="args">String with arguments. Separated by ";"</param>
         public void MoveForwardBy(string args)
         {
             string[] arguments = args.Split(';');
@@ -224,6 +224,7 @@ namespace WnekoTankMeadow
             float distance = float.Parse(arguments[1]);
             bool shouldBreak = bool.Parse(arguments[2]);
             byte gear = byte.Parse(arguments[3]);
+            bool softBreak = bool.Parse(arguments[4]);
             if (arguments[4] == "1" && distance > minSoftForwardDist)
             {
                 MoveForwardBySoft(speed, distance, shouldBreak, gear);

@@ -105,6 +105,7 @@ namespace WnekoTankControlApp
         {
             queue = new BlockingCollection<string>();
             DisplayMessage.Invoke("----------\nQUEUE CLEARED\n----------");
+            canTransmit.Set();
         }
     }
 }

@@ -50,7 +50,7 @@ namespace WnekoTankMeadow.Others
 
         internal void SetState(string msg)
         {
-            if (msg == "1") StartFan();
+            if (msg.StartsWith( "1")) StartFan();
             else StopFan();
         }
     }

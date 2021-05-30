@@ -34,7 +34,7 @@
         public static string fanMotorsState = "MLS";
         public static string ledWidePower = "LWP";
         public static string ledNarrowPower = "LNP";
-        public static string cameraPower = "CAM";
+        //public static string cameraPower = "CAM";
 
     }
 }

@@ -350,7 +350,7 @@ namespace WnekoTankControlApp
 
         private void ledsFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanLedState");
+            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanLedsState");
             msg += (bool)ledsFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
