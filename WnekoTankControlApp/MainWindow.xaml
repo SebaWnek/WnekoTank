@@ -648,10 +648,10 @@
                         <RowDefinition Height="2*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.6*"/>
                         <ColumnDefinition Width="3*"/>
                         <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.6*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <StackPanel>
@@ -678,11 +678,11 @@
                         Maximum="100" 
                         Minimum="-100" 
                         Value="0" 
-                        TickFrequency="10" 
+                        TickFrequency="5" 
                         IsSnapToTickEnabled="True" 
                         ValueChanged="speedSlider_ValueChanged" 
-                        Thumb.DragCompleted="speedSlider_DragCompleted" HorizontalAlignment="Center" Margin="57,0"/>
-                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ElementName=turnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" Margin="95,15,94,14"/>
+                        Thumb.DragCompleted="speedSlider_DragCompleted" HorizontalAlignment="Center" Margin="10,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding ElementName=turnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" Margin="10"/>
                     <Slider x:Name="turnSlider" Grid.Row="1" 
                         Grid.Column="0" 
                         Maximum="100" 
@@ -691,12 +691,12 @@
                         Orientation="Vertical"
                         IsDirectionReversed="False"
                         Value="0" 
-                        TickFrequency="5" 
+                        TickFrequency="10" 
                         IsSnapToTickEnabled="True"
                         ValueChanged="turnSlider_ValueChanged" 
                         Thumb.DragCompleted="turnSlider_DragCompleted" 
-                        HorizontalAlignment="Center" Margin="58,0,57,0"/>
-                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=speedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" Margin="94,15,94,14"/>
+                        HorizontalAlignment="Center" Margin="10,0,10,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=speedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="36" Margin="10"/>
                     <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -796,10 +796,10 @@
                             </Grid.RowDefinitions>
                             <Button x:Name="moveForwardByButton" Grid.Column="0" Content="Move forward by:" Click="moveForwardByButton_Click"/>
                             <TextBox x:Name="moveForwardByDistBox" Grid.Column="1" Text="{Binding ElementName=moveForwardByDistSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="100" Grid.Row="0"/>
-                            <Slider x:Name="moveForwardByDistSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="0.1" IsSnapToTickEnabled="True" Grid.Row="0"/>
+                            <Slider x:Name="moveForwardByDistSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-10" Maximum="10" TickFrequency="0.1" IsSnapToTickEnabled="True" Grid.Row="0"/>
                             <Label Grid.Row="1">At speed:</Label>
                             <TextBox x:Name="moveForwardBySpeedBox" Grid.Column="1" Text="{Binding ElementName=moveForwardBySpeedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="100" Grid.Row="1"/>
-                            <Slider x:Name="moveForwardBySpeedSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True" Grid.Row="1"/>
+                            <Slider x:Name="moveForwardBySpeedSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True" Grid.Row="1" Value="20"/>
                             <Label Grid.Row="2">Gear:</Label>
                             <CheckBox x:Name="moveForwardBySendGearCheckbox" Grid.Row="2" Grid.Column="1" Content="Send?" Margin="0,7"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,7">

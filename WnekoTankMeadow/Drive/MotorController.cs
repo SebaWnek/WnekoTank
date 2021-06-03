@@ -11,6 +11,7 @@ namespace WnekoTankMeadow
     /// </summary>
     class MotorController
     {
+        private const int slowdownTurns = 2;
         Motor leftMotor;
         Motor rightMotor;
         GearBox gearbox;
@@ -243,10 +244,12 @@ namespace WnekoTankMeadow
         public void MoveForwardBy(int speed, float distance, bool shouldBreak, byte gear)
         {
             if (gear > 0) SetGear(gear);
-            int turns = (int)Math.Round(distance * 1000 / circumference);
+            byte direction = (byte)Math.Sign(distance);
+            float absDist = Math.Abs(distance);
+            int turns = (int)Math.Round(absDist * 1000 / circumference);
             rightCounter.SetTarget(turns);
             leftCounter.SetTarget(turns);
-            SetLinearSpeed(speed);
+            SetLinearSpeed(direction > 0 ? speed : -1 * speed);
             moveForwardResetEventLeft.WaitOne();
             moveForwardResetEventRight.WaitOne();
             if (shouldBreak) Break();
@@ -263,8 +266,10 @@ namespace WnekoTankMeadow
         public void MoveForwardBySoft(int speed, float distance, bool shouldBreak, byte gear)
         {
             if (gear > 0) SetGear(gear);
-            int turns = (int)Math.Round(distance * 1000 / circumference);
-            rightCounter.SetTarget(turns - 2);
+            byte direction = (byte)Math.Sign(distance);
+            float absDist = Math.Abs(distance);
+            int turns = (int)Math.Round(absDist * 1000 / circumference);
+            rightCounter.SetTarget(turns - slowdownTurns);
             leftCounter.SetTarget(turns - 2);
             SetLinearSpeedSoft(speed);
             moveForwardResetEventLeft.WaitOne();
