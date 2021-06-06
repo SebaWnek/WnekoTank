@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using CommonsLibrary;
 
+/// <summary>
+/// OBSOLETE!!!!
+/// </summary>
 namespace WnekoTankControlApp
 {
     /// <summary>

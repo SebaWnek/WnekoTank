@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using CommonsLibrary;
 
 namespace WnekoTankControlApp
 {
@@ -59,7 +60,7 @@ namespace WnekoTankControlApp
 
             if (currentX != previousX && currentY != previousY)
             {
-                string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+                string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
                 msg += gimbalVerAngCanvasBox.Text + ";" + gimbalHorAngCanvasBox.Text;
                 Send(msg);
                 previousX = currentX;
@@ -112,7 +113,7 @@ namespace WnekoTankControlApp
                 gimbalDefineXBox.Text = angles[0].ToString();
                 gimbalDefineYBox.Text = angles[1].ToString();
 
-                string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+                string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
                 msg += angles[1] + ";" + angles[0];
                 Send(msg);
                 if (continuous)
@@ -144,7 +145,7 @@ namespace WnekoTankControlApp
             gimbalHorAngCanvasBox.Text = "0";
             gimbalVerAngCanvasBox.Text = "0";
 
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+            string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
             msg += 0 + ";" + 0;
             Send(msg);
         }
@@ -192,7 +193,7 @@ namespace WnekoTankControlApp
         private void predefinedDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Position selectedPosition = predefinedDataGrid.SelectedItem as Position;
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+            string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
             msg += selectedPosition.Y + ";" + selectedPosition.X;
             Send(msg);
         }

@@ -58,19 +58,20 @@ namespace WnekoTankControlApp
 
         private void gear1btn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("setGear") + "1";
+            string msg = CommandList.setGear + "1";
+            //string msg = CommandList.setGear") + "1";
             Send(msg);
         }
 
         private void gear2btn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("setGear") + "2";
+            string msg = CommandList.setGear + "2";
             Send(msg);
         }
 
         private void stopEmergencyBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stop");
+            string msg = CommandList.emergencyPrefix + CommandList.stop;
             SendEmergency(msg);
             clearQueue_Click(this, null);
             stabilizeOff.IsChecked = true;
@@ -79,80 +80,80 @@ namespace WnekoTankControlApp
 
         private void softStopButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("softStop") + "0";
+            string msg = CommandList.softStop + "0";
             Send(msg);
         }
         private void stopNormalButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("stop") + "0";
+            string msg = CommandList.stop + "0";
             Send(msg);
         }
 
         private void queueStart_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("startInvoking");
+            string msg = CommandList.emergencyPrefix + CommandList.startInvoking;
             Send(msg);
         }
 
         private void queueStop_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stopInvoking");
-            string msg2 = comList.GetCode("handshake");
+            string msg = CommandList.emergencyPrefix + CommandList.stopInvoking;
+            string msg2 = CommandList.handshake;
             Send(msg);
             Send(msg2);
         }
 
         private void listQueue_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("enumerateQueue");
+            string msg = CommandList.emergencyPrefix + CommandList.enumerateQueue;
             Send(msg);
         }
 
         private void waitButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("wait") + waitBox.Text;
+            string msg = CommandList.wait + waitBox.Text;
             Send(msg);
         }
 
         private void setSpeedButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("setLinearSpeed") + setSpeedBox.Text;
+            string msg = CommandList.setLinearSpeed + setSpeedBox.Text;
             Send(msg);
         }
 
         private void setTurnButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("setTurn") + setTurnBox.Text;
+            string msg = CommandList.setTurn + setTurnBox.Text;
             Send(msg);
         }
 
         private void handshakeButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("handshake");
+            string msg = CommandList.emergencyPrefix + CommandList.handshake;
             SendEmergency(msg);
         }
 
         private void tempPresBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("tempPres");
+            string msg = CommandList.tempPres;
             Send(msg);
         }
 
         private void positionButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("position");
+            string msg = CommandList.position;
             Send(msg);
         }
 
         private void calibrateBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("calibrate");
+            string msg = CommandList.calibrate;
             Send(msg);
         }
 
         private void checkCalibrationBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("checkCalibration");
+            string msg = CommandList.checkCalibration;
             Send(msg);
         }
 
@@ -210,13 +211,13 @@ namespace WnekoTankControlApp
 
         private void clearQueue_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("clearQueue");
+            string msg = CommandList.emergencyPrefix + CommandList.clearQueue;
             SendEmergency(msg);
         }
 
         private void moveForwardByButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("moveForwardBy");
+            string msg = CommandList.moveForwardBy;
             msg += moveForwardBySpeedBox.Text;
             msg += ';' + moveForwardByDistBox.Text;
             msg += (bool)shouldStopAfterCheckBox.IsChecked ? ";1" : ";0";
@@ -231,7 +232,7 @@ namespace WnekoTankControlApp
 
         private void turnByButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("turnBy");
+            string msg = CommandList.turnBy;
             msg += turnByAngleBox.Text;
             msg += ';' + turnBySpeedBox.Text;
             if ((bool)turnBySendGearCheckbox.IsChecked)
@@ -283,19 +284,19 @@ namespace WnekoTankControlApp
 
         private void stabilizeOff_Checked(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("stabilize") + "0";
+            string msg = CommandList.stabilize + "0";
             Send(msg);
         }
 
         private void stabilizeOn_Checked(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("stabilize") + "1";
+            string msg = CommandList.stabilize + "1";
             Send(msg);
         }
 
         private void proximity_Checked(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("setProxSensors");
+            string msg = CommandList.setProxSensors;
             if ((bool)proximityNone.IsChecked) msg += "0";
             else if ((bool)proximityStop.IsChecked) msg += "1";
             else if ((bool)proximitySoftStop.IsChecked) msg += "2";
@@ -306,9 +307,9 @@ namespace WnekoTankControlApp
         private void proxReset_Click(object sender, RoutedEventArgs e)
         {
             queue.ClearQueue();
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("clearQueue");
+            string msg = CommandList.emergencyPrefix + CommandList.clearQueue;
             SendEmergency(msg);
-            msg = comList.GetCode("emergencyPrefix") + comList.GetCode("startInvoking");
+            msg = CommandList.emergencyPrefix + CommandList.startInvoking;
             SendEmergency(msg);
         }
 
@@ -319,45 +320,45 @@ namespace WnekoTankControlApp
 
         private void gimbalStabilizeStartBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stabilizeGimbal") + "1";
+            string msg = CommandList.emergencyPrefix + CommandList.stabilizeGimbal + "1";
             Send(msg);
         }
 
         private void gimbalStabilizeStopBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("stabilizeGimbal") + "0";
+            string msg = CommandList.emergencyPrefix + CommandList.stabilizeGimbal + "0";
             Send(msg);
         }
 
         private void diagnozeBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("diagnoze");
+            string msg = CommandList.emergencyPrefix + CommandList.diagnoze;
             Send(msg);
         }
 
         private void electricButton_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("getElectricData");
+            string msg = CommandList.emergencyPrefix + CommandList.getElectricData;
             Send(msg);
         }
 
         private void motorsFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanMotorsState");
+            string msg = CommandList.emergencyPrefix + CommandList.fanMotorsState;
             msg += (bool)motorsFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
 
         private void ledsFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanLedsState");
+            string msg = CommandList.emergencyPrefix + CommandList.fanLedsState;
             msg += (bool)ledsFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
 
         private void inasFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("fanInasState");
+            string msg = CommandList.emergencyPrefix + CommandList.fanInasState;
             msg += (bool)inasFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }

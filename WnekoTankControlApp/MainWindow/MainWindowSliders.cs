@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using CommonsLibrary;
 
 namespace WnekoTankControlApp
 {
@@ -26,20 +27,20 @@ namespace WnekoTankControlApp
         private void speedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int speed = (int)e.NewValue;
-            string msg = comList.GetCode("setLinearSpeed") + speed.ToString();
+            string msg = CommandList.setLinearSpeed + speed.ToString();
             Send(msg);
         }
 
         private void turnSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int turn = (int)e.NewValue;
-            string msg = comList.GetCode("setTurn") + turn.ToString();
+            string msg = CommandList.setTurn + turn.ToString();
             Send(msg);
         }
 
         private void gimbalSlider_ValueChanged(object sender, DragCompletedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("setGimbalAngle");
+            string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
             msg += gimbalVerAngSlider.Value + ";" + gimbalHorAngSlider.Value;
             Send(msg);
         }
@@ -47,14 +48,14 @@ namespace WnekoTankControlApp
 
         private void wideLightSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("ledWidePower");
+            string msg = CommandList.emergencyPrefix + CommandList.ledWidePower;
             msg += wideLightSlider.Value;
             Send(msg);
         }
 
         private void narrowLightSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            string msg = comList.GetCode("emergencyPrefix") + comList.GetCode("ledNarrowPower");
+            string msg = CommandList.emergencyPrefix + CommandList.ledNarrowPower;
             msg += narrowLightSlider.Value;
             Send(msg);
         }

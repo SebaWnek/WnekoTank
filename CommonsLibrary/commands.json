@@ -1,0 +1,49 @@
+{
+  "general": {
+    "emergencyPrefix": "EMG",
+    "wait": "WAI",
+    "handshake": "HSK"
+  },
+  "movement": {
+    "setGear": "GEA",
+    "setLinearSpeed": "SPD",
+    "setTurn": "TRN",
+    "stop": "STP",
+    "moveForwardBy": "MFW",
+    "softStop": "STS",
+    "turnBy": "TBY",
+    "stabilize": "STB"
+
+  },
+  "queue": {
+    "startInvoking": "QSP",
+    "stopInvoking": "QSP",
+    "enumerateQueue": "QEN",
+    "clearQueue": "QCL"
+  },
+  "diagnostics": {
+    "diagnoze": "DGZ",
+    "getElectricData": "ELD"
+  },
+  "sensors": {
+    "tempPres": "TPR",
+    "position": "POS",
+    "calibrate": "CAL",
+    "checkCalibration": "CCL",
+    "setProxSensors": "PXS"
+  },
+  "gimbal": {
+    "setGimbalAngle": "GSA",
+    "stabilizeGimbal": "GST"
+  },
+  "fans": {
+    "fanLedsState": "FLS",
+      "fanInasState": "ILS",
+    "fanMotorsState": "MLS"
+  },
+  "lights": {
+    "ledWidePower": "LWP",
+    "ledNarrowPower": "LNP"
+  }
+}
+
