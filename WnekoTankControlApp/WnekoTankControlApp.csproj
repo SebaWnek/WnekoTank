@@ -85,8 +85,10 @@
     <Compile Include="CommandControl\ComDevices\HC12Communication.cs" />
     <Compile Include="CommandControl\ComDevices\MockCommunication.cs" />
     <Compile Include="CommandControl\ComDevices\WifiCommunication.cs" />
+    <Compile Include="CommandControl\IncommingMessageQueue.cs" />
     <Compile Include="MainWindow\MainWindowButtons.cs" />
     <Compile Include="MainWindow\MainWindowCameraCanvas.cs" />
+    <Compile Include="MainWindow\MainWindowIncommingData.cs" />
     <Compile Include="MainWindow\MainWindowMjpeg.cs" />
     <Compile Include="MainWindow\MainWindowSliders.cs" />
     <Compile Include="CommandControl\MessageEventArgs.cs" />
@@ -98,7 +100,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandControl\MessageQueue.cs" />
+    <Compile Include="CommandControl\OutgoingMessageQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -116,7 +118,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

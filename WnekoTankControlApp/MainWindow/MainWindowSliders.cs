@@ -27,20 +27,20 @@ namespace WnekoTankControlApp
         private void speedSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int speed = (int)e.NewValue;
-            string msg = CommandList.setLinearSpeed + speed.ToString();
+            string msg = TankCommandList.setLinearSpeed + speed.ToString();
             Send(msg);
         }
 
         private void turnSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int turn = (int)e.NewValue;
-            string msg = CommandList.setTurn + turn.ToString();
+            string msg = TankCommandList.setTurn + turn.ToString();
             Send(msg);
         }
 
         private void gimbalSlider_ValueChanged(object sender, DragCompletedEventArgs e)
         {
-            string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.setGimbalAngle;
             msg += gimbalVerAngSlider.Value + ";" + gimbalHorAngSlider.Value;
             Send(msg);
         }
@@ -48,14 +48,14 @@ namespace WnekoTankControlApp
 
         private void wideLightSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            string msg = CommandList.emergencyPrefix + CommandList.ledWidePower;
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.ledWidePower;
             msg += wideLightSlider.Value;
             Send(msg);
         }
 
         private void narrowLightSlider_DragCompleted(object sender, DragCompletedEventArgs e)
         {
-            string msg = CommandList.emergencyPrefix + CommandList.ledNarrowPower;
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.ledNarrowPower;
             msg += narrowLightSlider.Value;
             Send(msg);
         }

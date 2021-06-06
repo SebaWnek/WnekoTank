@@ -60,7 +60,7 @@ namespace WnekoTankControlApp
 
             if (currentX != previousX && currentY != previousY)
             {
-                string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
+                string msg = TankCommandList.emergencyPrefix + TankCommandList.setGimbalAngle;
                 msg += gimbalVerAngCanvasBox.Text + ";" + gimbalHorAngCanvasBox.Text;
                 Send(msg);
                 previousX = currentX;
@@ -113,7 +113,7 @@ namespace WnekoTankControlApp
                 gimbalDefineXBox.Text = angles[0].ToString();
                 gimbalDefineYBox.Text = angles[1].ToString();
 
-                string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
+                string msg = TankCommandList.emergencyPrefix + TankCommandList.setGimbalAngle;
                 msg += angles[1] + ";" + angles[0];
                 Send(msg);
                 if (continuous)
@@ -145,7 +145,7 @@ namespace WnekoTankControlApp
             gimbalHorAngCanvasBox.Text = "0";
             gimbalVerAngCanvasBox.Text = "0";
 
-            string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.setGimbalAngle;
             msg += 0 + ";" + 0;
             Send(msg);
         }
@@ -193,7 +193,7 @@ namespace WnekoTankControlApp
         private void predefinedDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Position selectedPosition = predefinedDataGrid.SelectedItem as Position;
-            string msg = CommandList.emergencyPrefix + CommandList.setGimbalAngle;
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.setGimbalAngle;
             msg += selectedPosition.Y + ";" + selectedPosition.X;
             Send(msg);
         }

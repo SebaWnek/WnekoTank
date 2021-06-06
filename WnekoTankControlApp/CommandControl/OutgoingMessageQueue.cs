@@ -12,7 +12,7 @@ namespace WnekoTankControlApp
     /// <summary>
     /// Class responsible for communication with vehicle 
     /// </summary>
-    class MessageQueue
+    class OutgoingMessageQueue
     {
         AutoResetEvent canTransmit = new AutoResetEvent(true);
         private ICommunication comPort;
@@ -26,7 +26,7 @@ namespace WnekoTankControlApp
         /// </summary>
         /// <param name="com">Communication device compatible with ICommunication interface</param>
         /// <param name="display">Delegate for printing messages in app window</param>
-        public MessageQueue(ICommunication com, Action<string> display)
+        public OutgoingMessageQueue(ICommunication com, Action<string> display)
         {
             comPort = com;
             comPort.SubscribeToMessages(DataReceived);

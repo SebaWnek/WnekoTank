@@ -3,7 +3,7 @@
     /// <summary>
     /// Communication protocol codes
     /// </summary>
-    public static class CommandList
+    public static class TankCommandList
     {
         public static string emergencyPrefix = "EMG";
         public static string setGear = "GEA";

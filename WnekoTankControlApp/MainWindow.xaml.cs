@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using CommonsLibrary;
 using MjpegProcessor;
+using WnekoTankControlApp.CommandControl;
 
 namespace WnekoTankControlApp
 {
@@ -27,17 +28,18 @@ namespace WnekoTankControlApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        CommandsList comList = new CommandsList();
+        //CommandsList comList = new CommandsList();
         ICommunication communication;
-        MessageQueue queue;
+        OutgoingMessageQueue outQueue;
+        IncommingMessageQueue inQueue;
         ObservableCollection<string> commandList = new ObservableCollection<string>();
         private Boolean AutoScroll = true;
         public MainWindow()
         {
             InitializeComponent();
             queueList.ItemsSource = commandList;
-            commandList.Add(CommandList.emergencyPrefix + CommandList.stopInvoking);
-            commandList.Add(CommandList.emergencyPrefix + CommandList.clearQueue);
+            commandList.Add(TankCommandList.emergencyPrefix + TankCommandList.stopInvoking);
+            commandList.Add(TankCommandList.emergencyPrefix + TankCommandList.clearQueue);
             connectButtons = new List<Button>();
             connectButtons.Add(ConnectButton);
             connectButtons.Add(mockConnectButton);
@@ -50,9 +52,9 @@ namespace WnekoTankControlApp
             mjpegLeft = new MjpegDecoder();
             mjpegLeft.FrameReady += MjpegLeft_FrameReady;
             mjpegLeft.Error += MjpegLeft_Error;
-            mjpegRight = new MjpegDecoder();
-            mjpegRight.FrameReady += MjpegRight_FrameReady;
-            mjpegRight.Error += MjpegRight_Error;
+            //mjpegRight = new MjpegDecoder();
+            //mjpegRight.FrameReady += MjpegRight_FrameReady;
+            //mjpegRight.Error += MjpegRight_Error;
         }
 
         /// <summary>

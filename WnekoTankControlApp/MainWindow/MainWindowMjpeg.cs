@@ -11,17 +11,17 @@ namespace WnekoTankControlApp
     public partial class MainWindow
     {
         MjpegDecoder mjpegLeft;
-        MjpegDecoder mjpegRight;
+        //MjpegDecoder mjpegRight;
 
-        private void MjpegRight_Error(object sender, MjpegProcessor.ErrorEventArgs e)
-        {
-            MessageBox.Show(e.Message);
-        }
+        //private void MjpegRight_Error(object sender, MjpegProcessor.ErrorEventArgs e)
+        //{
+        //    MessageBox.Show(e.Message);
+        //}
 
-        private void MjpegRight_FrameReady(object sender, FrameReadyEventArgs e)
-        {
-            rightCameraImage.Source = e.BitmapImage;
-        }
+        //private void MjpegRight_FrameReady(object sender, FrameReadyEventArgs e)
+        //{
+        //    rightCameraImage.Source = e.BitmapImage;
+        //}
 
         private void MjpegLeft_Error(object sender, MjpegProcessor.ErrorEventArgs e)
         {
@@ -33,10 +33,10 @@ namespace WnekoTankControlApp
             leftCameraImage.Source = e.BitmapImage;
         }
 
-        private void browserRightButton_Click(object sender, RoutedEventArgs e)
-        {
-            mjpegRight.ParseStream(new Uri(browserRightAddress.Text));
-        }
+        //private void browserRightButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    mjpegRight.ParseStream(new Uri(browserRightAddress.Text));
+        //}
 
         private void browserLeftButton_Click(object sender, RoutedEventArgs e)
         {
@@ -48,9 +48,9 @@ namespace WnekoTankControlApp
             mjpegLeft.StopStream();
         }
 
-        private void browserRightStopButton_Click(object sender, RoutedEventArgs e)
-        {
-            mjpegRight.StopStream();
-        }
+        //private void browserRightStopButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    mjpegRight.StopStream();
+        //}
     }
 }

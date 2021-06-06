@@ -45,7 +45,7 @@ namespace WnekoTankMeadow
         /// <param name="e">Message passed from communicaiton device</param>
         private void MessageReceived(object sender, MessageEventArgs e)
         {
-            if (e.Message.StartsWith(CommandList.emergencyPrefix)) EmergencyInvoke(e.Message.Substring(3));
+            if (e.Message.StartsWith(TankCommandList.emergencyPrefix)) EmergencyInvoke(e.Message.Substring(3));
             else Enqueue(dict.ReturnMethod(e.Message));
         }
 
