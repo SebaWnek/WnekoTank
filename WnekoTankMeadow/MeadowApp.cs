@@ -274,7 +274,9 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Initializing buzzer");
             buzzer = new Buzzer(expander2.CreateDigitalOutputPort(expander2.Pins.GP3, false, OutputType.OpenDrain));
+#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.Buzz();
+#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
 
 #if DEBUG
             Console.WriteLine("Initializing fans");
@@ -375,7 +377,9 @@ namespace WnekoTankMeadow
         }
         public void HandShake(string empty)
         {
+#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.Buzz();
+#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
         }
     }
 }

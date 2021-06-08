@@ -27,7 +27,9 @@ namespace WnekoTankMeadow.Others
             brightness = brightness > 100 ? 100 : brightness;
             port.DutyCycle = brightness / 100.01f;
             if (brightness > 0) fan.StartFan();
+#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             else fan.StopWithDelay(waitTime);
+#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
         }
         public void SetBrightnes(string msg)
         {
