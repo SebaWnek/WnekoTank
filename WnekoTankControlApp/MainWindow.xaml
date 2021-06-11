@@ -683,8 +683,9 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
+                                        <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <TabControl Grid.ColumnSpan="2">
+                                    <TabControl Grid.ColumnSpan="3">
                                         <TabItem Header="Sliders">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -766,8 +767,9 @@
                                             </Grid>
                                         </TabItem>
                                     </TabControl>
-                                    <Button x:Name="gimbalStabilizeStartBtn" Content="Start stabilizng camera" Click="gimbalStabilizeStartBtn_Click" Grid.Row="1"/>
-                                    <Button x:Name="gimbalStabilizeStopBtn" Content="Stop stabilizing camera" Click="gimbalStabilizeStopBtn_Click" Grid.Row="1" Grid.Column="1"/>
+                                    <Button x:Name="gimbalStabilizeStartBtn" Content="Stabilize vertical" Click="gimbalStabilizeStartBtn_Click" Grid.Row="1"/>
+                                    <Button x:Name="gimbalStabilizeWithHorizontalStartBtn" Content="Stabilize vert + horiz" Click="gimbalStabilizeWithHorizontalStartBtn_Click" Grid.Row="1" Grid.Column="1"/>
+                                    <Button x:Name="gimbalStabilizeStopBtn" Content="Stop stabilizing camera" Click="gimbalStabilizeStopBtn_Click" Grid.Row="1" Grid.Column="2"/>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Camera settings">

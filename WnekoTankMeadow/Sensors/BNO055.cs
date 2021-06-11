@@ -19,6 +19,7 @@ namespace WnekoTankMeadow.Drive
         Stopwatch stopwatch = new Stopwatch();
         EventHandler headingChanged;
         private int turnTimeDelta = 100;
+        private int headingCorrection = 180;
 
         public BNO055(II2cBus bus, byte address = 40)
         {
@@ -42,8 +43,14 @@ namespace WnekoTankMeadow.Drive
             byte newAxisPosition = 0b00_10_00_01;
             byte newAxisSigns = 0b00000_1_0_0;
             sensor.OperatingMode = Bno055.OperatingModes.ConfigurationMode;
+            Thread.Sleep(100);
+#if DEBUG
+            Console.WriteLine($"Writing: {Convert.ToString(newAxisPosition, 2)} to {axisPositionAddress:X}");
+            Console.WriteLine($"Writing: {Convert.ToString(newAxisSigns,2)} to {axisSignAddress:X}");
+#endif 
             bno.WriteRegister(axisPositionAddress, newAxisPosition);
             bno.WriteRegister(axisSignAddress, newAxisSigns);
+            Thread.Sleep(100);
             sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
         }
 
@@ -122,9 +129,9 @@ namespace WnekoTankMeadow.Drive
             byte[] data = bno.ReadRegisters(0x1a, 6);
             float[] result = new float[]
             {
-                (short)((data[1] << 8) | data[0])/representationInLSB,
-                (short)((data[3] << 8) | data[2])/representationInLSB,
-                (short)((data[5] << 8) | data[4])/representationInLSB,
+                (short)((data[1] << 8) | data[0])/representationInLSB,  //heading
+                (short)((data[3] << 8) | data[2])/representationInLSB,  //roll
+                (short)((data[5] << 8) | data[4])/representationInLSB   //pitch
             };
             return result;
         }

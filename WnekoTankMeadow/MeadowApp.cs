@@ -310,6 +310,7 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Clear();
             displaySmall.Write("Ready!");
+            buzzer.BuzzPulse(100, 100, 3);
         }
 
         /// <summary>

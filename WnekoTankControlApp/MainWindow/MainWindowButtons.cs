@@ -323,13 +323,20 @@ namespace WnekoTankControlApp
 
         private void gimbalStabilizeStartBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "1";
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "1;0";
+            Send(msg);
+        }
+
+        private void gimbalStabilizeWithHorizontalStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "1;1";
             Send(msg);
         }
 
         private void gimbalStabilizeStopBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "0";
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "0;0";
             Send(msg);
         }
 
