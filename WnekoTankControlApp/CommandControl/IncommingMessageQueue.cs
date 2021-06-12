@@ -19,13 +19,22 @@ namespace WnekoTankControlApp.CommandControl
         {
             source = new CancellationTokenSource();
             commands = new Dictionary<string, Action<string>>();
+            queue = new BlockingCollection<(Action<string>, string)>();
+            StartInvoking();
         }
-        public void IncommingMessageHandler(MessageEventArgs message)
+        public void IncommingMessageHandler(object sender, MessageEventArgs message)
         {
-            string msg = message.Message;
-            string command = msg.Substring(0, 3);
-            string args = msg.Substring(3);
-            queue.Add((commands[command], args));
+            string msg = message.Message; 
+            if (msg.Length > 3)
+            {
+
+                string command = msg.Substring(0, 3);
+                string args = msg.Substring(3);
+                if (commands.ContainsKey(command))
+                {
+                    queue.Add((commands[command], args));
+                } 
+            }
         }
 
         public void StartInvoking()
@@ -43,6 +52,7 @@ namespace WnekoTankControlApp.CommandControl
                     command.Invoke(args);
                 }
             });
+            worker.Start();
         }
 
         public void RegisterMethod(string command, Action<string> method)
@@ -61,7 +71,7 @@ namespace WnekoTankControlApp.CommandControl
         public void ClearQueue()
         {
             bool wasWorking = isWorking;
-            if(wasWorking) StopInvoking();
+            if (wasWorking) StopInvoking();
             queue = new BlockingCollection<(Action<string>, string)>();
             if (wasWorking) StartInvoking();
         }

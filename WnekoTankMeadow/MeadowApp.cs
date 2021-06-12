@@ -49,90 +49,27 @@ namespace WnekoTankMeadow
         Camera camera;
         public MeadowApp()
         {
-            //try
-            //{
-            Initialize();
-            onboardLed.SetColor(Color.Green);
-            //TestThings();
-            //}
-            //catch (Exception e)
-            //{
-            //    ReportToControl(e.Message);
-            //    ReportToControl(e.Message);
-            //    queue.StopInvoking();
-            //    queue.ClearQueue();
-            //    motor.Break();
-            //}
-            //Console.WriteLine(positionSensor.Read().ToString());
+            try
+            {
+                Initialize();
+                onboardLed.SetColor(Color.Green);
+                //TestThings();
+            }
+            catch (Exception e)
+            {
+                com.SendMessage(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+                displayBig.Write(e.Message);
+                displaySmall.Write(e.Message);
+                queue.StopInvoking();
+                queue.ClearQueue();
+                motor.Break();
+            }
         }
 
         private void TestThings()
         {
-            //LEDsFans.StartFan();
-            //Thread.Sleep(5000);
-            //LEDsFans.StopFan();
-            //motorsFans.StartFan();
-            //Thread.Sleep(5000);
-            //motorsFans.StopFan();
-            //inasFan.StartFan();
-            //Thread.Sleep(5000);
-            //inasFan.StopFan();
-
-            //LEDsFans.StartFan();
-
-            //for (int i = 0; i <= 100; i++)
-            //{
-            //    wideLed.SetBrightnes(i);
-            //    Console.WriteLine(i);
-            //    Thread.Sleep(50);
-            //}
-            //Thread.Sleep(1000);
-            //wideLed.SetBrightnes(0);
-            //for (int i = 0; i <= 100; i++)
-            //{
-            //    narrowLed.SetBrightnes(i);
-            //    Console.WriteLine(i);
-            //    Thread.Sleep(50);
-            //}
-            //Thread.Sleep(1000);
-            //narrowLed.SetBrightnes(0);
-
-            //buzzer.BuzzPulse(500, 1000, 3);
-
-            //LEDsFans.StopFan();
-
-            //LEDsFans.StartFan();
-            //motorsFans.StartFan();
-            //inasFan.StartFan();
-            ////string test = "123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 ";
-            ////displayBig.Write(test);
-            ////displaySmall.Write(test);
-            ////Console.WriteLine("testing ina219");
-            ////INA219.INA219Configuration configuration = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
-            ////                                                                          INA219.PGASettings.Gain320mV,
-            ////                                                                          INA219.ADCsettings.Samples128,
-            ////                                                                          INA219.ADCsettings.Samples128,
-            ////                                                                          INA219.ModeSettings.ShuntBusContinuous);
-            ////Console.WriteLine("Trying to creaate INA");
-            ////INA219 ina = new INA219(bus, 0x41);
-            ////Console.WriteLine("Ina created!");
-            ////Thread.Sleep(100);
-            ////ina.ResetToFactory();
-            ////ina.Calibrate(3.2f, 0.1f);
-            ////Thread.Sleep(100);
-            //////ina.EnumerateRegisters();
-            ////Thread.Sleep(1000);
-            //////ina.Configure(configuration);
-            ////Thread.Sleep(1000);
-            ////ina.EnumerateRegisters();
-            ////while (true)
-            ////{
-            ////    Console.WriteLine($"Shunt voltage: {ina.ReadShuntVltage()}V");
-            ////    Console.WriteLine($"Bus voltage: {ina.ReadBusVoltage()}V");
-            ////    Console.WriteLine($"Current: {ina.ReadCurrent()}A");
-            ////    Console.WriteLine($"Power: {ina.ReadPower()}W");
-            ////    Thread.Sleep(2000);
-            ////}
+            Thread.Sleep(10000);
+            throw new Exception("Test exception");
         }
 
         /// <summary>
@@ -179,24 +116,6 @@ namespace WnekoTankMeadow
             queue = new MethodsQueue(com, dict);
 
 #if DEBUG
-            Console.WriteLine("Initializing power sensors");
-#endif
-            displaySmall.Write("Initializing power sensors");
-            INA219.INA219Configuration config = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
-                                                                               INA219.PGASettings.Gain320mV,
-                                                                               INA219.ADCsettings.Samples128,
-                                                                               INA219.ADCsettings.Samples128,
-                                                                               INA219.ModeSettings.ShuntBusContinuous);
-            ina219s = new INA219Array(new INA219[]
-            {
-                new INA219(3.2f, 0.1f, 1, bus, 0x41, config, "C"),
-                new INA219(10f, 0.01f, 1, bus, 0x44, config, "L"),
-                new INA219(10f, 0.01f, 1, bus, 0x45, config, "R")
-            }, buzzer, displayBig, EmergencyDisable);
-            ina219s.RegisterSender(com.SendMessage);
-            ina219s.StartMonitoringVoltage();
-
-#if DEBUG
             Console.WriteLine("Initializing pca @1600Hz");
 #endif
             displaySmall.Write("Initializing PWM @1600Hz");
@@ -220,6 +139,43 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Initializing expander 2");
             expander2 = new Mcp23x08(bus, 0x21, Device.CreateDigitalInputPort(Device.Pins.D06, InterruptMode.EdgeBoth));
+
+#if DEBUG
+            Console.WriteLine("Initializing fans");
+#endif
+            displaySmall.Write("Initializing fans");
+            LEDsFans = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP4), "LEDs' fans");
+            motorsFans = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP5), "Motors' fans");
+            inasFan = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP6), "INAs fan");
+
+#if DEBUG
+            Console.WriteLine("Initializing buzzer");
+#endif
+            displaySmall.Write("Initializing buzzer");
+            buzzer = new Buzzer(expander2.CreateDigitalOutputPort(expander2.Pins.GP3, false, OutputType.OpenDrain));
+#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
+            buzzer.Buzz();
+#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
+
+#if DEBUG
+            Console.WriteLine("Initializing power sensors");
+#endif
+            displaySmall.Write("Initializing power sensors");
+            INA219.INA219Configuration config = new INA219.INA219Configuration(INA219.BusVoltageRangeSettings.range32v,
+                                                                               INA219.PGASettings.Gain320mV,
+                                                                               INA219.ADCsettings.Samples128,
+                                                                               INA219.ADCsettings.Samples128,
+                                                                               INA219.ModeSettings.ShuntBusContinuous);
+            ina219s = new INA219Array(new INA219[]
+            {
+                new INA219(3.2f, 0.1f, 1, bus, 0x41, config, "C"),
+                new INA219(10f, 0.01f, 1, bus, 0x44, config, "L"),
+                new INA219(10f, 0.01f, 1, bus, 0x45, config, "R")
+            }, buzzer, displayBig, EmergencyDisable);
+            ina219s.RegisterSender(com.SendMessage);
+            ina219s.RegisterFan(inasFan.SetState);
+            ina219s.RegisterFan(motorsFans.SetState);
+            ina219s.StartMonitoringVoltage();
 
             //com = new ComCommunication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4, suffixDelimiter: new byte[] { 10 }, preserveDelimiter: true, 921600, 8, Parity.None, StopBits.One));
 
@@ -268,23 +224,6 @@ namespace WnekoTankMeadow
             });
             proxSensors.Register(com.SendMessage);
             //proxSensors.Register(displaySmall.Write);
-
-#if DEBUG
-            Console.WriteLine("Initializing buzzer");
-#endif
-            displaySmall.Write("Initializing buzzer");
-            buzzer = new Buzzer(expander2.CreateDigitalOutputPort(expander2.Pins.GP3, false, OutputType.OpenDrain));
-#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-            buzzer.Buzz();
-#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-
-#if DEBUG
-            Console.WriteLine("Initializing fans");
-#endif
-            displaySmall.Write("Initializing fans");
-            LEDsFans = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP4), "LEDs' fans");
-            motorsFans = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP5), "Motors' fans");
-            inasFan = new Fan(expander2.CreateDigitalOutputPort(expander2.Pins.GP6), "INAs fan");
 
 #if DEBUG
             Console.WriteLine("Initializing lamps");
@@ -338,15 +277,17 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.stabilize, new Action<string>(motor.StabilizeDirection));
             dict.RegisterMethod(TankCommandList.setProxSensors, new Action<string>(proxSensors.SetBehavior));
             dict.RegisterMethod(TankCommandList.setGimbalAngle, new Action<string>(gimbal.SetAngle));
+            dict.RegisterMethod(TankCommandList.changeGimbalAngleBy, new Action<string>(gimbal.ChangeAngleBy));
             dict.RegisterMethod(TankCommandList.stabilizeGimbal, new Action<string>(gimbal.StartStabilizing));
             dict.RegisterMethod(TankCommandList.diagnoze, new Action<string>(Diangoze));
             dict.RegisterMethod(TankCommandList.getElectricData, new Action<string>(ina219s.ReturnData));
+            dict.RegisterMethod(TankCommandList.sendingElectricData, new Action<string>(ina219s.ChangeSending));
             dict.RegisterMethod(TankCommandList.fanInasState, new Action<string>(inasFan.SetState));
             dict.RegisterMethod(TankCommandList.fanLedsState, new Action<string>(LEDsFans.SetState));
             dict.RegisterMethod(TankCommandList.fanMotorsState, new Action<string>(motorsFans.SetState));
             dict.RegisterMethod(TankCommandList.ledNarrowPower, new Action<string>(narrowLed.SetBrightnes));
             dict.RegisterMethod(TankCommandList.ledWidePower, new Action<string>(wideLed.SetBrightnes));
-            
+
         }
 
         public void Diangoze(string empty)

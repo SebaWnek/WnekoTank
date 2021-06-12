@@ -1,12 +1,15 @@
-﻿using MjpegProcessor;
+﻿using CommonsLibrary;
+using MjpegProcessor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace WnekoTankControlApp
 {
@@ -32,6 +35,9 @@ namespace WnekoTankControlApp
         //    "Office",
         //    "Home"
         //};
+        int w,h;
+        double horAngle = 128, verAngle = 96;
+        double angularResolution;
 
         string baseAddress;
 
@@ -45,12 +51,17 @@ namespace WnekoTankControlApp
             leftCameraImage.Source = e.BitmapImage;
         }
 
-        private void browserLeftButton_Click(object sender, RoutedEventArgs e)
+        private async void browserLeftButton_Click(object sender, RoutedEventArgs e)
         {
             baseAddress = browserLeftAddress.Text;
             client = new HttpClient();
             string address = baseAddress + streamSuffix;
             mjpegLeft.ParseStream(new Uri(address));
+            await Task.Delay(500);
+            w = (int)leftCameraImage.ActualWidth;
+            h = (int)leftCameraImage.ActualHeight;
+            resolutionLabel.Content = $"{w}x{h}px";
+            angularResolution = w / horAngle;
         }
 
         private void browserLeftStopButton_Click(object sender, RoutedEventArgs e)
@@ -60,11 +71,31 @@ namespace WnekoTankControlApp
             mjpegLeft.StopStream();
         }
 
-        private void resolutionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private async void resolutionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
+            value = SelectResolution(value);
             string address = baseAddress + controlSuffix + var + framesize + val + value;
             client?.GetAsync(address);
+            await Task.Delay(500);
+            w = (int)leftCameraImage.ActualWidth;
+            h = (int)leftCameraImage.ActualHeight;
+            resolutionLabel.Content = $"{w}x{h}px";
+        }
+
+        private int SelectResolution(int value)
+        {
+            switch (value)
+            {
+                case 1: return 1;
+                case 2: return 5;
+                case 3: return 8;
+                case 4: return 9;
+                case 5: return 10;
+                case 6: return 13;
+                default: throw new ArgumentException("Unknown resolution!");
+            }
+
         }
 
         private void qualitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -100,6 +131,21 @@ namespace WnekoTankControlApp
             int value = wbListBox.SelectedIndex;
             string address = baseAddress + controlSuffix + var + wb_mode + val + value;
             client?.GetAsync(address);
+        }
+
+        private void leftCameraImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Point p = e.GetPosition(leftCameraImage);
+            w = (int)leftCameraImage.ActualWidth;
+            h = (int)leftCameraImage.ActualHeight;
+
+            int dX = (int)((p.X - w / 2) / angularResolution);
+            int dY = (int)(-1*(p.Y - h / 2) / angularResolution);
+            resolutionLabel.Content = $"{dX}, {dY}";
+
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.changeGimbalAngleBy;
+            msg += dY + ";" + dX;
+            Send(msg);
         }
     }
 }

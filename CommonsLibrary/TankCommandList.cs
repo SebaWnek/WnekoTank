@@ -26,9 +26,11 @@
         public static string stabilize = "STB";
         public static string setProxSensors = "PXS";
         public static string setGimbalAngle = "GSA";
+        public static string changeGimbalAngleBy = "GCB";
         public static string stabilizeGimbal = "GST";
         public static string diagnoze = "DGZ";
         public static string getElectricData = "ELD";
+        public static string sendingElectricData = "ELS";
         public static string fanLedsState = "FLS";
         public static string fanInasState = "ILS";
         public static string fanMotorsState = "MLS";

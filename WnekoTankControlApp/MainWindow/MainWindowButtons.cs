@@ -205,6 +205,8 @@ namespace WnekoTankControlApp
             outputBox.Text += "Connecting... \r\n";
             outQueue = new OutgoingMessageQueue(communication, DisplayMessage);
             inQueue = new IncommingMessageQueue();
+            communication.SubscribeToMessages(inQueue.IncommingMessageHandler);
+            RegisterMethods();
 
             await Task.Delay(1000);
             Send(TankCommandList.handshake);

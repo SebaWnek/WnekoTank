@@ -664,7 +664,12 @@
                         <TextBox x:Name="browserRightAddress" Text="http://192.168.1.139:81/stream" Height="30" Padding="4" Margin="10" Width="500"/>
                     </StackPanel>-->
                     <Border BorderBrush="Black" BorderThickness="2" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="1,40,1,10" Padding="5">
-                        <Image x:Name="leftCameraImage" />
+                        <Grid>
+                            <Image x:Name="leftCameraImage" MouseLeftButtonDown="leftCameraImage_MouseLeftButtonDown" />
+                            <Canvas>
+                                <Label x:Name="resolutionLabel" Content="0x0px" Canvas.Bottom="10" Canvas.Right="10" Background="White"/>
+                            </Canvas>
+                        </Grid>
                     </Border>
                     <!--<Image x:Name="rightCameraImage" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2"/>-->
                     <Grid Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="10">
@@ -786,7 +791,7 @@
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <Label Width="100" Margin="2">Resolution:</Label>
-                                            <Slider x:Name="resolutionSlider" Maximum="13" Minimum="0" TickFrequency="1" Value="13" 
+                                            <Slider x:Name="resolutionSlider" Maximum="6" Minimum="1" TickFrequency="1" Value="13" 
                                         ValueChanged="resolutionSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
                                             <TextBox Text="{Binding ElementName=resolutionSlider, Path=Value}" Margin="20,2" Padding="2" Width="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                                         </StackPanel>
@@ -1109,7 +1114,51 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Parameters">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <Separator Margin="20"/>
+                        <Label Content="Electric data:"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Central:" Width="100"/>
+                            <TextBox x:Name="centVBatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="V"/>
+                            <TextBox x:Name="centABatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="A"/>
+                            <TextBox x:Name="centWBatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="W"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Left:" Width="100"/>
+                            <TextBox x:Name="leftVBatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="V"/>
+                            <TextBox x:Name="leftABatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="A"/>
+                            <TextBox x:Name="leftWBatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="W"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Right:" Width="100"/>
+                            <TextBox x:Name="rightVBatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="V"/>
+                            <TextBox x:Name="rightABatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="A"/>
+                            <TextBox x:Name="rightWBatBox" Width="100" IsReadOnly="True"/>
+                            <Label Content="W"/>
+                        </StackPanel>
+                        <Separator Margin="20"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
 
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+
+                    </StackPanel>
+                </Grid>
             </TabItem>
         </TabControl>
         <Grid>

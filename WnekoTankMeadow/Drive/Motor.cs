@@ -13,7 +13,7 @@ namespace WnekoTankMeadow
     /// </summary>
     class Motor
     {
-        int softSleepTime = 50;
+        int softSleepTime = 100;
         int deltaV = 10;
 
         int baseSpeed = 0;
@@ -22,7 +22,7 @@ namespace WnekoTankMeadow
 
         private IPwmPort forwardPwm;
         private IPwmPort backPwm;
-        private IPwmPort _currentPwmPort;
+        private IPwmPort currentPwmPort;
         /// <summary>
         /// Using property asures that all the time there is only one PWM signal, 
         /// as all methods use this property and there could be only one port assigned,
@@ -31,12 +31,15 @@ namespace WnekoTankMeadow
         /// </summary>
         private IPwmPort CurrentPort
         {
-            get { return _currentPwmPort; }
+            get { return currentPwmPort; }
             set
             {
-                _currentPwmPort.DutyCycle = 0;
-                Thread.Sleep(50);
-                _currentPwmPort = value;
+                if (value != currentPwmPort)
+                {
+                    currentPwmPort.DutyCycle = 0;
+                    Thread.Sleep(50);
+                    currentPwmPort = value; 
+                }
             }
         }
 
@@ -49,7 +52,7 @@ namespace WnekoTankMeadow
         {
             forwardPwm = forward;
             backPwm = back;
-            _currentPwmPort = forward;
+            currentPwmPort = forward;
         }
 
         /// <summary>
@@ -77,7 +80,7 @@ namespace WnekoTankMeadow
             int deltaSpeed = speed - tmpSpeed;
             int sign = Math.Sign(deltaSpeed);
             int abs = Math.Abs(deltaSpeed);
-            for(int i = 0; i < abs; i += deltaV)
+            for (int i = 0; i < abs; i += deltaV)
             {
                 tmpSpeed += deltaV * sign;
                 if (i > abs) currentSpeed -= abs - currentSpeed;

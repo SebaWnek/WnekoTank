@@ -13,5 +13,10 @@ namespace CommonsLibrary
         public static string calibrationData = "CDT";
         public static string tempHumidData = "TDT";
         public static string diagnosticData = "DDT";
+        public static string exception = "EXC";
+        public static string exceptionTrace = "EXT";
+        public static string acknowledge = "ACK";
+        public static string lowBattery = "BAL";
+        public static string dischargedBattery = "BAD";
     }
 }

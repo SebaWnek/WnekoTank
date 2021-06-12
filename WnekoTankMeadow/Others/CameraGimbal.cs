@@ -25,6 +25,10 @@ namespace WnekoTankMeadow.Others
         int stabilizeDeltaTime = 25;
         bool isStabilizing = false;
         bool horizontalStabilization = false;
+        int minAngle = -100, maxAngle = 100;
+        int minServoAngle = 0, maxServoAngle = 200;
+        int angleDelta;
+        int fullCircle = 360, quarterCircle;
 #if DEBUG
         Stopwatch stopwatch;
 #endif
@@ -33,12 +37,14 @@ namespace WnekoTankMeadow.Others
         {
             horizontalPort = hor;
             verticalPort = ver;
-            horizontalCoinfig = new ServoConfig(0, 200, 370, 2700, 50);
-            verticalConfig = new ServoConfig(0, 200, 370, 2700, 50);
+            horizontalCoinfig = new ServoConfig(minServoAngle, maxServoAngle, 370, 2700, 50);
+            verticalConfig = new ServoConfig(minServoAngle, maxServoAngle, 370, 2700, 50);
             horizontal = new Servo(horizontalPort, horizontalCoinfig);
             vertical = new Servo(verticalPort, verticalConfig);
             sensor = s;
             source = new CancellationTokenSource();
+            angleDelta = maxServoAngle - maxAngle;
+            quarterCircle = fullCircle / 4;
             Test();
 #if DEBUG
             stopwatch = new Stopwatch();
@@ -50,28 +56,49 @@ namespace WnekoTankMeadow.Others
 #if DEBUG
             Console.WriteLine("Testing gimbal");
 #endif
-            SetAngle(-100, -100);
+            SetAngle(minAngle, minAngle);
             Thread.Sleep(2000);
-            SetAngle(100, 100);
+            SetAngle(maxAngle, maxAngle);
             Thread.Sleep(2000);
-            SetAngle(0, 0);
+            SetAngle((maxAngle + minAngle) / 2, (maxAngle + minAngle) / 2);
             Thread.Sleep(2000);
         }
 
-        public void SetAngle(int verticalAngle, int horizontalAngle)
+        public void SetAngle(int verAngle, int horAngle)
         {
-            vertical.RotateTo(verticalAngle + 100);
-            horizontal.RotateTo(100 - horizontalAngle);
-            this.verticalAngle = verticalAngle;
-            this.horizontalAngle = horizontalAngle;
+            verticalAngle = verAngle;
+            horizontalAngle = horAngle;
+            vertical.RotateTo(verticalAngle + angleDelta);
+            horizontal.RotateTo(angleDelta - horizontalAngle);
         }
 
         public void SetAngle(string args)
         {
             string[] arguments = args.Split(';');
-            int vertival = int.Parse(arguments[0]);
+            int vertical = int.Parse(arguments[0]);
             int horizontal = int.Parse(arguments[1]);
-            SetAngle(vertival, horizontal);
+            SetAngle(vertical, horizontal);
+        }
+
+        internal void ChangeAngleBy(string args)
+        {
+            string[] arguments = args.Split(';');
+            int vertical = int.Parse(arguments[0]);
+            int horizontal = int.Parse(arguments[1]);
+            ChangeAngleBy(vertical, horizontal);
+        }
+
+        private void ChangeAngleBy(int verticalChange, int horizontalChange)
+        {
+            verticalAngle += verticalChange;
+            horizontalAngle += horizontalChange;
+            verticalAngle = verticalAngle < minAngle ? minAngle : verticalAngle > maxAngle ? maxAngle : verticalAngle;
+            horizontalAngle = horizontalAngle < minAngle ? minAngle : horizontalAngle > maxAngle ? maxAngle : horizontalAngle;
+            vertical.RotateTo(verticalAngle + angleDelta);
+            horizontal.RotateTo(angleDelta - horizontalAngle);
+#if DEBUG
+            Console.WriteLine($"{horizontalAngle}, {verticalAngle}");
+#endif
         }
 
         public void StartStabilizing(string args)
@@ -96,14 +123,14 @@ namespace WnekoTankMeadow.Others
             float roll = reading[1];
             CancellationToken token = source.Token;
             float tmpAngle = Math.Abs(horizontalAngle);
-            float meanAngle = roll * (tmpAngle / 90) + pitch * (1 - tmpAngle / 90);
+            float meanAngle = roll * (tmpAngle / quarterCircle) + pitch * (1 - tmpAngle / quarterCircle);
             int sign;
             float cameraHeading = heading + horizontalAngle, previousHeading = heading;
             //cameraHeading = cameraHeading < 0 ? cameraHeading + 360 : cameraHeading > 360 ? cameraHeading - 360 : cameraHeading;
             int verticalTarget, horizontalTarget = 0, currentHorizontalAngle, previousAngle = horizontalAngle;
-            vertical.RotateTo(verticalAngle + (int)Math.Round(meanAngle) + 100);
+            vertical.RotateTo(verticalAngle + (int)Math.Round(meanAngle) + angleDelta);
 #if DEBUG
-            Console.WriteLine($"Angle: {pitch}, {roll}, stabilizing to: {verticalAngle + (int)Math.Round(meanAngle) + 100}");
+            Console.WriteLine($"Angle: {pitch}, {roll}, stabilizing to: {verticalAngle + (int)Math.Round(meanAngle) + angleDelta}");
 #endif
             Thread worker = new Thread(() =>
             {
@@ -120,8 +147,8 @@ namespace WnekoTankMeadow.Others
                     if (horizontalStabilization)
                     {
                         heading = reading[0];
-                        if (heading - previousHeading < -180) cameraHeading -= 360;
-                        if (heading - previousHeading > 180) cameraHeading += 360;
+                        if (heading - previousHeading < minAngle) cameraHeading -= fullCircle;
+                        if (heading - previousHeading > maxAngle) cameraHeading += fullCircle;
                         if (previousAngle != horizontalAngle)
                         {
                             cameraHeading = heading + horizontalAngle;
@@ -129,8 +156,8 @@ namespace WnekoTankMeadow.Others
                         }
 
                         currentHorizontalAngle = (int)(heading - cameraHeading);
-                        currentHorizontalAngle = currentHorizontalAngle < -100 ? -100 : currentHorizontalAngle > 100 ? 100 : currentHorizontalAngle;
-                        horizontalTarget = currentHorizontalAngle + 100;
+                        currentHorizontalAngle = currentHorizontalAngle < minAngle ? minAngle : currentHorizontalAngle > maxAngle ? maxAngle : currentHorizontalAngle;
+                        horizontalTarget = currentHorizontalAngle + angleDelta;
                         horizontal.RotateTo(horizontalTarget);
 
                         previousAngle = horizontalAngle;
@@ -140,9 +167,9 @@ namespace WnekoTankMeadow.Others
 
                     tmpAngle = Math.Abs(currentHorizontalAngle);
                     sign = Math.Sign(currentHorizontalAngle);
-                    meanAngle = sign * roll * (tmpAngle / 90) + pitch * (1 - (tmpAngle / 90));
-                    verticalTarget = verticalAngle + (int)Math.Round(meanAngle) + 100;
-                    verticalTarget = verticalTarget < 0 ? 0 : verticalTarget > 200 ? 200 : verticalTarget;
+                    meanAngle = sign * roll * (tmpAngle / quarterCircle) + pitch * (1 - (tmpAngle / quarterCircle));
+                    verticalTarget = verticalAngle + (int)Math.Round(meanAngle) + angleDelta;
+                    verticalTarget = verticalTarget < minServoAngle ? minServoAngle : verticalTarget > maxServoAngle ? maxServoAngle : verticalTarget;
                     vertical.RotateTo(verticalTarget);
 #if DEBUG
                     stopwatch.Stop();

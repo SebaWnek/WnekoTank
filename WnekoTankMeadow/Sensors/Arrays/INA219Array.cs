@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonsLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,15 +14,20 @@ namespace WnekoTankMeadow.Sensors
         INA219[] inas;
         Buzzer buzzer;
         DisplayLCD display;
-        float warningVoltage = 14f;
-        float dischargeVoltage = 13.5f;
+        float warningVoltage = 13.5f;
+        float dischargeVoltage = 13.0f;
         float disconnectedTreshold = 2f;
         int delay;
+        int previousBatteriesConnected = 0;
+        int batteriesConnected = 0;
+        byte[] batteries = { 0, 0, 0 };
         bool isMeasuring;
         bool isDischarged = false;
         bool[] signaled = new bool[3];
+        bool shouldSend = true;
         Action emergencyDisable;
         Action<string> sendMessage;
+        Action<string> setFanState;
 #if DEBUG
         bool printToConsole = false;
 #endif
@@ -42,11 +48,14 @@ namespace WnekoTankMeadow.Sensors
         {
             if (isMeasuring) return;
             isMeasuring = true;
+            string msg = "";
             Thread worker = new Thread(() =>
             {
                 CancellationToken token = source.Token;
                 string[] tmp = new string[inas.Length + 1];
                 float[] voltages = new float[3];
+                float[] currents = new float[3];
+                float[] powers = new float[3];
                 while (true)
                 {
                     if (token.IsCancellationRequested) break;
@@ -57,17 +66,37 @@ namespace WnekoTankMeadow.Sensors
                         Console.WriteLine(tmp[0]); 
                     }
 #endif
+                    if (shouldSend) msg = ReturnCommandList.electricData;
                     for (int i = 0; i < inas.Length; i++)
                     {
                         voltages[i] = inas[i].ReadBusVoltage();
-                        tmp[i + 1] = $"{inas[i].Name}:{voltages[i].ToString("n1")}V,{inas[i].ReadCurrent().ToString("n2")}A,{inas[i].ReadPower().ToString("n2")}W";
+                        currents[i] = inas[i].ReadCurrent();
+                        powers[i] = inas[i].ReadPower();
+                        tmp[i + 1] = $"{inas[i].Name}:{voltages[i]:n1}V,{currents[i]:n2}A,{powers[i]:n2}W";
+                        if (shouldSend)
+                        {
+                            msg += $"{inas[i].Name};{voltages[i]:n2};{currents[i]:n2};{powers[i]:n2};";
+                        }
 #if DEBUG
                         if (printToConsole)
                         {
                             Console.WriteLine(tmp[i + 1]); 
                         }
 #endif
+                        if (voltages[i] > disconnectedTreshold) batteries[i] = 1;
+                        else batteries[i] = 0;
                     }
+                    if (shouldSend) sendMessage.Invoke(msg);
+                    batteriesConnected = batteries[0] + batteries[1] + batteries[2];
+                    if (batteriesConnected > 1 && previousBatteriesConnected <= 1) setFanState("1");
+                    else if (batteriesConnected <= 1 && previousBatteriesConnected > 1) setFanState("0");
+                    previousBatteriesConnected = batteriesConnected;
+#if DEBUG                    
+                    if (printToConsole)
+                    {
+                        Console.WriteLine($"Batteries: {batteries[0] + batteries[1] + batteries[2]}");
+                    }
+#endif
                     display.WriteMultipleLines(tmp);
                     CheckVoltages(voltages);
                     Thread.Sleep(delay);
@@ -83,11 +112,11 @@ namespace WnekoTankMeadow.Sensors
                 if (voltages[i] < warningVoltage && !signaled[i] && voltages[i] > disconnectedTreshold)
                 {
                     signaled[i] = true;
-                    SignalWarning();
+                    SignalWarning(i, voltages[i]);
                 }
                 if (voltages[i] < dischargeVoltage && !isDischarged && voltages[i] > disconnectedTreshold)
                 {
-                    SignalDischarge();
+                    SignalDischarge(i, voltages[i]);
                     EmergencyDisable();
                     isDischarged = true;
                 }
@@ -107,17 +136,17 @@ namespace WnekoTankMeadow.Sensors
             source = new CancellationTokenSource();
         }
 
-        private void SignalWarning()
+        private void SignalWarning(int batNumber, float voltage)
         {
             buzzer.BuzzPulse(200, 800, 5);
-            string msg = "Low Battery!\n\nLow Battery!\n\nLow Battery!";
+            string msg = ReturnCommandList.lowBattery + $"Battery {inas[batNumber].Name} is low\nVoltage: {voltage}!\n\nCharge soon!";
             sendMessage(msg);
         }
 
-        private void SignalDischarge()
+        private void SignalDischarge(int batNumber, float voltage)
         {
             buzzer.BuzzPulse(500, 500, int.MaxValue);
-            string msg = "Battery discharged!\nCharge ASAP!\n\nBattery discharged!\nCharge ASAP!\n\nBattery discharged!\nCharge ASAP!\n\nBattery discharged!\nCharge ASAP!";
+            string msg = ReturnCommandList.dischargedBattery + $"Battery {inas[batNumber].Name} is discharged!\nVoltage: {voltage}!\n\nCharge ASAP!";
             sendMessage(msg);
         }
 
@@ -127,20 +156,31 @@ namespace WnekoTankMeadow.Sensors
             float[] voltages = new float[count];
             float[] currents = new float[count];
             float[] powers = new float[count];
-            string msg = "Electric data:\n";
+            string msg = ReturnCommandList.electricData;
             for (int i = 0; i < count; i++)
             {
                 voltages[i] = inas[i].ReadBusVoltage();
                 currents[i] = inas[i].ReadCurrent();
                 powers[i] = inas[i].ReadPower();
-                msg += inas[i].Name + ":" + voltages[i] + "V;" + currents[i] + "A;" + powers[i] + "W\n";
+                msg += inas[i].Name + ";" + voltages[i].ToString("n2") + ";" + currents[i].ToString("n2") + ";" + powers[i].ToString("n2") + ";";
             }
             sendMessage(msg);
+        }
+
+        public void ChangeSending(string args)
+        {
+            if (args.StartsWith("1")) shouldSend = true;
+            else shouldSend = false;
         }
 
         internal void RegisterSender(Action<string> sender)
         {
             sendMessage += sender;
+        }
+
+        internal void RegisterFan(Action<string> fanSetter)
+        {
+            setFanState += fanSetter;
         }
     }
 }
