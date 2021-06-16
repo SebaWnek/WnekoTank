@@ -18,5 +18,6 @@ namespace CommonsLibrary
         public static string acknowledge = "ACK";
         public static string lowBattery = "BAL";
         public static string dischargedBattery = "BAD";
+        public static string handShake = "HSK";
     }
 }

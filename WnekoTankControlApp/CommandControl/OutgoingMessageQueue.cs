@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonsLibrary;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace WnekoTankControlApp
         BlockingCollection<string> queue = new BlockingCollection<string>();
         Thread sender;
         CancellationTokenSource source;
+        private int waitInterval = 1000;
 
         /// <summary>
         /// Main constructor
@@ -82,7 +84,6 @@ namespace WnekoTankControlApp
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -96,10 +97,15 @@ namespace WnekoTankControlApp
         private void SendMessagesFromQueue()
         {
             CancellationToken token = source.Token;
+            bool acknowledged = false;
             while (true)
             {
                 if (token.IsCancellationRequested) return;
-                canTransmit.WaitOne();
+                while (!(acknowledged = canTransmit.WaitOne(waitInterval)))
+                {
+                    comPort.SendMessage(TankCommandList.handshake);
+                    DisplayMessage.Invoke("Timed out, sending handshake!");
+                }
                 string msg = queue.Take();
                 DisplayMessage.Invoke("Sending: " + msg);
                 comPort.SendMessage(msg);

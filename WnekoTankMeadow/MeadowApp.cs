@@ -15,6 +15,7 @@ using CommonsLibrary;
 using WnekoTankMeadow.CommandControl.ComDevices;
 using WnekoTankMeadow.Others;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace WnekoTankMeadow
 {
@@ -47,6 +48,7 @@ namespace WnekoTankMeadow
         LedLamp wideLed;
         LedLamp narrowLed;
         Camera camera;
+        Watchdog watchdog;
         public MeadowApp()
         {
             try
@@ -111,6 +113,12 @@ namespace WnekoTankMeadow
                                                                        suffixDelimiter: new byte[] { 10 },
                                                                        preserveDelimiter: true, 115200, 8, Parity.None,
                                                                        StopBits.One));
+
+            watchdog = new Watchdog();
+            com.RegisterWatchdog(watchdog.MessageReceived);
+            watchdog.RegisterSender(com.SendMessage);
+            watchdog.RegisterBlockAction(EmergencyDisable);
+            watchdog.StartCheckingMessages();
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
@@ -191,6 +199,7 @@ namespace WnekoTankMeadow
             displaySmall.Write("Initializing position sensor");
             positionSensor = new BNO055(bus, 0x28);
             positionSensor.RegisterSender(com.SendMessage);
+            positionSensor.RegisterScreen(displaySmall.Write);
 
 #if DEBUG
             Console.WriteLine("Initializing motor controller");
@@ -249,6 +258,7 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Clear();
             displaySmall.Write("Ready!");
+            com.SendMessage("Ready!");
             buzzer.BuzzPulse(100, 100, 3);
         }
 

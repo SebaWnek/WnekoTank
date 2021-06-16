@@ -33,6 +33,11 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
             SendMessage(msg);
         }
 
+        public void RegisterWatchdog(Action<string> action)
+        {
+            throw new NotImplementedException();
+        }
+
         public WifiCommunication()
         {
             Device.InitWiFiAdapter().Wait();

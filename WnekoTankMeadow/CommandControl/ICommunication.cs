@@ -14,6 +14,7 @@ namespace WnekoTankMeadow
         void SendMessage(object sender, string msg);
         void SendMessage(string msg);
         void SubscribeToMessages(EventHandler<MessageEventArgs> handler);
+        void RegisterWatchdog(Action<string> action);
         object locker { get; }
     }
 }

@@ -14,6 +14,7 @@ namespace WnekoTankMeadow.Drive
     {
         Bno055 sensor;
         Action<string> sendMessage;
+        Action<string> displayMessage;
         I2cPeripheral bno;
         float representationInLSB = 16;
         Stopwatch stopwatch = new Stopwatch();
@@ -78,6 +79,7 @@ namespace WnekoTankMeadow.Drive
             {
                 cal = CheckCalibration();
                 sendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+                displayMessage($"S:{cal[0]} G:{cal[1]} A: {cal[2]} M:{cal[3]}");
 #if DEBUG
                 Console.WriteLine($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #endif
@@ -85,6 +87,13 @@ namespace WnekoTankMeadow.Drive
                 {
                     Thread.Sleep(100);
                     sendMessage($"Done! S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+                    displayMessage($"OK! S:{cal[0]}G:{cal[1]}A:{cal[2]}M:{cal[3]}");
+                    Task task = new Task(async () =>
+                    {
+                        await Task.Delay(5000);
+                        displayMessage("Ready!");
+                    });
+                    task.Start();
 #if DEBUG
                     Console.WriteLine($"Done! S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #endif
@@ -181,6 +190,11 @@ namespace WnekoTankMeadow.Drive
                 previousHeading = currentHeading;
                 Thread.Sleep(turnTimeDelta);
             }
+        }
+
+        internal void RegisterScreen(Action<string> write)
+        {
+            displayMessage += write;
         }
     }
 }

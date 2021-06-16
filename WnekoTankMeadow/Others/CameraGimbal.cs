@@ -22,7 +22,7 @@ namespace WnekoTankMeadow.Others
         CancellationTokenSource source;
         int verticalAngle = 0;
         int horizontalAngle = 0;
-        int stabilizeDeltaTime = 25;
+        int stabilizeDeltaTime = 20;
         bool isStabilizing = false;
         bool horizontalStabilization = false;
         int minAngle = -100, maxAngle = 100;

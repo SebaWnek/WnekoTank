@@ -33,7 +33,10 @@ namespace WnekoTankControlApp
         OutgoingMessageQueue outQueue;
         IncommingMessageQueue inQueue;
         ObservableCollection<string> commandList = new ObservableCollection<string>();
+        ElectricPlotModel electricPlotModel;
+        string[][] electricData;
         private Boolean AutoScroll = true;
+        DateTime startTime;
         public MainWindow()
         {
             InitializeComponent();
@@ -43,6 +46,12 @@ namespace WnekoTankControlApp
             connectButtons = new List<Button>();
             connectButtons.Add(ConnectButton);
             connectButtons.Add(mockConnectButton);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show((e.ExceptionObject as Exception).Message + "\n\n" + (e.ExceptionObject as Exception).StackTrace, "Unhandled Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -52,6 +61,9 @@ namespace WnekoTankControlApp
             mjpegLeft = new MjpegDecoder();
             mjpegLeft.FrameReady += MjpegLeft_FrameReady;
             mjpegLeft.Error += MjpegLeft_Error;
+            electricPlotModel = new ElectricPlotModel();
+            electricPlot.Model = electricPlotModel.DataModel;
+            startTime = DateTime.Now;
             //mjpegRight = new MjpegDecoder();
             //mjpegRight.FrameReady += MjpegRight_FrameReady;
             //mjpegRight.Error += MjpegRight_Error;

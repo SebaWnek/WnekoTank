@@ -54,8 +54,16 @@
     <Reference Include="MjpegProcessor, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MJPEG-Decoder.1.2\lib\net35\MjpegProcessor.dll</HintPath>
     </Reference>
+    <Reference Include="OxyPlot, Version=2.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Core.2.0.0\lib\net45\OxyPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="OxyPlot.Wpf, Version=2.0.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
+      <HintPath>..\packages\OxyPlot.Wpf.2.0.0\lib\net45\OxyPlot.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Printing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -86,6 +94,7 @@
     <Compile Include="CommandControl\ComDevices\MockCommunication.cs" />
     <Compile Include="CommandControl\ComDevices\WifiCommunication.cs" />
     <Compile Include="CommandControl\IncommingMessageQueue.cs" />
+    <Compile Include="CommandControl\OxyPlots.cs" />
     <Compile Include="MainWindow\MainWindowButtons.cs" />
     <Compile Include="MainWindow\MainWindowCameraCanvas.cs" />
     <Compile Include="MainWindow\MainWindowIncommingData.cs" />

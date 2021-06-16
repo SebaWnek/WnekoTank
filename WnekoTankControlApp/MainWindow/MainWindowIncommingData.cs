@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using CommonsLibrary;
+using WnekoTankControlApp.CommandControl;
 
 namespace WnekoTankControlApp
 {
@@ -22,6 +24,12 @@ namespace WnekoTankControlApp
             inQueue.RegisterMethod(ReturnCommandList.acknowledge, AckReceived);
             inQueue.RegisterMethod(ReturnCommandList.lowBattery, LowBatteryReceived);
             inQueue.RegisterMethod(ReturnCommandList.dischargedBattery, DischargedBatteryReceived);
+            inQueue.RegisterMethod(ReturnCommandList.handShake, HandshakeReceived);
+        }
+
+        private void HandshakeReceived(string obj)
+        {
+            SendEmergency(TankCommandList.handshake);
         }
 
         private void DischargedBatteryReceived(string obj)
@@ -54,38 +62,83 @@ namespace WnekoTankControlApp
 
         private void ElectricDataReceived(string obj)
         {
-            TextBox[] box = new TextBox[3];
+            try
+            {
+                electricData = DeconstructElectricData(obj);
+                UpdateElectricDataBoxes();
+                UpdateElectricPlot();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message + "\n\n" + e.StackTrace, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateElectricPlot()
+        {
+            DateTime currentTime = DateTime.Now;
+            double dT = (currentTime - startTime).TotalSeconds;
+            electricPlotModel.AddPoint("L", dT, new double[] { double.Parse(electricData[1][0], CultureInfo.InvariantCulture), double.Parse(electricData[1][1], CultureInfo.InvariantCulture) });
+            electricPlotModel.AddPoint("R", dT, new double[] { double.Parse(electricData[2][0], CultureInfo.InvariantCulture), double.Parse(electricData[2][1], CultureInfo.InvariantCulture) });
+            electricPlotModel.AddPoint("C", dT, new double[] { double.Parse(electricData[0][0], CultureInfo.InvariantCulture), double.Parse(electricData[0][1], CultureInfo.InvariantCulture) });
+            electricPlot.InvalidatePlot();
+        }
+
+        private void UpdateElectricDataBoxes()
+        {
+            Dispatcher.Invoke(() => centVBatBox.Text = electricData[0][0]);
+            Dispatcher.Invoke(() => centABatBox.Text = electricData[0][1]);
+            Dispatcher.Invoke(() => centWBatBox.Text = electricData[0][2]);
+            Dispatcher.Invoke(() => leftVBatBox.Text = electricData[1][0]);
+            Dispatcher.Invoke(() => leftABatBox.Text = electricData[1][1]);
+            Dispatcher.Invoke(() => leftWBatBox.Text = electricData[1][2]);
+            Dispatcher.Invoke(() => rightVBatBox.Text = electricData[2][0]);
+            Dispatcher.Invoke(() => rightABatBox.Text = electricData[2][1]);
+            Dispatcher.Invoke(() => rightWBatBox.Text = electricData[2][2]);
+        }
+
+        private string[][] DeconstructElectricData(string input)
+        {
+            string[] data = input.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             int counter = 0;
-            string[] data = obj.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+            string[] cElectric = new string[3];
+            string[] lElectric = new string[3];
+            string[] rElectric = new string[3];
+            string[] currentElectric = null;
             foreach (string str in data)
             {
                 switch (str)
                 {
                     case "C":
-                        box[0] = centVBatBox;
-                        box[1] = centABatBox;
-                        box[2] = centWBatBox;
+                        currentElectric = cElectric;
+                        //box[0] = centVBatBox;
+                        //box[1] = centABatBox;
+                        //box[2] = centWBatBox;
                         counter = 0;
                         break;
                     case "L":
-                        box[0] = leftVBatBox;
-                        box[1] = leftABatBox;
-                        box[2] = leftWBatBox;
+                        currentElectric = lElectric;
+                        //box[0] = leftVBatBox;
+                        //box[1] = leftABatBox;
+                        //box[2] = leftWBatBox;
                         counter = 0;
                         break;
                     case "R":
-                        box[0] = rightVBatBox;
-                        box[1] = rightABatBox;
-                        box[2] = rightWBatBox;
+                        currentElectric = rElectric;
+                        //box[0] = rightVBatBox;
+                        //box[1] = rightABatBox;
+                        //box[2] = rightWBatBox;
                         counter = 0;
                         break;
                     default:
-                        Dispatcher.Invoke(() => box[counter].Text = str);
+                        currentElectric[counter] = str;
+                        //Dispatcher.Invoke(() => box[counter].Text = str);
                         counter++;
                         break;
                 }
-                if (counter > 2) break;
+                //if (counter > 2) break;
             }
+            return new string[][] { cElectric, lElectric, rElectric };
         }
 
         private void PositionDataReceived(string obj)

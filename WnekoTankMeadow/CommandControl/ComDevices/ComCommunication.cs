@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonsLibrary;
 
 namespace WnekoTankMeadow
 {
@@ -15,6 +16,7 @@ namespace WnekoTankMeadow
     {
         ISerialMessagePort port;
         EventHandler<MessageEventArgs> messageEvent;
+        Action<string> signalWatchdog;
 
         public object locker => new object();
 
@@ -51,11 +53,14 @@ namespace WnekoTankMeadow
                 //{
                 //    Console.WriteLine(b);
                 //}
-                Console.WriteLine($"Trying to send ACK:{msg}");
+                Console.WriteLine($"Trying to send {ReturnCommandList.acknowledge}{msg}");
 #endif
-                port.Write(Encoding.ASCII.GetBytes($"ACK:{msg}"));
+                port.Write(Encoding.ASCII.GetBytes($"{ReturnCommandList.acknowledge}{msg}"));
+
+
+                signalWatchdog?.Invoke(msg);
             }
-            messageEvent.Invoke(this, new MessageEventArgs(msg)); 
+            messageEvent.Invoke(this, new MessageEventArgs(msg));
         }
 
         /// <summary>
@@ -66,7 +71,7 @@ namespace WnekoTankMeadow
         {
             lock (locker)
             {
-                port.Write(Encoding.ASCII.GetBytes(msg)); 
+                port.Write(Encoding.ASCII.GetBytes(msg));
             }
         }
 
@@ -78,13 +83,21 @@ namespace WnekoTankMeadow
         {
             lock (locker)
             {
-                messageEvent += handler; 
+                messageEvent += handler;
             }
         }
 
         public void SendMessage(object sender, string msg)
         {
-            SendMessage(msg);
+            lock (locker)
+            {
+                SendMessage(msg);
+            }
+        }
+
+        public void RegisterWatchdog(Action<string> action)
+        {
+            signalWatchdog += action;
         }
     }
 }
