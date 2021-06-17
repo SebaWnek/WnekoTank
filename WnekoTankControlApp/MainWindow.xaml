@@ -1151,6 +1151,11 @@
                             <Label Content="W"/>
                         </StackPanel>
                         <oxy:PlotView x:Name="electricPlot" Height="300"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Delay(ms):"/>
+                            <TextBox x:Name="delayBox" Text="5000"/>
+                            <Button x:Name="delayButton" Content="Send" Click="delayButton_Click"/>
+                        </StackPanel>
                         <Separator Margin="20"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">

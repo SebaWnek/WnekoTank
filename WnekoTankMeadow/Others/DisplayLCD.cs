@@ -11,10 +11,20 @@ namespace WnekoTankMeadow.Others
 {
     class DisplayLCD
     {
+        /// <summary>
+        /// Extends inbuilt I2cCharacterDisplay class
+        /// </summary>
         I2cCharacterDisplay display;
         byte rows;
         byte columns;
 
+        /// <summary>
+        /// Basic constructor 
+        /// </summary>
+        /// <param name="bus">I2C bus</param>
+        /// <param name="address">I2C device address</param>
+        /// <param name="r">Number of text rows</param>
+        /// <param name="c">Number of text columns</param>
         public DisplayLCD(II2cBus bus, byte address, byte r, byte c)
         {
             display = new I2cCharacterDisplay(bus, address, r, c);
@@ -22,11 +32,20 @@ namespace WnekoTankMeadow.Others
             columns = c;
         }
 
+        /// <summary>
+        /// Write message, to be used with EventHandler of string
+        /// </summary>
+        /// <param name="sender">Sender object</param>
+        /// <param name="msg">Message</param>
         public void Write(object sender, string msg)
         {
             Write(msg);
         }
 
+        /// <summary>
+        /// Writes selected text using all availible lines, automatically overflowing to next line
+        /// </summary>
+        /// <param name="msg">Message to be printed</param>
         public void Write(string msg)
         {
             for(byte i = 0; i < rows; i++)
@@ -37,6 +56,10 @@ namespace WnekoTankMeadow.Others
             }
         }
 
+        /// <summary>
+        /// Displays selected lines, each string in next line
+        /// </summary>
+        /// <param name="lines"></param>
         public void WriteMultipleLines(string[] lines)
         {
             byte count = rows < lines.Length ? rows : (byte)lines.Length;
@@ -46,31 +69,12 @@ namespace WnekoTankMeadow.Others
             }
         }
 
+        /// <summary>
+        /// Clears display 
+        /// </summary>
         internal void Clear()
         {
             display.ClearLines();
         }
-
-        //public void Write(string msg)
-        //{
-        //    display.ClearLines();
-        //    if (msg.Length <= 16) display.Write(msg);
-        //    else if (msg.Length > 16 && msg.Length <= 32)
-        //    {
-        //        display.WriteLine(msg.Substring(0, 16), 0);
-        //        display.WriteLine(msg.Substring(16, msg.Length - 16), 1);
-        //    }
-        //    else 
-        //    {
-        //        display.WriteLine(msg.Substring(0, 16), 0);
-        //        display.WriteLine(msg.Substring(16, 16), 1);
-        //    }
-        //}
-
-        //public void WriteTwoLines(string first, string second)
-        //{
-        //    display.WriteLine(first, 0);
-        //    display.WriteLine(second, 1);
-        //}
     }
 }

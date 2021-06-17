@@ -9,6 +9,9 @@ using WnekoTankMeadow.Others;
 
 namespace WnekoTankMeadow.Sensors
 {
+    /// <summary>
+    /// Array of all voltage and current sensors INA219, so all batteries can be monitored together
+    /// </summary>
     class INA219Array
     {
         INA219[] inas;
@@ -34,6 +37,14 @@ namespace WnekoTankMeadow.Sensors
 
         CancellationTokenSource source;
 
+        /// <summary>
+        /// Main constructor
+        /// </summary>
+        /// <param name="iNA219s">Array of objects representing sensors</param>
+        /// <param name="buz">Buzzer to send sound signals</param>
+        /// <param name="dis">Display to show current data</param>
+        /// <param name="disable">Action to disable device if needed</param>
+        /// <param name="del">Time between each electric reads</param>
         public INA219Array(INA219[] iNA219s, Buzzer buz, DisplayLCD dis, Action disable, int del = 5000)
         {
             inas = iNA219s;
@@ -173,6 +184,17 @@ namespace WnekoTankMeadow.Sensors
         {
             if (args.StartsWith("1")) shouldSend = true;
             else shouldSend = false;
+        }
+
+        public void ChangeTimeDelta(string time)
+        {
+            int t = int.Parse(time);
+            ChangeTimeDelta(t);
+        }
+
+        private void ChangeTimeDelta(int t)
+        {
+            delay = t;
         }
 
         internal void RegisterSender(Action<string> sender)

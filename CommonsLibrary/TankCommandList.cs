@@ -31,6 +31,7 @@
         public static string diagnoze = "DGZ";
         public static string getElectricData = "ELD";
         public static string sendingElectricData = "ELS";
+        public static string setElectricDataDelay = "ESD";
         public static string fanLedsState = "FLS";
         public static string fanInasState = "ILS";
         public static string fanMotorsState = "MLS";

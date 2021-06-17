@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace WnekoTankMeadow.Others
 {
+    /// <summary>
+    /// To be implemented
+    /// </summary>
     class Camera
     {
         IDigitalOutputPort port;

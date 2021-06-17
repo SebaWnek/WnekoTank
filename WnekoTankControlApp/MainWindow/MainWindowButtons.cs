@@ -374,5 +374,14 @@ namespace WnekoTankControlApp
             msg += (bool)inasFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
+
+        private void delayButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.setElectricDataDelay;
+            int dt = int.Parse(delayBox.Text);
+            msg += dt;
+            Send(msg);
+
+        }
     }
 }

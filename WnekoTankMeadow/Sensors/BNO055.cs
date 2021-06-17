@@ -22,6 +22,11 @@ namespace WnekoTankMeadow.Drive
         private int turnTimeDelta = 100;
         private int headingCorrection = 180;
 
+        /// <summary>
+        /// Basic constructor
+        /// </summary>
+        /// <param name="bus">I2C bus</param>
+        /// <param name="address">I2C device address</param>
         public BNO055(II2cBus bus, byte address = 40)
         {
             sensor = new Bno055(bus, address);
@@ -29,6 +34,12 @@ namespace WnekoTankMeadow.Drive
             bno = new I2cPeripheral(bus, address);
         }
 
+        /// <summary>
+        /// Constructor with sender action added
+        /// </summary>
+        /// <param name="sender">Method to send data to control app</param>
+        /// <param name="bus">I2C bus</param>
+        /// <param name="address">I2C device address</param>
         public BNO055(Action<string> sender, II2cBus bus, byte address = 40) : this(bus, address)
         {
             sendMessage += sender;
@@ -54,25 +65,44 @@ namespace WnekoTankMeadow.Drive
             Thread.Sleep(100);
             sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
         }
-
+        
+        /// <summary>
+        /// Register method to send data to control app
+        /// </summary>
+        /// <param name="sender">Sender method</param>
         public void RegisterSender(Action<string> sender)
         {
             sendMessage += sender;
         }
 
+
+        /// <summary>
+        /// Action<string> to be invoked by queue
+        /// </summary>
+        /// <param name="empty">No arguments needed</param>
         public void Calibrate(string empty)
         {
             Calibrate();
         }
 
+        /// <summary>
+        /// Calibrate sensor.
+        /// 1) Resets BNO;
+        /// 2) Checks calibration every second (or other sleepTime)
+        /// 3) Prints current calibration to control app and small display
+        /// 4) If all 3 - gyroscope, accelerometer and magnetometer are calibrates finishes calibration
+        /// 5) Ignores system, as there is bug in firmware so can show it at less than 3 even tough all others are 3
+        /// BNO055 is calibrated constantly so there is no strict calibrate method - here it's just making sure it's reset first and then that all 3 sensors got calibrated correctly
+        /// </summary>
         public void Calibrate()
         {
             byte resetAddress = 0x3F;
             byte resetByte = 0b00100000;
+            int sleepTime = 1000;
             byte[] cal;
             sendMessage("Reseting BNO055");
             bno.WriteRegister(resetAddress, resetByte);
-            Thread.Sleep(1000);
+            Thread.Sleep(sleepTime);
             RemapAxis();
             sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
             for (int i = 0; i < 60; i++) //Timeout after one minute
@@ -107,6 +137,10 @@ namespace WnekoTankMeadow.Drive
 #endif
         }
 
+        /// <summary>
+        /// Checks current calibration and sends back to control app
+        /// </summary>
+        /// <param name="empty">No parameters needed</param>
         public void CheckCalibration(string empty)
         {
             byte[] cal = CheckCalibration();
@@ -116,6 +150,10 @@ namespace WnekoTankMeadow.Drive
 #endif
         }
         
+        /// <summary>
+        /// Reads calibration registers and calculates current calibration from them
+        /// </summary>
+        /// <returns>Calibration values</returns>
         public byte[] CheckCalibration()
         {
             byte callibration = bno.ReadRegister(53);
@@ -126,13 +164,21 @@ namespace WnekoTankMeadow.Drive
             return new byte[] { system, gyro, acc, mag };
         }
 
+        /// <summary>
+        /// Gets current position info and sends back to control app.
+        /// </summary>
+        /// <param name="empty">No params needed</param>
         public void Read(string empty)
         {
             float[] position = Read();
             string msg = $"Hading: {position[0]}deg,\r\nRoll: {position[1]}deg,\r\nPitch: {position[2]}deg";
             sendMessage(msg);
         }
-
+        
+        /// <summary>
+        /// Reads position registers and calculates euler angles from them
+        /// </summary>
+        /// <returns>Euler angles representing current position</returns>
         public float[] Read()
         {
             byte[] data = bno.ReadRegisters(0x1a, 6);
@@ -145,6 +191,10 @@ namespace WnekoTankMeadow.Drive
             return result;
         }
 
+        /// <summary>
+        /// Reads only heading from respective register
+        /// </summary>
+        /// <returns>Current heading</returns>
         internal float ReadHeading()
         {
             byte[] data = bno.ReadRegisters(0x1a, 2);
@@ -152,16 +202,29 @@ namespace WnekoTankMeadow.Drive
             return result;
         }
 
+        /// <summary>
+        /// Heading changed event
+        /// </summary>
         private void OnHeadingChanged()
         {
             headingChanged?.Invoke(this, null);
         }
 
+        /// <summary>
+        /// Registers for heading changed event
+        /// </summary>
+        /// <param name="handler"></param>
         public void RegisterForHeadingChanged(EventHandler handler)
         {
             headingChanged += handler;
         }
 
+        /// <summary>
+        /// Checks if heading changed to selected value
+        /// Depreciated - this will overshoot, as it's not using PID, should use PID version
+        /// </summary>
+        /// <param name="a">Desired angle</param>
+        /// <param name="token">Cancellation token to stop before heading reached</param>
         public void StartCheckingAngle(int a, CancellationToken token)
         {
             int angle = a;
@@ -192,6 +255,10 @@ namespace WnekoTankMeadow.Drive
             }
         }
 
+        /// <summary>
+        /// Registers method for displaying text on small screen
+        /// </summary>
+        /// <param name="write"></param>
         internal void RegisterScreen(Action<string> write)
         {
             displayMessage += write;

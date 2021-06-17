@@ -289,10 +289,11 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.setProxSensors, new Action<string>(proxSensors.SetBehavior));
             dict.RegisterMethod(TankCommandList.setGimbalAngle, new Action<string>(gimbal.SetAngle));
             dict.RegisterMethod(TankCommandList.changeGimbalAngleBy, new Action<string>(gimbal.ChangeAngleBy));
-            dict.RegisterMethod(TankCommandList.stabilizeGimbal, new Action<string>(gimbal.StartStabilizing));
+            dict.RegisterMethod(TankCommandList.stabilizeGimbal, new Action<string>(gimbal.SetStabilization));
             dict.RegisterMethod(TankCommandList.diagnoze, new Action<string>(Diangoze));
             dict.RegisterMethod(TankCommandList.getElectricData, new Action<string>(ina219s.ReturnData));
             dict.RegisterMethod(TankCommandList.sendingElectricData, new Action<string>(ina219s.ChangeSending));
+            dict.RegisterMethod(TankCommandList.setElectricDataDelay, new Action<string>(ina219s.ChangeTimeDelta));
             dict.RegisterMethod(TankCommandList.fanInasState, new Action<string>(inasFan.SetState));
             dict.RegisterMethod(TankCommandList.fanLedsState, new Action<string>(LEDsFans.SetState));
             dict.RegisterMethod(TankCommandList.fanMotorsState, new Action<string>(motorsFans.SetState));
@@ -330,9 +331,16 @@ namespace WnekoTankMeadow
             motor.Break();
             queue.LockQueue();
             onboardLed.SetColor(Color.Red);
+#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.BuzzPulse(100, 100, int.MaxValue);
+#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             displaySmall.Write("!!!EMERGENDY DISABLE  ENGAGED!!!");
         }
+
+        /// <summary>
+        /// Reaction to hand shake message from controll app
+        /// </summary>
+        /// <param name="empty">Incoming parameters, none needed so should me empty</param>
         public void HandShake(string empty)
         {
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania

@@ -119,5 +119,10 @@ namespace WnekoTankControlApp
                 ScrollView.ScrollToVerticalOffset(ScrollView.ExtentHeight);
             }
         }
+
+        private void delayButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -8,6 +8,9 @@ using System.Windows;
 
 namespace WnekoTankControlApp.CommandControl.ComDevices
 {
+    /// <summary>
+    /// For checking functionality without actual device connected
+    /// </summary>
     class MockCommunication : ICommunication
     {
         EventHandler<MessageEventArgs> messageEvent;

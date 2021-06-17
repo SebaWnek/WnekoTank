@@ -10,8 +10,14 @@ using Meadow.Peripherals;
 
 namespace WnekoTankMeadow.Sensors
 {
+    /// <summary>
+    /// Voltage, current and power electric sensor
+    /// </summary>
     class INA219
     {
+        /// <summary>
+        /// Register addresses
+        /// </summary>
         private enum RegisterAddresses
         {
             Configuration = 0x0,
@@ -22,6 +28,9 @@ namespace WnekoTankMeadow.Sensors
             Calibration = 0x5
         }
 
+        /// <summary>
+        /// Analog-digital converter settings 
+        /// </summary>
         public enum ADCsettings
         {
             Mode9 = 0b0000,
@@ -38,6 +47,9 @@ namespace WnekoTankMeadow.Sensors
             Samples128 = 0b1111
         }
 
+        /// <summary>
+        /// Operating mode settings 
+        /// </summary>
         public enum ModeSettings
         {
             powerDown = 0b000,
@@ -50,12 +62,18 @@ namespace WnekoTankMeadow.Sensors
             ShuntBusContinuous = 0b111
         }
 
+        /// <summary>
+        /// Bus voltage range setting
+        /// </summary>
         public enum BusVoltageRangeSettings
         {
             range16v = 0,
             range32v = 1
         }
 
+        /// <summary>
+        /// Gain settings
+        /// </summary>
         public enum PGASettings
         {
             Gain40mV = 0b00,
@@ -70,9 +88,6 @@ namespace WnekoTankMeadow.Sensors
         float scaleFactor = 0.04096f; //magic number from datasheet
         ushort LSBdivider = 32768;
 
-        float shuntVoltageCorrection = 0f;
-        float busVoltageCorrection = 0.9120001f;
-
         float shuntVoltageLSB = 10f / 1000000f;
         float busVoltageLSB = 4f / 1000f;
         float calibrationScalingFactor;
@@ -81,9 +96,17 @@ namespace WnekoTankMeadow.Sensors
         ushort calibration;
         float currentLSB;
         float powerLSB;
+        bool writeDataToConsole = false; //Should electric data be written to console?
 
         public string Name { get; set; }
 
+        /// <summary>
+        /// Basic constructor
+        /// </summary>
+        /// <param name="bus">I2C bus</param>
+        /// <param name="address">I2C device address</param>
+        /// <param name="config">Device configuration object</param>
+        /// <param name="name">Device name to distinct easily between physical devices</param>
         public INA219(II2cBus bus, byte address = 0x40, INA219Configuration config = null, string name = "")
         {
             ina219 = new I2cPeripheral(bus, address);
@@ -96,6 +119,16 @@ namespace WnekoTankMeadow.Sensors
             }
         }
 
+        /// <summary>
+        /// Constructor taking also calibration data
+        /// </summary>
+        /// <param name="maxCurrent">Maximum expected current</param>
+        /// <param name="shuntResistor">Shunt resistor resistance value</param>
+        /// <param name="calibraitonScaling">Scaling factor if needed</param>
+        /// <param name="bus">I2C bus</param>
+        /// <param name="address">I2C device address</param>
+        /// <param name="config">Device configuration object</param>
+        /// <param name="name">Device name to distinct easily between physical devices</param>
         public INA219(float maxCurrent, float shuntResistor, float calibraitonScaling, II2cBus bus, byte address = 0x40, INA219Configuration config = null, string name = "")
             : this(bus, address, config, name)
         {
@@ -105,6 +138,9 @@ namespace WnekoTankMeadow.Sensors
             Calibrate();
         }
 
+        /// <summary>
+        /// Converts current calibration data in the object into binary form and writes to device
+        /// </summary>
         private void Calibrate()
         {
             currentLSB = maximumExpectedCurrent / LSBdivider;
@@ -116,6 +152,12 @@ namespace WnekoTankMeadow.Sensors
             ina219.WriteUShort((byte)RegisterAddresses.Calibration, calibration, ByteOrder.BigEndian);
         }
 
+        /// <summary>
+        /// Writed calibration data into object and invokes writing it to device
+        /// </summary>
+        /// <param name="maxCurrent">Maximum expected current</param>
+        /// <param name="shuntResistor">Shunt resistor resistance value</param>
+        /// <param name="calibraitonScaling">Scaling factor if needed</param>
         public void Calibrate(float maxCurrent, float shuntResistor, float calibraitonScaling = 1)
         {
             maximumExpectedCurrent = maxCurrent;
@@ -124,67 +166,106 @@ namespace WnekoTankMeadow.Sensors
             Calibrate();
         }
 
+        /// <summary>
+        /// Writes binary calibration data to device
+        /// </summary>
+        /// <param name="calibration">Calibration binary data</param>
         public void Calibrate(ushort calibration)
         {
             ina219.WriteUShort((byte)RegisterAddresses.Calibration, calibration, ByteOrder.BigEndian);
         }
 
+        /// <summary>
+        /// Reads current shunt voltage
+        /// </summary>
+        /// <returns>Shunt voltage</returns>
         public float ReadShuntVltage()
         {
             short register = (short)ina219.ReadUShort((byte)RegisterAddresses.ShuntVoltage, ByteOrder.BigEndian);
-//#if DEBUG
-//            Console.WriteLine();
-//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-//            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.ShuntVoltage));
-//            Console.WriteLine(Convert.ToString(register, 10));
-//            Console.WriteLine();
-//#endif
+#if DEBUG
+            if (writeDataToConsole)
+            {
+                Console.WriteLine();
+                Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+                Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.ShuntVoltage));
+                Console.WriteLine(Convert.ToString(register, 10));
+                Console.WriteLine();
+            }
+#endif
             float voltage = register * shuntVoltageLSB;
             return voltage;
         }
 
+        /// <summary>
+        /// Reads current bus voltage
+        /// </summary>
+        /// <returns>Bus voltage</returns>
         public float ReadBusVoltage()
         {
             ushort register = ina219.ReadUShort((byte)RegisterAddresses.BusVoltage, ByteOrder.BigEndian);
-//#if DEBUG
-//            Console.WriteLine();
-//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-//            Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.BusVoltage));
-//#endif
+#if DEBUG
+            if (writeDataToConsole)
+            {
+                Console.WriteLine();
+                Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+                Console.WriteLine(ina219.ReadRegister((byte)RegisterAddresses.BusVoltage));
+            }
+#endif
             register = (ushort)(register >> 3);
-//#if DEBUG
-//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-//            Console.WriteLine(Convert.ToString(register, 10));
-//            Console.WriteLine();
-//#endif
+#if DEBUG
+            if (writeDataToConsole)
+            {
+                Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+                Console.WriteLine(Convert.ToString(register, 10));
+                Console.WriteLine(); 
+            }
+#endif
             float voltage = register * busVoltageLSB;
             return voltage;
         }
 
+        /// <summary>
+        /// Reads current
+        /// </summary>
+        /// <returns>Current current</returns>
         public float ReadCurrent()
         {
             short register = (short)ina219.ReadUShort((byte)RegisterAddresses.Current, ByteOrder.BigEndian);
-//#if DEBUG
-//            Console.WriteLine();
-//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-//            Console.WriteLine();
-//#endif
+#if DEBUG
+            if (writeDataToConsole)
+            {
+                Console.WriteLine();
+                Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+                Console.WriteLine(); 
+            }
+#endif
             float current = register * currentLSB;
             return current;
         }
 
+        /// <summary>
+        /// Reads power
+        /// </summary>
+        /// <returns>Current power</returns>
         public float ReadPower()
         {
             ushort register = ina219.ReadUShort((byte)RegisterAddresses.Power, ByteOrder.BigEndian);
-//#if DEBUG
-//            Console.WriteLine();
-//            Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
-//            Console.WriteLine();
-//#endif
+#if DEBUG
+            if (writeDataToConsole)
+            {
+                Console.WriteLine();
+                Console.WriteLine(Convert.ToString(register, 2).PadLeft(16, '0'));
+                Console.WriteLine(); 
+            }
+#endif
             float power = register * powerLSB;
             return power;
         }
 
+#if DEBUG
+        /// <summary>
+        /// Enumerates all registers' contents and sends them to conttoll app and writes them to console. Only in Debug mode with PC connected to Meadow's USB
+        /// </summary>
         public void EnumerateRegisters()
         {
             Console.WriteLine("Enumerating:");
@@ -194,13 +275,22 @@ namespace WnekoTankMeadow.Sensors
                 Console.WriteLine(Convert.ToString(tmp, 2).PadLeft(16, '0') + " - " + Convert.ToString(tmp, 16) + " - " + tmp);
             }
         }
+#endif
 
+        /// <summary>
+        /// Saves new configuration data in object and invokes writing it to device
+        /// </summary>
+        /// <param name="configuration">Configuration settings to be written</param>
         public void Configure(INA219Configuration configuration)
         {
             this.configuration = configuration;
             Configure();
         }
 
+
+        /// <summary>
+        /// Creates configuration binary data from current settings and writes it to device
+        /// </summary>
         public void Configure()
         {
             int config = 0;
@@ -215,16 +305,27 @@ namespace WnekoTankMeadow.Sensors
             ina219.WriteUShort((byte)RegisterAddresses.Configuration, (ushort)config, ByteOrder.BigEndian);
         }
 
+        /// <summary>
+        /// Writes configuration data to respective device register
+        /// </summary>
+        /// <param name="config">Configuration data</param>
         public void Configure(ushort config)
         {
             ina219.WriteUShort((byte)RegisterAddresses.Configuration, (ushort)config, ByteOrder.BigEndian);
         }
 
+        /// <summary>
+        /// Writes reset byte that causes device to reset to factory default settings
+        /// </summary>
         public void ResetToFactory()
         {
             //Configure(new INA219Configuration());
             ina219.WriteUShort((byte)RegisterAddresses.Configuration, 0b1000000000000000, ByteOrder.BigEndian);
         }
+
+        /// <summary>
+        /// Class containing sensor configuration for easier preparing configuration data to be written to device
+        /// </summary>
         internal class INA219Configuration
         {
             BusVoltageRangeSettings busVoltageRange;
@@ -255,35 +356,5 @@ namespace WnekoTankMeadow.Sensors
             internal ADCsettings ShuntADC { get => shuntADC; set => shuntADC = value; }
             internal ModeSettings Mode { get => mode; set => mode = value; }
         }
-
-        //public short CalculateTwosComplementShunt(ushort data)
-        //{
-        //    if((data & 0b1000000000000000) == 0)
-        //    {
-        //        return (short)data;
-        //    }
-
-        //    ushort mask = 0;
-        //    int result;
-        //    switch (configuration.Pga)
-        //    {
-        //        case PGASettings.Gain40mV:
-        //            mask = 0b0000111111111111;
-        //            break;
-        //        case PGASettings.Gain80mV:
-        //            mask = 0b0001111111111111;
-        //            break;
-        //        case PGASettings.Gain160mV:
-        //            mask = 0b0011111111111111;
-        //            break;
-        //        case PGASettings.Gain320mV:
-        //            mask = 0b0111111111111111;
-        //            break;
-        //    }
-        //    result = data & mask;
-        //    result = (~data + 1) & mask;
-        //    return (short)result;
-        //}
     }
-
 }

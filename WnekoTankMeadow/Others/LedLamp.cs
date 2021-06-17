@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace WnekoTankMeadow.Others
 {
+    /// <summary>
+    /// Basic LED
+    /// Controlled by PWM signal delivered to NPN transistor, which in turn controls PNP high side transistor turning LEDs on and off.
+    /// </summary>
     class LedLamp
     {
         private IPwmPort port;
@@ -22,6 +26,10 @@ namespace WnekoTankMeadow.Others
             fan = f;
         }
 
+        /// <summary>
+        /// Sets brightness by changing PWM duty cycle
+        /// </summary>
+        /// <param name="brightness">Requested brightness percent</param>
         public void SetBrightnes(int brightness)
         {
             brightness = brightness > 100 ? 100 : brightness;
@@ -31,6 +39,11 @@ namespace WnekoTankMeadow.Others
             else fan.StopWithDelay(waitTime);
 #pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
         }
+
+        /// <summary>
+        /// Sets brightness, to be used by controll app
+        /// </summary>
+        /// <param name="msg"></param>
         public void SetBrightnes(string msg)
         {
             int power = int.Parse(msg);
