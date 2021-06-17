@@ -57,6 +57,7 @@ namespace WnekoTankMeadow
                 onboardLed.SetColor(Color.Green);
                 //TestThings();
             }
+            //Catching all exceptions, so we can send them to control application and display on screen
             catch (Exception e)
             {
                 com.SendMessage(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
@@ -320,12 +321,17 @@ namespace WnekoTankMeadow
             }
         }
 
+
+        /// <summary>
+        /// Lock device from performing any action, either in emergency situation, or when battery is discharged too much
+        /// </summary>
         private void EmergencyDisable()
         {
             motor.Break();
             queue.LockQueue();
             onboardLed.SetColor(Color.Red);
-            displaySmall.Write("BATTERY TOO LOW!!!CHARGE  ASAP!!");
+            buzzer.BuzzPulse(100, 100, int.MaxValue);
+            displaySmall.Write("!!!EMERGENDY DISABLE  ENGAGED!!!");
         }
         public void HandShake(string empty)
         {

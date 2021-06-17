@@ -138,16 +138,18 @@ namespace WnekoTankMeadow.Sensors
 
         private void SignalWarning(int batNumber, float voltage)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             buzzer.BuzzPulse(200, 800, 5);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             string msg = ReturnCommandList.lowBattery + $"Battery {inas[batNumber].Name} is low\nVoltage: {voltage}!\n\nCharge soon!";
             sendMessage(msg);
         }
 
-        private void SignalDischarge(int batNumber, float voltage)
+        private async void SignalDischarge(int batNumber, float voltage)
         {
-            buzzer.BuzzPulse(500, 500, int.MaxValue);
             string msg = ReturnCommandList.dischargedBattery + $"Battery {inas[batNumber].Name} is discharged!\nVoltage: {voltage}!\n\nCharge ASAP!";
             sendMessage(msg);
+            await buzzer.BuzzPulse(500, 500, 5);
         }
 
         public void ReturnData(string empty)

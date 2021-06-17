@@ -29,14 +29,14 @@ namespace WnekoTankMeadow.Others
             port.State = false;
         }
 
-        public async void Buzz(int delay)
+        public async Task Buzz(int delay)
         {
             port.State = true;
             await Task.Delay(delay);
             port.State = false;
         }
 
-        public async void BuzzPulse(int on, int off, int count)
+        public async Task BuzzPulse(int on, int off, int count)
         {
             for(int i = 0; i < count; i++)
             {
