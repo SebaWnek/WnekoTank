@@ -126,7 +126,7 @@ namespace WnekoTankMeadow.Others
             lock (locker)
             {
                 lastHorizontalChange = horizontalChange;
-                lastVerticalChange = verticalChange; 
+                lastVerticalChange = verticalChange;
             }
             verticalAngle += verticalChange;
             horizontalAngle += horizontalChange;
@@ -175,9 +175,9 @@ namespace WnekoTankMeadow.Others
             float cameraHeading = heading + horizontalAngle, previousHeading = heading; //Absolute camera yaw - device heading + yaw in relation to device
             int verticalTarget, horizontalTarget = 0, currentHorizontalAngle, previousAngle = horizontalAngle;
             //vertical.RotateTo(verticalAngle + (int)Math.Round(meanAngle) + angleDelta);
-//#if DEBUG
-//            Console.WriteLine($"Angle: {pitch}, {roll}, stabilizing to: {verticalAngle + (int)Math.Round(meanAngle) + angleDelta}");
-//#endif
+            //#if DEBUG
+            //            Console.WriteLine($"Angle: {pitch}, {roll}, stabilizing to: {verticalAngle + (int)Math.Round(meanAngle) + angleDelta}");
+            //#endif
             Thread worker = new Thread(() =>
             {
                 while (true)
@@ -201,7 +201,7 @@ namespace WnekoTankMeadow.Others
                             lock (locker) //So we don't have value updated at the same time, as read 
                             {
                                 cameraHeading += lastHorizontalChange; //Turn camera to new heading by last angle delta by control app
-                            } 
+                            }
                         }
 
                         currentHorizontalAngle = (int)(heading - cameraHeading); //Camera yaw in relation to device
@@ -240,6 +240,19 @@ namespace WnekoTankMeadow.Others
             source.Cancel();
             source.Dispose();
             source = new CancellationTokenSource();
+        }
+
+        /// <summary>
+        /// Current gimbal angles - horizontal, vertical
+        /// </summary>
+        /// <returns>Angle values</returns>
+        public int[] GetCurrentPosition()
+        {
+            return new int[]
+             {
+                horizontal.Angle - angleDelta,
+                vertical.Angle - angleDelta
+             };
         }
     }
 }

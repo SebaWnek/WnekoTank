@@ -213,7 +213,7 @@ namespace WnekoTankMeadow
                                         pwm50.CreatePwmPort(0),
                                         Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
                                         Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
-                                        positionSensor);
+                                        positionSensor, gimbal);
 
 #if DEBUG
             Console.WriteLine("Initializing gimbal");
@@ -260,7 +260,9 @@ namespace WnekoTankMeadow
             displaySmall.Clear();
             displaySmall.Write("Ready!");
             com.SendMessage("Ready!");
+#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.BuzzPulse(100, 100, 3);
+#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using WnekoTankMeadow.Drive;
 using Meadow.Foundation.Controllers.Pid;
+using WnekoTankMeadow.Others;
 
 namespace WnekoTankMeadow
 {
@@ -18,6 +19,7 @@ namespace WnekoTankMeadow
         HallEffectCounter rightCounter;
         HallEffectCounter leftCounter;
         BNO055 positionSensor;
+        CameraGimbal gimbal;
         int teethCount = 14;
         int magnetsCount = 1;
         float chainPitch = 12.7f; //08b chain, half inch pitch, in mm
@@ -32,11 +34,18 @@ namespace WnekoTankMeadow
         IdealPidController turnPid;
         IdealPidController stabilizePid;
         private int slowSpeed = 10;
-        private int turnTimeDeltaMax = 101;
+        private int turnTimeDeltaMax = 51;
         private int stabilizeTimeDelta = 200;
         private bool isStabilizing = false;
         private float stabilizeTargetDirection;
         private int stabilizeTurnRate = 20;
+        private int defaultTurnRate = 50;
+        private int defaultSpeed = 40;
+        private float cameraHeigth = 0.4f; //m, from ground level
+        private float cameraPosition = -0.3f; //m, from center 
+        private int fullCircle = 360;
+        private int quarterCircle;
+        private byte defaultGear = 1;
 
         /// <summary>
         /// Main constructor
@@ -53,9 +62,12 @@ namespace WnekoTankMeadow
                                IPwmPort gearPwm,
                                IDigitalInputPort leftCounterPort,
                                IDigitalInputPort righCounterPort,
-                               BNO055 posSens)
+                               BNO055 posSens,
+                               CameraGimbal gimb)
         {
+            quarterCircle = fullCircle / 4;
             positionSensor = posSens;
+            gimbal = gimb;
             circumference = teethCount * chainPitch / magnetsCount;
             leftMotor = new Motor(leftForwardPwm, leftBackPwm);
             rightMotor = new Motor(rightForwardPwm, rightBackPwm);
@@ -320,11 +332,17 @@ namespace WnekoTankMeadow
             TurnByPid(int.Parse(arguments[0]), int.Parse(arguments[1]), byte.Parse(arguments[2]));
         }
 
+        /// <summary>
+        /// Depreciated, replaced by TurnByPid
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="tr"></param>
+        /// <param name="gear"></param>
         public void TurnBy(int d, int tr, byte gear)
         {
             if (gear > 0) SetGear(gear);
             int degrees = d;
-            int turnRate = tr;
+            int turnRate = tr == 0 ? defaultTurnRate : tr;
             int direction = Math.Sign(degrees);
             SetTurn(direction * turnRate);
             positionSensor.StartCheckingAngle(degrees, turnTokenSource.Token);
@@ -386,13 +404,13 @@ namespace WnekoTankMeadow
             });
             stabilizeThread.Start();
         }
-
+        
         public void TurnByPid(int d, int tr, byte gear)
         {
             if (!isStabilizing)
             {
                 CancellationToken token = turnTokenSource.Token;
-                int turnTimeDelta = turnTimeDeltaMax - 2 * tr; //So when it turn at max turn rate of 50 it has max frequency and with slower turn rates it's not that needed
+                int turnTimeDelta = turnTimeDeltaMax - tr; //So when it turn at max turn rate of 50 it has max frequency and with slower turn rates it's not that needed
                 int angle = d;
                 int direction = Math.Sign(angle);
                 float previousHeading = positionSensor.ReadHeading();
@@ -400,7 +418,7 @@ namespace WnekoTankMeadow
                 float turned = 0;
                 float deltaAngle = 0;
                 bool done = false;
-                float turnRate = tr;
+                float turnRate = tr == 0 ? defaultTurnRate : tr;
                 turnPid.OutputMax = tr;
                 turnPid.OutputMin = -tr;
                 turnPid.TargetInput = d;
@@ -440,6 +458,53 @@ namespace WnekoTankMeadow
             {
                 stabilizePid.TargetInput += d;
             }
+        }
+
+        public void TurnToByCamera(string args)
+        {
+            int angle = int.Parse(args);
+            TurnToByCamera(angle);
+        }
+
+        public void TurnToByCamera(int angle)
+        {
+            float heading = positionSensor.ReadHeading();
+            int camAngle = gimbal.GetCurrentPosition()[0];
+            float camHeading = heading + camAngle;
+            float targetHeading = camHeading + angle;
+            targetHeading = targetHeading < 0 ? targetHeading + fullCircle : targetHeading > fullCircle ? targetHeading - fullCircle : targetHeading;
+            TurnTo(targetHeading);
+        }
+
+        private void TurnTo(float targetHeading)
+        {
+            float heading = positionSensor.ReadHeading();
+            float headingDelta = targetHeading - heading;
+            headingDelta = headingDelta < 0 ? headingDelta + fullCircle : headingDelta > fullCircle ? headingDelta - fullCircle : headingDelta;
+            TurnByPid((int)headingDelta, defaultTurnRate, defaultGear);
+        }
+
+        public void MoveToByAngles(string args)
+        {
+            string[] values = args.Split(';');
+            int x = int.Parse(values[0]);
+            int y = int.Parse(values[1]);
+            MoveToByAngles(x, y);
+        }
+
+        private void MoveToByAngles(int horAngle, int verAngle)
+        {
+            float[] position = positionSensor.Read();
+            int[] gimbalAngles = gimbal.GetCurrentPosition();
+            TurnToByCamera(horAngle);
+
+            int tmpAngle = Math.Abs(gimbalAngles[0]);
+            int sign = Math.Sign(gimbalAngles[0]);
+            float deviceAngle = sign * position[1] * (tmpAngle / quarterCircle) + position[2] * (1 - (tmpAngle / quarterCircle));
+
+            float groundAngle = verAngle + deviceAngle + gimbalAngles[1];
+            float distance = cameraHeigth / (float)Math.Tan(groundAngle);
+            MoveForwardBy(defaultSpeed, distance, true, defaultGear);
         }
 
         private void HeadingChanged(object sender, EventArgs e)

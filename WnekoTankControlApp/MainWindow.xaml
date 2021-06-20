@@ -664,11 +664,12 @@
                         </StackPanel>
                         <TextBox x:Name="browserRightAddress" Text="http://192.168.1.139:81/stream" Height="30" Padding="4" Margin="10" Width="500"/>
                     </StackPanel>-->
-                    <Border BorderBrush="Black" BorderThickness="2" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="1,40,1,10" Padding="5">
+                    <Border x:Name="imageArea" BorderBrush="Black" BorderThickness="2" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Margin="1,40,1,10" Padding="5">
                         <Grid>
                             <Image x:Name="leftCameraImage" MouseLeftButtonDown="leftCameraImage_MouseLeftButtonDown" />
                             <Canvas>
                                 <Label x:Name="resolutionLabel" Content="0x0px" Canvas.Bottom="10" Canvas.Right="10" Background="White"/>
+                                <Label x:Name="infoLabel" Content="" Canvas.Top="50" Canvas.Left="50" FontSize="30" Foreground="Red"/>
                             </Canvas>
                         </Grid>
                     </Border>
@@ -894,6 +895,17 @@
                         IsSnapToTickEnabled="True" 
                         Thumb.DragCompleted="angleSlider_DragCompleted"/>-->
                     </StackPanel>
+                    <Grid Grid.Row="0" Grid.Column="2" Margin="10,40,10,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="moveByClickButton" Content="Move by click" Click="moveByClickButton_Click" Grid.Column="0"/>
+                        <Button x:Name="turnByClickButton" Content="TurnByClick" Click="turnByClickButton_Click" Grid.Column="1"/>
+                        <Button x:Name="cancelClickButton" Content="Cancel" Click="cancelClickButton_Click" Grid.Column="2"/>
+                    </Grid>
+                    
                 </Grid>
             </TabItem>
             <TabItem Header="Commands">

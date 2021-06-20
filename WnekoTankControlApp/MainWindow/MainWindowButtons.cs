@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 using CommonsLibrary;
 using WnekoTankControlApp.CommandControl;
 using WnekoTankControlApp.CommandControl.ComDevices;
@@ -189,6 +190,7 @@ namespace WnekoTankControlApp
             try
             {
                 communication = new MockCommunication();
+                leftCameraImage = 
             }
             catch (Exception ex)
             {

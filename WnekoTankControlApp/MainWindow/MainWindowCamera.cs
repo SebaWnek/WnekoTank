@@ -15,6 +15,14 @@ namespace WnekoTankControlApp
 {
     public partial class MainWindow
     {
+        enum ClickMode
+        {
+            rotateCamera,
+            rotateDevice,
+            move
+        }
+
+        ClickMode clickMode = ClickMode.rotateCamera;
         MjpegDecoder mjpegLeft;
         HttpClient client;
         string streamSuffix = ":81/stream";
@@ -135,17 +143,99 @@ namespace WnekoTankControlApp
 
         private void leftCameraImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            string msg = "";
+            switch (clickMode)
+            {
+                case ClickMode.rotateCamera:
+                    msg = TurnCamera(e);
+                    break;
+                case ClickMode.rotateDevice:
+                    msg = TurnDevice(e);
+                    break;
+                case ClickMode.move:
+                    msg = MoveDevice(e);
+                    break;
+                default:
+                    throw new ArgumentException("Unknown ClickMode!");
+
+            }
+
+            Send(msg);
+
+            moveByClickButton.IsEnabled = true;
+            turnByClickButton.IsEnabled = true;
+            infoLabel.Content = "";
+            clickMode = ClickMode.rotateCamera;
+            imageArea.Cursor = Cursors.Arrow;
+
+        }
+
+        private string MoveDevice(MouseButtonEventArgs e)
+        {
             Point p = e.GetPosition(leftCameraImage);
             w = (int)leftCameraImage.ActualWidth;
             h = (int)leftCameraImage.ActualHeight;
 
             int dX = (int)((p.X - w / 2) / angularResolution);
-            int dY = (int)(-1*(p.Y - h / 2) / angularResolution);
+            int dY = (int)(-1 * (p.Y - h / 2) / angularResolution);
+            resolutionLabel.Content = $"{dX}, {dY}";
+            string msg = TankCommandList.moveByCamera + dX + ";" + dY;
+            return msg;
+        }
+
+        private string TurnDevice(MouseButtonEventArgs e)
+        {
+            Point p = e.GetPosition(leftCameraImage);
+            w = (int)leftCameraImage.ActualWidth;
+            h = (int)leftCameraImage.ActualHeight;
+
+            int dX = (int)((p.X - w / 2) / angularResolution);
+            resolutionLabel.Content = $"{dX}";
+
+            return TankCommandList.turnToByCamera + dX;
+        }
+
+        private string TurnCamera(MouseButtonEventArgs e)
+        {
+            Point p = e.GetPosition(leftCameraImage);
+            w = (int)leftCameraImage.ActualWidth;
+            h = (int)leftCameraImage.ActualHeight;
+
+            int dX = (int)((p.X - w / 2) / angularResolution);
+            int dY = (int)(-1 * (p.Y - h / 2) / angularResolution);
             resolutionLabel.Content = $"{dX}, {dY}";
 
             string msg = TankCommandList.emergencyPrefix + TankCommandList.changeGimbalAngleBy;
             msg += dY + ";" + dX;
-            Send(msg);
+            return msg;
+        }
+
+
+        private void moveByClickButton_Click(object sender, RoutedEventArgs e)
+        {
+            moveByClickButton.IsEnabled = false;
+            turnByClickButton.IsEnabled = false;
+            infoLabel.Content = "Click where to move";
+            clickMode = ClickMode.move;
+            imageArea.Cursor = Cursors.Cross;
+        }
+
+        private void turnByClickButton_Click(object sender, RoutedEventArgs e)
+        {
+            moveByClickButton.IsEnabled = false;
+            turnByClickButton.IsEnabled = false;
+            infoLabel.Content = "Click where to turn to";
+            clickMode = ClickMode.rotateDevice;
+            imageArea.Cursor = Cursors.Cross;
+        }
+
+        private void cancelClickButton_Click(object sender, RoutedEventArgs e)
+        {
+            moveByClickButton.IsEnabled = true;
+            turnByClickButton.IsEnabled = true;
+            infoLabel.Content = "";
+            clickMode = ClickMode.rotateCamera;
+            imageArea.Cursor = Cursors.Arrow;
         }
     }
 }

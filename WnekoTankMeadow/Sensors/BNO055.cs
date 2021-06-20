@@ -178,7 +178,7 @@ namespace WnekoTankMeadow.Drive
         /// <summary>
         /// Reads position registers and calculates euler angles from them
         /// </summary>
-        /// <returns>Euler angles representing current position</returns>
+        /// <returns>Euler angles representing current position - yaw, roll, pitch</returns>
         public float[] Read()
         {
             byte[] data = bno.ReadRegisters(0x1a, 6);
