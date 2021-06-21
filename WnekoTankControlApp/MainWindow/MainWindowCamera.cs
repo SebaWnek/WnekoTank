@@ -69,7 +69,6 @@ namespace WnekoTankControlApp
             w = (int)leftCameraImage.ActualWidth;
             h = (int)leftCameraImage.ActualHeight;
             resolutionLabel.Content = $"{w}x{h}px";
-            angularResolution = w / horAngle;
         }
 
         private void browserLeftStopButton_Click(object sender, RoutedEventArgs e)
@@ -143,6 +142,7 @@ namespace WnekoTankControlApp
 
         private void leftCameraImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            angularResolution = w / horAngle;
             string msg = "";
             switch (clickMode)
             {

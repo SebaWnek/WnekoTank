@@ -91,6 +91,9 @@ namespace WnekoTankMeadow
         {
             lock (locker)
             {
+#if DEBUG
+                Console.WriteLine($"Sending: -{msg}-");
+#endif
                 SendMessage(msg);
             }
         }

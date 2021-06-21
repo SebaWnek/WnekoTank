@@ -481,7 +481,10 @@ namespace WnekoTankMeadow
             float heading = positionSensor.ReadHeading();
             float headingDelta = targetHeading - heading;
             headingDelta = headingDelta < 0 ? headingDelta + fullCircle : headingDelta > fullCircle ? headingDelta - fullCircle : headingDelta;
-            TurnByPid((int)headingDelta, defaultTurnRate, defaultGear);
+            //TurnByPid((int)headingDelta, defaultTurnRate, defaultGear);
+#if DEBUG
+            Console.WriteLine($"Turning to {targetHeading}, by {headingDelta}");
+#endif
         }
 
         public void MoveToByAngles(string args)
@@ -504,7 +507,10 @@ namespace WnekoTankMeadow
 
             float groundAngle = verAngle + deviceAngle + gimbalAngles[1];
             float distance = cameraHeigth / (float)Math.Tan(groundAngle);
-            MoveForwardBy(defaultSpeed, distance, true, defaultGear);
+            //MoveForwardBy(defaultSpeed, distance, true, defaultGear);
+#if DEBUG
+            Console.WriteLine($"Moving by {distance}");
+#endif
         }
 
         private void HeadingChanged(object sender, EventArgs e)

@@ -25,7 +25,7 @@ namespace WnekoTankControlApp.CommandControl
         public void IncommingMessageHandler(object sender, MessageEventArgs message)
         {
             string msg = message.Message; 
-            if (msg.Length > 3)
+            if (msg.Length >= 3)
             {
 
                 string command = msg.Substring(0, 3);

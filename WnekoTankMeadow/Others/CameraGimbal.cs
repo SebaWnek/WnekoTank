@@ -33,9 +33,9 @@ namespace WnekoTankMeadow.Others
         int angleDelta;
         int fullCircle = 360, quarterCircle;
         int lastVerticalChange, lastHorizontalChange;
+        private object locker;
 #if DEBUG
         Stopwatch stopwatch;
-        private object locker;
 #endif
 
         /// <summary>
@@ -56,6 +56,7 @@ namespace WnekoTankMeadow.Others
             source = new CancellationTokenSource();
             angleDelta = maxServoAngle - maxAngle;
             quarterCircle = fullCircle / 4;
+            locker = new object();
             Test();
 #if DEBUG
             stopwatch = new Stopwatch();
@@ -85,8 +86,11 @@ namespace WnekoTankMeadow.Others
         /// <param name="horAngle">Yaw</param>
         public void SetAngle(int verAngle, int horAngle)
         {
-            verticalAngle = verAngle;
-            horizontalAngle = horAngle;
+            lock (locker)
+            {
+                verticalAngle = verAngle;
+                horizontalAngle = horAngle; 
+            }
             vertical.RotateTo(verticalAngle + angleDelta);
             horizontal.RotateTo(angleDelta - horizontalAngle);
         }
@@ -112,6 +116,9 @@ namespace WnekoTankMeadow.Others
             string[] arguments = args.Split(';');
             int vertical = int.Parse(arguments[0]);
             int horizontal = int.Parse(arguments[1]);
+#if DEBUG
+            Console.WriteLine("Gimbal: " + vertical + " " + horizontal);
+#endif
             ChangeAngleBy(vertical, horizontal);
         }
 

@@ -114,12 +114,14 @@ namespace WnekoTankMeadow
                                                                        suffixDelimiter: new byte[] { 10 },
                                                                        preserveDelimiter: true, 115200, 8, Parity.None,
                                                                        StopBits.One));
-
+#if DEBUG
+            Console.WriteLine("Initializing watchdog");
+#endif
+            displaySmall.Write("Initializing watchdog");
             watchdog = new Watchdog();
             com.RegisterWatchdog(watchdog.MessageReceived);
             watchdog.RegisterSender(com.SendMessage);
             watchdog.RegisterBlockAction(EmergencyDisable);
-            watchdog.StartCheckingMessages();
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
@@ -162,6 +164,7 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Initializing buzzer");
             buzzer = new Buzzer(expander2.CreateDigitalOutputPort(expander2.Pins.GP3, false, OutputType.OpenDrain));
+            watchdog.RegisterBuzzer(buzzer.Buzz);
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.Buzz();
 #pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
@@ -254,6 +257,7 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Finishing initialization");
             RegisterMethods();
+            watchdog.StartCheckingMessages();
 #if DEBUG
             Console.WriteLine("All hardware initialized!");
 #endif
@@ -287,6 +291,8 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.calibrate, new Action<string>(positionSensor.Calibrate));
             dict.RegisterMethod(TankCommandList.checkCalibration, new Action<string>(positionSensor.CheckCalibration));
             dict.RegisterMethod(TankCommandList.turnBy, new Action<string>(motor.TurnBy));
+            dict.RegisterMethod(TankCommandList.moveByCamera, new Action<string>(motor.MoveToByAngles));
+            dict.RegisterMethod(TankCommandList.turnToByCamera, motor.TurnToByCamera);
             dict.RegisterMethod(TankCommandList.stabilize, new Action<string>(motor.StabilizeDirection));
             dict.RegisterMethod(TankCommandList.setProxSensors, new Action<string>(proxSensors.SetBehavior));
             dict.RegisterMethod(TankCommandList.setGimbalAngle, new Action<string>(gimbal.SetAngle));
@@ -301,7 +307,6 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.fanMotorsState, new Action<string>(motorsFans.SetState));
             dict.RegisterMethod(TankCommandList.ledNarrowPower, new Action<string>(narrowLed.SetBrightnes));
             dict.RegisterMethod(TankCommandList.ledWidePower, new Action<string>(wideLed.SetBrightnes));
-
         }
 
         public void Diangoze(string empty)
@@ -346,7 +351,7 @@ namespace WnekoTankMeadow
         public void HandShake(string empty)
         {
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-            buzzer.Buzz();
+            buzzer.Buzz(200);
 #pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
         }
     }

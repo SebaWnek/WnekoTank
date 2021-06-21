@@ -32,7 +32,7 @@ namespace WnekoTankMeadow.Sensors
         /// <param name="bus">I2C bus</param>
         /// <param name="address">I2C device address</param>
         /// <param name="send">Communication method for sending data to controll app</param>
-        public TempPressureSensor(II2cBus bus, Bme280.I2cAddress address = Bme280.I2cAddress.Adddress0x76, Action<string> send) : this(bus, address)
+        public TempPressureSensor(II2cBus bus, Action<string> send, Bme280.I2cAddress address = Bme280.I2cAddress.Adddress0x76) : this(bus, address)
         {
             sendMessage = send;
         }

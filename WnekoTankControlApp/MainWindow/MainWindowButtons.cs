@@ -190,7 +190,6 @@ namespace WnekoTankControlApp
             try
             {
                 communication = new MockCommunication();
-                leftCameraImage = 
             }
             catch (Exception ex)
             {
