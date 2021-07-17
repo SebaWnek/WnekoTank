@@ -152,13 +152,13 @@ namespace WnekoTankMeadow.Sensors
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             buzzer.BuzzPulse(200, 800, 5);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            string msg = ReturnCommandList.lowBattery + $"Battery {inas[batNumber].Name} is low\nVoltage: {voltage}!\n\nCharge soon!";
+            string msg = ReturnCommandList.lowBattery + $"{inas[batNumber].Name};{voltage}";
             sendMessage(msg);
         }
 
         private async void SignalDischarge(int batNumber, float voltage)
         {
-            string msg = ReturnCommandList.dischargedBattery + $"Battery {inas[batNumber].Name} is discharged!\nVoltage: {voltage}!\n\nCharge ASAP!";
+            string msg = ReturnCommandList.dischargedBattery + $"{inas[batNumber].Name};{voltage}";
             sendMessage(msg);
             await buzzer.BuzzPulse(500, 500, 5);
         }
@@ -205,6 +205,12 @@ namespace WnekoTankMeadow.Sensors
         internal void RegisterFan(Action<string> fanSetter)
         {
             setFanState += fanSetter;
+        }
+
+        internal void SetElectricDataDelay(string args)
+        {
+            int d = int.Parse(args);
+            delay = d;
         }
     }
 }

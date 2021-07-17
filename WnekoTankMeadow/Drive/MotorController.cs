@@ -44,8 +44,9 @@ namespace WnekoTankMeadow
         private float cameraHeigth = 0.4f; //m, from ground level
         private float cameraPosition = -0.3f; //m, from center 
         private int fullCircle = 360;
-        private int quarterCircle;
+        private int quarterCircle, halfCircle;
         private byte defaultGear = 1;
+        private Action ClearQueue;
 
         /// <summary>
         /// Main constructor
@@ -63,9 +64,11 @@ namespace WnekoTankMeadow
                                IDigitalInputPort leftCounterPort,
                                IDigitalInputPort righCounterPort,
                                BNO055 posSens,
-                               CameraGimbal gimb)
+                               CameraGimbal gimb, 
+                               Action clQueue)
         {
             quarterCircle = fullCircle / 4;
+            halfCircle = fullCircle / 2;
             positionSensor = posSens;
             gimbal = gimb;
             circumference = teethCount * chainPitch / magnetsCount;
@@ -462,6 +465,8 @@ namespace WnekoTankMeadow
 
         public void TurnToByCamera(string args)
         {
+            ClearQueue.Invoke();
+            Break();
             int angle = int.Parse(args);
             TurnToByCamera(angle);
         }
@@ -479,16 +484,18 @@ namespace WnekoTankMeadow
         private void TurnTo(float targetHeading)
         {
             float heading = positionSensor.ReadHeading();
-            float headingDelta = targetHeading - heading;
-            headingDelta = headingDelta < 0 ? headingDelta + fullCircle : headingDelta > fullCircle ? headingDelta - fullCircle : headingDelta;
-            //TurnByPid((int)headingDelta, defaultTurnRate, defaultGear);
+            int headingDelta = (int)Math.Round(targetHeading - heading);
+            headingDelta = headingDelta < -halfCircle ? headingDelta + fullCircle : headingDelta > halfCircle ? headingDelta - fullCircle : headingDelta;
 #if DEBUG
             Console.WriteLine($"Turning to {targetHeading}, by {headingDelta}");
 #endif
+            TurnByPid(headingDelta, defaultTurnRate, defaultGear);
         }
 
         public void MoveToByAngles(string args)
         {
+            ClearQueue.Invoke();
+            Break();
             string[] values = args.Split(';');
             int x = int.Parse(values[0]);
             int y = int.Parse(values[1]);
@@ -505,12 +512,13 @@ namespace WnekoTankMeadow
             int sign = Math.Sign(gimbalAngles[0]);
             float deviceAngle = sign * position[1] * (tmpAngle / quarterCircle) + position[2] * (1 - (tmpAngle / quarterCircle));
 
-            float groundAngle = verAngle + deviceAngle + gimbalAngles[1];
+            float groundAngle = -1* verAngle + deviceAngle + gimbalAngles[1];
             float distance = cameraHeigth / (float)Math.Tan(groundAngle);
             //MoveForwardBy(defaultSpeed, distance, true, defaultGear);
 #if DEBUG
             Console.WriteLine($"Moving by {distance}");
 #endif
+            MoveForwardBy(defaultSpeed, distance, true, defaultGear);
         }
 
         private void HeadingChanged(object sender, EventArgs e)

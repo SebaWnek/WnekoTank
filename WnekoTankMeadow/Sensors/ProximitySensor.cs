@@ -35,9 +35,9 @@ namespace WnekoTankMeadow.Sensors
 
         EventHandler<string> stopEvent;
 
-        internal StopBehavior Behavior 
-        { 
-            get => behavior; 
+        internal StopBehavior Behavior
+        {
+            get => behavior;
             set
             {
                 behavior = value;
@@ -62,8 +62,12 @@ namespace WnekoTankMeadow.Sensors
 
         private void Port_Changed(object sender, DigitalInputPortEventArgs e)
         {
-            stopAction?.Invoke();
-            stopEvent?.Invoke(this, $"{position} detected obstacle");
+            Task handler = new Task(() =>
+            {
+                stopAction?.Invoke();
+                stopEvent?.Invoke(this, $"{position} detected obstacle");
+            });
+            handler.Start();
 #if DEBUG
             Console.WriteLine($"{position} detected obstacle");
 #endif

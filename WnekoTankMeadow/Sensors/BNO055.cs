@@ -1,4 +1,5 @@
-﻿using Meadow.Foundation.Sensors.Motion;
+﻿using CommonsLibrary;
+using Meadow.Foundation.Sensors.Motion;
 using Meadow.Hardware;
 using System;
 using System.Collections.Generic;
@@ -144,7 +145,7 @@ namespace WnekoTankMeadow.Drive
         public void CheckCalibration(string empty)
         {
             byte[] cal = CheckCalibration();
-            sendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+            sendMessage(ReturnCommandList.calibrationData + $"{cal[0]};{cal[1]};{cal[2]};{cal[3]}");
 #if DEBUG
             Console.WriteLine($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
 #endif
@@ -171,7 +172,8 @@ namespace WnekoTankMeadow.Drive
         public void Read(string empty)
         {
             float[] position = Read();
-            string msg = $"Hading: {position[0]}deg,\r\nRoll: {position[1]}deg,\r\nPitch: {position[2]}deg";
+            string msg = ReturnCommandList.positionData + $"{position[0]};{position[1]};{position[2]}";
+            //string msg = $"Heading: {position[0]}deg,\r\nRoll: {position[1]}deg,\r\nPitch: {position[2]}deg";
             sendMessage(msg);
         }
         

@@ -43,9 +43,11 @@ namespace WnekoTankControlApp
             queueList.ItemsSource = commandList;
             commandList.Add(TankCommandList.emergencyPrefix + TankCommandList.stopInvoking);
             commandList.Add(TankCommandList.emergencyPrefix + TankCommandList.clearQueue);
-            connectButtons = new List<Button>();
-            connectButtons.Add(ConnectButton);
-            connectButtons.Add(mockConnectButton);
+            connectButtons = new List<Button>
+            {
+                ConnectButton,
+                mockConnectButton
+            };
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 

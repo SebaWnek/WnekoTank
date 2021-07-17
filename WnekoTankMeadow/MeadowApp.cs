@@ -216,7 +216,7 @@ namespace WnekoTankMeadow
                                         pwm50.CreatePwmPort(0),
                                         Device.CreateDigitalInputPort(Device.Pins.D03, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
                                         Device.CreateDigitalInputPort(Device.Pins.D04, InterruptMode.EdgeRising, ResistorMode.InternalPullDown, 20, 20),
-                                        positionSensor, gimbal);
+                                        positionSensor, gimbal, queue.ClearQueue);
 
 #if DEBUG
             Console.WriteLine("Initializing gimbal");
@@ -274,39 +274,40 @@ namespace WnekoTankMeadow
         /// </summary>
         private void RegisterMethods()
         {
-            dict.RegisterMethod(TankCommandList.setGear, new Action<string>(motor.SetGear));
-            dict.RegisterMethod(TankCommandList.setLinearSpeed, new Action<string>(motor.SetLinearSpeed));
-            dict.RegisterMethod(TankCommandList.setTurn, new Action<string>(motor.SetTurn));
-            dict.RegisterMethod(TankCommandList.stop, new Action<string>(motor.Break));
-            dict.RegisterMethod(TankCommandList.wait, new Action<string>(HelperMethods.Wait));
-            dict.RegisterMethod(TankCommandList.startInvoking, new Action<string>(queue.StartInvoking));
-            dict.RegisterMethod(TankCommandList.stopInvoking, new Action<string>(queue.StopInvoking));
-            dict.RegisterMethod(TankCommandList.enumerateQueue, new Action<string>(queue.EnumerateQueue));
-            dict.RegisterMethod(TankCommandList.clearQueue, new Action<string>(queue.ClearQueue));
-            dict.RegisterMethod(TankCommandList.handshake, new Action<string>(HandShake));
-            dict.RegisterMethod(TankCommandList.moveForwardBy, new Action<string>(motor.MoveForwardBy));
-            dict.RegisterMethod(TankCommandList.softStop, new Action<string>(motor.SoftBreak));
-            dict.RegisterMethod(TankCommandList.tempPres, new Action<string>(tempPresSensor.Read));
-            dict.RegisterMethod(TankCommandList.position, new Action<string>(positionSensor.Read));
-            dict.RegisterMethod(TankCommandList.calibrate, new Action<string>(positionSensor.Calibrate));
-            dict.RegisterMethod(TankCommandList.checkCalibration, new Action<string>(positionSensor.CheckCalibration));
-            dict.RegisterMethod(TankCommandList.turnBy, new Action<string>(motor.TurnBy));
-            dict.RegisterMethod(TankCommandList.moveByCamera, new Action<string>(motor.MoveToByAngles));
+            dict.RegisterMethod(TankCommandList.setGear, motor.SetGear);
+            dict.RegisterMethod(TankCommandList.setLinearSpeed, motor.SetLinearSpeed);
+            dict.RegisterMethod(TankCommandList.setTurn, motor.SetTurn);
+            dict.RegisterMethod(TankCommandList.stop, motor.Break);
+            dict.RegisterMethod(TankCommandList.wait, HelperMethods.Wait);
+            dict.RegisterMethod(TankCommandList.startInvoking, queue.StartInvoking);
+            dict.RegisterMethod(TankCommandList.stopInvoking, queue.StopInvoking);
+            dict.RegisterMethod(TankCommandList.enumerateQueue, queue.EnumerateQueue);
+            dict.RegisterMethod(TankCommandList.clearQueue, queue.ClearQueue);
+            dict.RegisterMethod(TankCommandList.handshake, HandShake);
+            dict.RegisterMethod(TankCommandList.moveForwardBy, motor.MoveForwardBy);
+            dict.RegisterMethod(TankCommandList.softStop, motor.SoftBreak);
+            dict.RegisterMethod(TankCommandList.tempPres, tempPresSensor.Read);
+            dict.RegisterMethod(TankCommandList.position, positionSensor.Read);
+            dict.RegisterMethod(TankCommandList.calibrate, positionSensor.Calibrate);
+            dict.RegisterMethod(TankCommandList.checkCalibration, positionSensor.CheckCalibration);
+            dict.RegisterMethod(TankCommandList.turnBy, motor.TurnBy);
+            dict.RegisterMethod(TankCommandList.moveByCamera, motor.MoveToByAngles);
             dict.RegisterMethod(TankCommandList.turnToByCamera, motor.TurnToByCamera);
-            dict.RegisterMethod(TankCommandList.stabilize, new Action<string>(motor.StabilizeDirection));
-            dict.RegisterMethod(TankCommandList.setProxSensors, new Action<string>(proxSensors.SetBehavior));
-            dict.RegisterMethod(TankCommandList.setGimbalAngle, new Action<string>(gimbal.SetAngle));
-            dict.RegisterMethod(TankCommandList.changeGimbalAngleBy, new Action<string>(gimbal.ChangeAngleBy));
-            dict.RegisterMethod(TankCommandList.stabilizeGimbal, new Action<string>(gimbal.SetStabilization));
-            dict.RegisterMethod(TankCommandList.diagnoze, new Action<string>(Diangoze));
-            dict.RegisterMethod(TankCommandList.getElectricData, new Action<string>(ina219s.ReturnData));
-            dict.RegisterMethod(TankCommandList.sendingElectricData, new Action<string>(ina219s.ChangeSending));
-            dict.RegisterMethod(TankCommandList.setElectricDataDelay, new Action<string>(ina219s.ChangeTimeDelta));
-            dict.RegisterMethod(TankCommandList.fanInasState, new Action<string>(inasFan.SetState));
-            dict.RegisterMethod(TankCommandList.fanLedsState, new Action<string>(LEDsFans.SetState));
-            dict.RegisterMethod(TankCommandList.fanMotorsState, new Action<string>(motorsFans.SetState));
-            dict.RegisterMethod(TankCommandList.ledNarrowPower, new Action<string>(narrowLed.SetBrightnes));
-            dict.RegisterMethod(TankCommandList.ledWidePower, new Action<string>(wideLed.SetBrightnes));
+            dict.RegisterMethod(TankCommandList.stabilizeDirection, motor.StabilizeDirection);
+            dict.RegisterMethod(TankCommandList.setProxSensors, proxSensors.SetBehavior);
+            dict.RegisterMethod(TankCommandList.setGimbalAngle, gimbal.SetAngle);
+            dict.RegisterMethod(TankCommandList.changeGimbalAngleBy, gimbal.ChangeAngleBy);
+            dict.RegisterMethod(TankCommandList.stabilizeGimbal, gimbal.SetStabilization);
+            dict.RegisterMethod(TankCommandList.diagnoze, Diangoze);
+            dict.RegisterMethod(TankCommandList.getElectricData, ina219s.ReturnData);
+            dict.RegisterMethod(TankCommandList.sendingElectricData, ina219s.ChangeSending);
+            dict.RegisterMethod(TankCommandList.setElectricDataDelay, ina219s.ChangeTimeDelta);
+            dict.RegisterMethod(TankCommandList.fanInasState, inasFan.SetState);
+            dict.RegisterMethod(TankCommandList.fanLedsState, LEDsFans.SetState);
+            dict.RegisterMethod(TankCommandList.fanMotorsState, motorsFans.SetState);
+            dict.RegisterMethod(TankCommandList.ledNarrowPower, narrowLed.SetBrightnes);
+            dict.RegisterMethod(TankCommandList.ledWidePower, wideLed.SetBrightnes);
+            dict.RegisterMethod(TankCommandList.setElectricDataDelay, ina219s.SetElectricDataDelay);
         }
 
         public void Diangoze(string empty)

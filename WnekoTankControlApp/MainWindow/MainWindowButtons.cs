@@ -32,11 +32,15 @@ namespace WnekoTankControlApp
             {
                 outQueue.SendMessage(msg);
             }
-            catch (Exception ex)
+            catch (NullReferenceException)
             {
-                if(ex is NullReferenceException) MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
-                else MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
+            }
+            catch (Exception ex)
+            {                 
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw ex;
             }
         }
 
@@ -46,11 +50,15 @@ namespace WnekoTankControlApp
             {
                 outQueue.SendEmergencyMessage(msg);
             }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             catch (Exception ex)
             {
-                if (ex is NullReferenceException) MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
-                else MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw ex;
             }
         }
 
@@ -58,46 +66,46 @@ namespace WnekoTankControlApp
 
 
 
-        private void gear1btn_Click(object sender, RoutedEventArgs e)
+        private void Gear1btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.setGear + "1";
             //string msg = CommandList.setGear") + "1";
             Send(msg);
         }
 
-        private void gear2btn_Click(object sender, RoutedEventArgs e)
+        private void Gear2btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.setGear + "2";
             Send(msg);
         }
 
-        private void stopEmergencyBtn_Click(object sender, RoutedEventArgs e)
+        private void StopEmergencyBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.stop;
             SendEmergency(msg);
-            clearQueue_Click(this, null);
+            ClearQueue_Click(this, null);
             stabilizeOff.IsChecked = true;
             SendEmergency(msg);
         }
 
-        private void softStopButton_Click(object sender, RoutedEventArgs e)
+        private void SoftStopButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.softStop + "0";
             Send(msg);
         }
-        private void stopNormalButton_Click(object sender, RoutedEventArgs e)
+        private void StopNormalButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.stop + "0";
             Send(msg);
         }
 
-        private void queueStart_Click(object sender, RoutedEventArgs e)
+        private void QueueStart_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.startInvoking;
             Send(msg);
         }
 
-        private void queueStop_Click(object sender, RoutedEventArgs e)
+        private void QueueStop_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.stopInvoking;
             string msg2 = TankCommandList.handshake;
@@ -105,55 +113,55 @@ namespace WnekoTankControlApp
             Send(msg2);
         }
 
-        private void listQueue_Click(object sender, RoutedEventArgs e)
+        private void ListQueue_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.enumerateQueue;
             Send(msg);
         }
 
-        private void waitButton_Click(object sender, RoutedEventArgs e)
+        private void WaitButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.wait + waitBox.Text;
             Send(msg);
         }
 
-        private void setSpeedButton_Click(object sender, RoutedEventArgs e)
+        private void SetSpeedButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.setLinearSpeed + setSpeedBox.Text;
             Send(msg);
         }
 
-        private void setTurnButton_Click(object sender, RoutedEventArgs e)
+        private void SetTurnButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.setTurn + setTurnBox.Text;
             Send(msg);
         }
 
-        private void handshakeButton_Click(object sender, RoutedEventArgs e)
+        private void HandshakeButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.handshake;
             SendEmergency(msg);
         }
 
-        private void tempPresBtn_Click(object sender, RoutedEventArgs e)
+        private void TempPresBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.tempPres;
             Send(msg);
         }
 
-        private void positionButton_Click(object sender, RoutedEventArgs e)
+        private void PositionButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.position;
             Send(msg);
         }
 
-        private void calibrateBtn_Click(object sender, RoutedEventArgs e)
+        private void CalibrateBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.calibrate;
             Send(msg);
         }
 
-        private void checkCalibrationBtn_Click(object sender, RoutedEventArgs e)
+        private void CheckCalibrationBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.checkCalibration;
             Send(msg);
@@ -215,13 +223,13 @@ namespace WnekoTankControlApp
             Send(TankCommandList.handshake);
         }
 
-        private void clearQueue_Click(object sender, RoutedEventArgs e)
+        private void ClearQueue_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.clearQueue;
             SendEmergency(msg);
         }
 
-        private void moveForwardByButton_Click(object sender, RoutedEventArgs e)
+        private void MoveForwardByButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.moveForwardBy;
             msg += moveForwardBySpeedBox.Text;
@@ -236,7 +244,7 @@ namespace WnekoTankControlApp
             Send(msg);
         }
 
-        private void turnByButton_Click(object sender, RoutedEventArgs e)
+        private void TurnByButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.turnBy;
             msg += turnByAngleBox.Text;
@@ -249,32 +257,32 @@ namespace WnekoTankControlApp
             Send(msg);
         }
 
-        private void startAddingButton_Click(object sender, RoutedEventArgs e)
+        private void StartAddingButton_Click(object sender, RoutedEventArgs e)
         {
             shouldQueue = true;
             stopAddingButton.IsEnabled = true;
             startAddingButton.IsEnabled = false;
         }
 
-        private void stopAddingButton_Click(object sender, RoutedEventArgs e)
+        private void StopAddingButton_Click(object sender, RoutedEventArgs e)
         {
             shouldQueue = false;
             stopAddingButton.IsEnabled = false;
             startAddingButton.IsEnabled = true;
         }
 
-        private void sendQueuedButton_Click(object sender, RoutedEventArgs e)
+        private void SendQueuedButton_Click(object sender, RoutedEventArgs e)
         {
-            stopAddingButton_Click(null, null);
+            StopAddingButton_Click(null, null);
             foreach (string msg in commandList) Send(msg);
         }
 
-        private void clearQueuedButton_Click(object sender, RoutedEventArgs e)
+        private void ClearQueuedButton_Click(object sender, RoutedEventArgs e)
         {
             commandList = new ObservableCollection<string>();
         }
 
-        private void queueListHideButton_Click(object sender, RoutedEventArgs e)
+        private void QueueListHideButton_Click(object sender, RoutedEventArgs e)
         {
             if (QueueColumn.Width.Value == 0)
             {
@@ -288,19 +296,19 @@ namespace WnekoTankControlApp
             }
         }
 
-        private void stabilizeOff_Checked(object sender, RoutedEventArgs e)
+        private void StabilizeOff_Checked(object sender, RoutedEventArgs e)
         {
-            string msg = TankCommandList.stabilize + "0";
+            string msg = TankCommandList.stabilizeDirection + "0";
             Send(msg);
         }
 
-        private void stabilizeOn_Checked(object sender, RoutedEventArgs e)
+        private void StabilizeOn_Checked(object sender, RoutedEventArgs e)
         {
-            string msg = TankCommandList.stabilize + "1";
+            string msg = TankCommandList.stabilizeDirection + "1";
             Send(msg);
         }
 
-        private void proximity_Checked(object sender, RoutedEventArgs e)
+        private void Proximity_Checked(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.setProxSensors;
             if ((bool)proximityNone.IsChecked) msg += "0";
@@ -310,7 +318,7 @@ namespace WnekoTankControlApp
             Send(msg);
         }
 
-        private void proxReset_Click(object sender, RoutedEventArgs e)
+        private void ProxReset_Click(object sender, RoutedEventArgs e)
         {
             outQueue.ClearQueue();
             string msg = TankCommandList.emergencyPrefix + TankCommandList.clearQueue;
@@ -319,64 +327,64 @@ namespace WnekoTankControlApp
             SendEmergency(msg);
         }
 
-        private void sendQueueClearBtn_Click(object sender, RoutedEventArgs e)
+        private void SendQueueClearBtn_Click(object sender, RoutedEventArgs e)
         {
             outQueue.ClearQueue();
         }
 
-        private void gimbalStabilizeStartBtn_Click(object sender, RoutedEventArgs e)
+        private void GimbalStabilizeStartBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "1;0";
             Send(msg);
         }
 
-        private void gimbalStabilizeWithHorizontalStartBtn_Click(object sender, RoutedEventArgs e)
+        private void GimbalStabilizeWithHorizontalStartBtn_Click(object sender, RoutedEventArgs e)
         {
 
             string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "1;1";
             Send(msg);
         }
 
-        private void gimbalStabilizeStopBtn_Click(object sender, RoutedEventArgs e)
+        private void GimbalStabilizeStopBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.stabilizeGimbal + "0;0";
             Send(msg);
         }
 
-        private void diagnozeBtn_Click(object sender, RoutedEventArgs e)
+        private void DiagnozeBtn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.diagnoze;
             Send(msg);
         }
 
-        private void electricButton_Click(object sender, RoutedEventArgs e)
+        private void ElectricButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.getElectricData;
             Send(msg);
         }
 
-        private void motorsFanCheckBox_Click(object sender, RoutedEventArgs e)
+        private void MotorsFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.fanMotorsState;
             msg += (bool)motorsFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
 
-        private void ledsFanCheckBox_Click(object sender, RoutedEventArgs e)
+        private void LedsFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.fanLedsState;
             msg += (bool)ledsFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
 
-        private void inasFanCheckBox_Click(object sender, RoutedEventArgs e)
+        private void InasFanCheckBox_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.fanInasState;
             msg += (bool)inasFanCheckBox.IsChecked ? "1" : "0";
             Send(msg);
         }
 
-        private void delayButton_Click(object sender, RoutedEventArgs e)
+        private void DelayButton_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.emergencyPrefix + TankCommandList.setElectricDataDelay;
             int dt = int.Parse(delayBox.Text);

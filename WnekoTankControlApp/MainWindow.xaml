@@ -774,9 +774,9 @@
                                             </Grid>
                                         </TabItem>
                                     </TabControl>
-                                    <Button x:Name="gimbalStabilizeStartBtn" Content="Stabilize vertical" Click="gimbalStabilizeStartBtn_Click" Grid.Row="1"/>
-                                    <Button x:Name="gimbalStabilizeWithHorizontalStartBtn" Content="Stabilize vert + horiz" Click="gimbalStabilizeWithHorizontalStartBtn_Click" Grid.Row="1" Grid.Column="1"/>
-                                    <Button x:Name="gimbalStabilizeStopBtn" Content="Stop stabilizing camera" Click="gimbalStabilizeStopBtn_Click" Grid.Row="1" Grid.Column="2"/>
+                                    <Button x:Name="gimbalStabilizeStartBtn" Content="Stabilize vertical" Click="GimbalStabilizeStartBtn_Click" Grid.Row="1"/>
+                                    <Button x:Name="gimbalStabilizeWithHorizontalStartBtn" Content="Stabilize vert + horiz" Click="GimbalStabilizeWithHorizontalStartBtn_Click" Grid.Row="1" Grid.Column="1"/>
+                                    <Button x:Name="gimbalStabilizeStopBtn" Content="Stop stabilizing camera" Click="GimbalStabilizeStopBtn_Click" Grid.Row="1" Grid.Column="2"/>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="Camera settings">
@@ -878,11 +878,11 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="gear1btn" Grid.Column="0" Content="gear 1" Click="gear1btn_Click"/>
-                        <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="gear2btn_Click"/>
-                        <Button x:Name="proxReset" Grid.Column="2" Content="Reset" Click="proxReset_Click"/>
+                        <Button x:Name="gear1btn" Grid.Column="0" Content="gear 1" Click="Gear1btn_Click"/>
+                        <Button x:Name="gear2btn" Grid.Column="1" Content="gear 2" Click="Gear2btn_Click"/>
+                        <Button x:Name="proxReset" Grid.Column="2" Content="Reset" Click="ProxReset_Click"/>
                     </Grid>
-                    <Button x:Name="stopEmergencyBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="stopEmergencyBtn_Click" Margin="0,21,0,14" Grid.ColumnSpan="2"/>
+                    <Button x:Name="stopEmergencyBtn" Grid.Column="1" Grid.Row="4" Content="STOP" Click="StopEmergencyBtn_Click" Margin="0,21,0,14" Grid.ColumnSpan="2"/>
                     <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" >
 
                         <!--<Slider IsEnabled="False" 
@@ -937,15 +937,15 @@
                         </StackPanel>
                         <Separator Margin="10"/>
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="top">
-                            <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="handshakeButton_Click" HorizontalAlignment="Left"/>
+                            <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="HandshakeButton_Click" HorizontalAlignment="Left"/>
                             <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click" IsEnabled="False" Width="100" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
-                        <Button x:Name="queueStart" Content="Start Queue" Click="queueStart_Click" Height="30"/>
-                        <Button x:Name="queueStop" Content="Stop Queue" Click="queueStop_Click" Height="30"/>
-                        <Button x:Name="listQueue" Content="Enumerate Queue" Click="listQueue_Click" Height="30"/>
-                        <Button x:Name="clearQueue" Content="Clear Queue" Click="clearQueue_Click" Height="30"/>
+                        <Button x:Name="queueStart" Content="Start Queue" Click="QueueStart_Click" Height="30"/>
+                        <Button x:Name="queueStop" Content="Stop Queue" Click="QueueStop_Click" Height="30"/>
+                        <Button x:Name="listQueue" Content="Enumerate Queue" Click="ListQueue_Click" Height="30"/>
+                        <Button x:Name="clearQueue" Content="Clear Queue" Click="ClearQueue_Click" Height="30"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
                         <Grid>
@@ -954,7 +954,7 @@
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="setSpeedButton" Grid.Column="0" Content="Set speed:" Click="setSpeedButton_Click"/>
+                            <Button x:Name="setSpeedButton" Grid.Column="0" Content="Set speed:" Click="SetSpeedButton_Click"/>
                             <TextBox x:Name="setSpeedBox" Grid.Column="1" Text="{Binding ElementName=setSpeedSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Padding="5"/>
                             <Slider x:Name="setSpeedSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True"/>
                         </Grid>
@@ -964,7 +964,7 @@
                                 <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="setTurnButton" Grid.Column="0" Content="Set turn:" Click="setTurnButton_Click"/>
+                            <Button x:Name="setTurnButton" Grid.Column="0" Content="Set turn:" Click="SetTurnButton_Click"/>
                             <TextBox x:Name="setTurnBox" Grid.Column="1" Text="{Binding ElementName=setTurnSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Padding="5"/>
                             <Slider x:Name="setTurnSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-100" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True"/>
                         </Grid>
@@ -980,7 +980,7 @@
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
                             </Grid.RowDefinitions>
-                            <Button x:Name="moveForwardByButton" Grid.Column="0" Content="Move forward by:" Click="moveForwardByButton_Click"/>
+                            <Button x:Name="moveForwardByButton" Grid.Column="0" Content="Move forward by:" Click="MoveForwardByButton_Click"/>
                             <TextBox x:Name="moveForwardByDistBox" Grid.Column="1" Text="{Binding ElementName=moveForwardByDistSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="100" Grid.Row="0"/>
                             <Slider x:Name="moveForwardByDistSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-10" Maximum="10" TickFrequency="0.1" IsSnapToTickEnabled="True" Grid.Row="0"/>
                             <Label Grid.Row="1">At speed:</Label>
@@ -998,8 +998,8 @@
                         <Separator Margin="0,10" />
                         <StackPanel Orientation="Horizontal">
                             <Label Height="30">Stabilize direction:</Label>
-                            <RadioButton x:Name="stabilizeOff" Content="Off" GroupName="stabilize" Margin="20,7" Checked="stabilizeOff_Checked"/>
-                            <RadioButton x:Name="stabilizeOn" Content="On" Margin="0,7" GroupName="stabilize" Checked="stabilizeOn_Checked"/>
+                            <RadioButton x:Name="stabilizeOff" Content="Off" GroupName="stabilize" Margin="20,7" Checked="StabilizeOff_Checked"/>
+                            <RadioButton x:Name="stabilizeOn" Content="On" Margin="0,7" GroupName="stabilize" Checked="StabilizeOn_Checked"/>
                         </StackPanel>
                         <Separator Margin="0,10" />
                         <Grid>
@@ -1013,7 +1013,7 @@
                                 <RowDefinition Height="30"/>
                                 <RowDefinition Height="30"/>
                             </Grid.RowDefinitions>
-                            <Button x:Name="turnByButton" Grid.Column="0" Content="Turn by:" Click="turnByButton_Click"/>
+                            <Button x:Name="turnByButton" Grid.Column="0" Content="Turn by:" Click="TurnByButton_Click"/>
                             <TextBox x:Name="turnByAngleBox" Grid.Column="1" Text="{Binding ElementName=turnByAngleSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Padding="5" Width="100" Grid.Row="0"/>
                             <Slider x:Name="turnByAngleSlider" Grid.Column="2" Orientation="Horizontal" Minimum="-360" Maximum="360" TickFrequency="1" IsSnapToTickEnabled="True" Grid.Row="0"/>
                             <Label Grid.Row="1">At speed:</Label>
@@ -1041,23 +1041,23 @@
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="waitButton" Grid.Column="0" Content="Wait:" Click="waitButton_Click"/>
+                                <Button x:Name="waitButton" Grid.Column="0" Content="Wait:" Click="WaitButton_Click"/>
                                 <TextBox x:Name="waitBox" Grid.Column="1" Text="{Binding ElementName=waitSlider, Path=Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100" Padding="5"/>
                                 <Slider x:Name="waitSlider" Grid.Column="2" Orientation="Horizontal" Minimum="0" Maximum="60" TickFrequency="1" IsSnapToTickEnabled="True"/>
                             </Grid>
                             <Separator Margin="0,10"/>
                             <StackPanel Orientation="Horizontal">
-                                <Button x:Name="stopASAPButton" Content="Stop ASAP" Click="stopEmergencyBtn_Click" Height="30" Width="100"/>
-                                <Button x:Name="stopNormalButton" Content="Stop" Click="stopNormalButton_Click" Height="30" Width="100"/>
-                                <Button x:Name="softStopButton" Content="Soft stop" Click="softStopButton_Click" Height="30" Width="100"/>
+                                <Button x:Name="stopASAPButton" Content="Stop ASAP" Click="StopEmergencyBtn_Click" Height="30" Width="100"/>
+                                <Button x:Name="stopNormalButton" Content="Stop" Click="StopNormalButton_Click" Height="30" Width="100"/>
+                                <Button x:Name="softStopButton" Content="Soft stop" Click="SoftStopButton_Click" Height="30" Width="100"/>
                             </StackPanel>
                             <Separator Margin="0,10"/>
                             <StackPanel Orientation="Horizontal">
                                 <Label Height="30">Proximity sensor Behavior:</Label>
-                                <RadioButton x:Name="proximityNone" Content="None" GroupName="proximity" Margin="20,7" Checked="proximity_Checked"/>
-                                <RadioButton x:Name="proximityStop" Content="Hard stop" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
-                                <RadioButton x:Name="proximitySoftStop" Content="Soft stop" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
-                                <RadioButton x:Name="proximityStopAndReturn" Content="Stop and reverse" Margin="20,7" GroupName="proximity" Checked="proximity_Checked"/>
+                                <RadioButton x:Name="proximityNone" Content="None" GroupName="proximity" Margin="20,7" Checked="Proximity_Checked"/>
+                                <RadioButton x:Name="proximityStop" Content="Hard stop" Margin="20,7" GroupName="proximity" Checked="Proximity_Checked"/>
+                                <RadioButton x:Name="proximitySoftStop" Content="Soft stop" Margin="20,7" GroupName="proximity" Checked="Proximity_Checked"/>
+                                <RadioButton x:Name="proximityStopAndReturn" Content="Stop and reverse" Margin="20,7" GroupName="proximity" Checked="Proximity_Checked"/>
                             </StackPanel>
                             <Separator Margin="0,10"/>
                             <StackPanel>
@@ -1085,45 +1085,34 @@
                             <Separator Margin="0,10"/>
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="Fans:" Margin="5,0"/>
-                                <CheckBox x:Name="motorsFanCheckBox" Content="Motors" Margin="10,6" IsChecked="False" Click="motorsFanCheckBox_Click"/>
-                                <CheckBox x:Name="ledsFanCheckBox" Content="LEDs"  Margin="10,6" IsChecked="False" Click="ledsFanCheckBox_Click"/>
-                                <CheckBox x:Name="inasFanCheckBox" Content="INAs"  Margin="10,6" IsChecked="False" Click="inasFanCheckBox_Click"/>
+                                <CheckBox x:Name="motorsFanCheckBox" Content="Motors" Margin="10,6" IsChecked="False" Click="MotorsFanCheckBox_Click"/>
+                                <CheckBox x:Name="ledsFanCheckBox" Content="LEDs"  Margin="10,6" IsChecked="False" Click="LedsFanCheckBox_Click"/>
+                                <CheckBox x:Name="inasFanCheckBox" Content="INAs"  Margin="10,6" IsChecked="False" Click="InasFanCheckBox_Click"/>
                             </StackPanel>
                             <Separator Margin="0,10"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1">
-                            <Button x:Name="tempPresBtn" Content="Read temperature and preasure" Click="tempPresBtn_Click" Height="30"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Button x:Name="calibrateBtn" Content="Calibrate position sensor" Click="calibrateBtn_Click" Height="30" Grid.Column="0"/>
-                                <Button x:Name="checkCalibrationBtn" Content="Check calibration" Click="checkCalibrationBtn_Click" Height="30" Grid.Column="1"/>
-                                <Button x:Name="positionButton" Content="Read position" Click="positionButton_Click" Height="30" Grid.Column="2"/>
-                            </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="diagnozeBtn_Click"/>
-                                <Button x:Name="electricButton" Content="Get electric data" Grid.Column="1" Click="electricButton_Click"/>
+                                <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="DiagnozeBtn_Click"/>
+                                
                             </Grid>
                         </StackPanel>
                     </Grid>
                     <StackPanel Grid.Column="2" Grid.RowSpan="3" Margin="5">
-                        <Button x:Name="startAddingButton" Content="Start adding" Click="startAddingButton_Click"/>
+                        <Button x:Name="startAddingButton" Content="Start adding" Click="StartAddingButton_Click"/>
                         <Separator Margin="5"/>
-                        <Button x:Name="stopAddingButton" Content="Stop adding" Click="stopAddingButton_Click" IsEnabled="false"/>
+                        <Button x:Name="stopAddingButton" Content="Stop adding" Click="StopAddingButton_Click" IsEnabled="false"/>
                         <Separator Margin="5"/>
-                        <Button x:Name="sendQueuedButton" Content="Send" Click="sendQueuedButton_Click"/>
+                        <Button x:Name="sendQueuedButton" Content="Send" Click="SendQueuedButton_Click"/>
                         <Separator Margin="5"/>
-                        <Button x:Name="clearQueuedButton" Content="Clear" Click="clearQueuedButton_Click"/>
+                        <Button x:Name="clearQueuedButton" Content="Clear" Click="ClearQueuedButton_Click"/>
                     </StackPanel>
                     <ListBox x:Name="queueList" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Margin="5"/>
-                    <Button x:Name="queueListHideButton" Content=">>" Grid.Column="1" Grid.Row="2" Width="30" HorizontalAlignment="right" Click="queueListHideButton_Click"/>
+                    <Button x:Name="queueListHideButton" Content=">>" Grid.Column="1" Grid.Row="2" Width="30" HorizontalAlignment="right" Click="QueueListHideButton_Click"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Parameters">
@@ -1166,15 +1155,65 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Delay(ms):"/>
                             <TextBox x:Name="delayBox" Text="5000"/>
-                            <Button x:Name="delayButton" Content="Send" Click="delayButton_Click"/>
+                            <Button x:Name="delayButton" Content="Send" Click="DelayButton_Click"/>
+                            <Button x:Name="electricButton" Content="Get electric data" Grid.Column="1" Click="ElectricButton_Click" Width="100" Margin="10,0"/>
                         </StackPanel>
                         <Separator Margin="20"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="tempPresBtn" Content=" Read temperature and preasure " Click="TempPresBtn_Click" Height="30" Margin="10"/>
+                            <Label VerticalAlignment="Center" >Temperature:</Label>
+                            <TextBox x:Name="tempBox" Width="60" Height="30" VerticalAlignment="Center"/>
+                            <Label VerticalAlignment="Center">°C, Humidity:</Label>
+                            <TextBox x:Name="humBox" VerticalAlignment="Center" Width="60" Height="30"/>
+                            <Label VerticalAlignment="Center">%, Last read time:</Label>
+                            <TextBox x:Name="tempTimeBox" VerticalAlignment="Center" Width="200" Height="30"/>
+                        </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
+                        <Separator Margin="20"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Button x:Name="calibrateBtn" Content="Calibrate position sensor" Click="CalibrateBtn_Click" Height="30" Grid.Column="0"/>
+                            <Button x:Name="checkCalibrationBtn" Content="Check calibration" Click="CheckCalibrationBtn_Click" Height="30" Grid.Column="1"/>
+                            <Button x:Name="positionButton" Content="Read position" Click="PositionButton_Click" Height="30" Grid.Column="2"/>
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,10">
+                                <Label VerticalAlignment="Center">Calibration system:</Label>
+                                <TextBox x:Name="systemCalBox" Width="40"/>
+                                <Label VerticalAlignment="Center">Gyroscope:</Label>
+                                <TextBox x:Name="gyroCalBox" Width="40"/>
+                                <Label VerticalAlignment="Center">Magnetometer::</Label>
+                                <TextBox x:Name="magCalBox" Width="40"/>
+                                <Label VerticalAlignment="Center">Accelerometer:</Label>
+                                <TextBox x:Name="accCalBox" Width="40"/>
+                            </StackPanel>
 
-                    </StackPanel>
-                    <StackPanel Grid.Column="2">
-
+                            <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,10">
+                                <Label VerticalAlignment="Center">Heading:</Label>
+                                <TextBox x:Name="headingBox" Width="80"/>
+                                <Label VerticalAlignment="Center">°, Roll:</Label>
+                                <TextBox x:Name="rollBox" Width="80"/>
+                                <Label VerticalAlignment="Center">°, Pitch:</Label>
+                                <TextBox x:Name="pitchBox" Width="80"/>
+                                <Label VerticalAlignment="Center">°</Label>
+                            </StackPanel>
+                        </Grid>
+                        <Separator Margin="20"/>
+                        <Grid Height="400">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            
+                        </Grid>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -1184,7 +1223,7 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button x:Name="sendQueueClearBtn" Grid.Row="0" Content="Clear queue" Click="sendQueueClearBtn_Click"/>
+            <Button x:Name="sendQueueClearBtn" Grid.Row="0" Content="Clear queue" Click="SendQueueClearBtn_Click"/>
             <ScrollViewer x:Name="ScrollView" Grid.Row="1" ScrollChanged="ScrollViewer_ScrollChanged">
                 <TextBlock x:Name="outputBox" />
             </ScrollViewer>

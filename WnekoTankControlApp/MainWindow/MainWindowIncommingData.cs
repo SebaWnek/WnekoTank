@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using CommonsLibrary;
 using WnekoTankControlApp.CommandControl;
 
@@ -34,12 +35,18 @@ namespace WnekoTankControlApp
 
         private void DischargedBatteryReceived(string obj)
         {
-            MessageBox.Show(obj, "Battery discharged!!", MessageBoxButton.OK, MessageBoxImage.Error);
+            string[] data = obj.Split(';');
+            string batName = data[0];
+            string batVoltage = data[1];
+            MessageBox.Show(obj, $"Battery {batName} is discharged!\nVoltage: {batVoltage}!\n\nCharge ASAP!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void LowBatteryReceived(string obj)
         {
-            MessageBox.Show(obj, "Battery low!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            string[] data = obj.Split(';');
+            string batName = data[0];
+            string batVoltage = data[1];
+            MessageBox.Show(obj, $"Battery {batName} is low\nVoltage: {batVoltage}!\n\nCharge soon!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
         private void AckReceived(string obj)
@@ -57,7 +64,11 @@ namespace WnekoTankControlApp
 
         private void AtmosphericDataReceived(string obj)
         {
-            throw new NotImplementedException();
+            string[] data = obj.Split(';');
+            DateTime time = DateTime.Now;
+            Dispatcher.Invoke(() => tempBox.Text = data[0]);
+            Dispatcher.Invoke(() => humBox.Text = data[1]);
+            Dispatcher.Invoke(() => tempTimeBox.Text = time.ToLongTimeString());
         }
 
         private void ElectricDataReceived(string obj)
@@ -143,7 +154,13 @@ namespace WnekoTankControlApp
 
         private void PositionDataReceived(string obj)
         {
-            throw new NotImplementedException();
+            string[] data = obj.Split(';');
+            Dispatcher.Invoke(() =>
+            {
+                headingBox.Text = data[0];
+                rollBox.Text = data[1];
+                pitchBox.Text = data[2];
+            });
         }
 
         private void DiagnosticDataReceived(string obj)
@@ -153,7 +170,29 @@ namespace WnekoTankControlApp
 
         private void CalibrationDataReceived(string obj)
         {
-            throw new NotImplementedException();
+            string[] data = obj.Split(';');
+            Dispatcher.Invoke(() =>
+            {
+                systemCalBox.Text = data[0];
+                gyroCalBox.Text = data[1];
+                magCalBox.Text = data[2];
+                accCalBox.Text = data[3];
+            });
+            bool isCalibrated = data[1] == "3" && data[2] == "3" && data[3] == "3";
+            if (isCalibrated) Dispatcher.Invoke(() =>
+             {
+                 systemCalBox.Background = Brushes.Green;
+                 gyroCalBox.Background = Brushes.Green;
+                 magCalBox.Background = Brushes.Green;
+                 accCalBox.Background = Brushes.Green;
+             });
+            else Dispatcher.Invoke(() =>
+            {
+                systemCalBox.Background = Brushes.Red;
+                gyroCalBox.Background = Brushes.Red;
+                magCalBox.Background = Brushes.Red;
+                accCalBox.Background = Brushes.Red;
+            });
         }
     }
 }
