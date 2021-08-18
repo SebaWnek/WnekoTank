@@ -18,7 +18,7 @@ namespace WnekoTankMeadow.Others
         Func<int, Task> buzzer;
 
         private Action<string> sendMessage;
-
+        public bool IsStarted { get; set; }
         public Watchdog()
         {
             resetEvent = new AutoResetEvent(false);
@@ -41,6 +41,7 @@ namespace WnekoTankMeadow.Others
 
         internal void StartCheckingMessages()
         {
+            IsStarted = true;
 #if DEBUG
             Console.WriteLine("Starting watchdog!");
 #endif

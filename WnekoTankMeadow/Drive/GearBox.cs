@@ -1,5 +1,6 @@
 ﻿using Meadow.Foundation.Servos;
 using Meadow.Hardware;
+using Meadow.Units;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace WnekoTankMeadow
         public GearBox(IPwmPort gearPwm)
         {
             pwm = gearPwm;
-            ServoConfig config = new ServoConfig(0, 180, 500, 2500, 50);
+            ServoConfig config = new ServoConfig(new Angle(0), new Angle(180), 500, 2500, 50);
             servo = new Servo(pwm, config);
         }
 
@@ -47,7 +48,7 @@ namespace WnekoTankMeadow
         /// <param name="angle">Requested angle</param>
         public async void SetAngle(int angle)
         {
-            servo.RotateTo(angle + 90);
+            servo.RotateTo(new Angle(angle + 90));
             await Task.Delay(500);
             servo.Stop();
         }

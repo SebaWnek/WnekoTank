@@ -60,7 +60,7 @@ namespace WnekoTankMeadow.Sensors
             port.Changed += Port_Changed;
         }
 
-        private void Port_Changed(object sender, DigitalInputPortEventArgs e)
+        private void Port_Changed(object sender, DigitalPortResult e)
         {
             Task handler = new Task(() =>
             {

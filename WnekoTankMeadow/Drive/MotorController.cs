@@ -46,7 +46,7 @@ namespace WnekoTankMeadow
         private int fullCircle = 360;
         private int quarterCircle, halfCircle;
         private byte defaultGear = 1;
-        private Action ClearQueue;
+        private Action clearQueue;
 
         /// <summary>
         /// Main constructor
@@ -71,6 +71,7 @@ namespace WnekoTankMeadow
             halfCircle = fullCircle / 2;
             positionSensor = posSens;
             gimbal = gimb;
+            clearQueue = clQueue;
             circumference = teethCount * chainPitch / magnetsCount;
             leftMotor = new Motor(leftForwardPwm, leftBackPwm);
             rightMotor = new Motor(rightForwardPwm, rightBackPwm);
@@ -465,7 +466,7 @@ namespace WnekoTankMeadow
 
         public void TurnToByCamera(string args)
         {
-            ClearQueue.Invoke();
+            clearQueue.Invoke();
             Break();
             int angle = int.Parse(args);
             TurnToByCamera(angle);
@@ -494,7 +495,7 @@ namespace WnekoTankMeadow
 
         public void MoveToByAngles(string args)
         {
-            ClearQueue.Invoke();
+            clearQueue.Invoke();
             Break();
             string[] values = args.Split(';');
             int x = int.Parse(values[0]);

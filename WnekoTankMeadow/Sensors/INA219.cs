@@ -149,7 +149,7 @@ namespace WnekoTankMeadow.Sensors
 #if DEBUG
             Console.WriteLine($"LSB: {currentLSB}, calibration: {calibration}");
 #endif
-            ina219.WriteUShort((byte)RegisterAddresses.Calibration, calibration, ByteOrder.BigEndian);
+            ina219.WriteUShorts((byte)RegisterAddresses.Calibration, new ushort[] { calibration }, ByteOrder.BigEndian);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace WnekoTankMeadow.Sensors
         /// <param name="calibration">Calibration binary data</param>
         public void Calibrate(ushort calibration)
         {
-            ina219.WriteUShort((byte)RegisterAddresses.Calibration, calibration, ByteOrder.BigEndian);
+            ina219.WriteUShorts((byte)RegisterAddresses.Calibration, new ushort[] { calibration }, ByteOrder.BigEndian);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace WnekoTankMeadow.Sensors
         /// <returns>Shunt voltage</returns>
         public float ReadShuntVltage()
         {
-            short register = (short)ina219.ReadUShort((byte)RegisterAddresses.ShuntVoltage, ByteOrder.BigEndian);
+            short register = (short)ina219.ReadUShorts((byte)RegisterAddresses.ShuntVoltage, 1, ByteOrder.BigEndian)[0];
 #if DEBUG
             if (writeDataToConsole)
             {
@@ -202,7 +202,7 @@ namespace WnekoTankMeadow.Sensors
         /// <returns>Bus voltage</returns>
         public float ReadBusVoltage()
         {
-            ushort register = ina219.ReadUShort((byte)RegisterAddresses.BusVoltage, ByteOrder.BigEndian);
+            ushort register = ina219.ReadUShorts((byte)RegisterAddresses.BusVoltage, 1, ByteOrder.BigEndian)[0];
 #if DEBUG
             if (writeDataToConsole)
             {
@@ -230,7 +230,7 @@ namespace WnekoTankMeadow.Sensors
         /// <returns>Current current</returns>
         public float ReadCurrent()
         {
-            short register = (short)ina219.ReadUShort((byte)RegisterAddresses.Current, ByteOrder.BigEndian);
+            short register = (short)ina219.ReadUShorts((byte)RegisterAddresses.Current, 1, ByteOrder.BigEndian)[0];
 #if DEBUG
             if (writeDataToConsole)
             {
@@ -249,7 +249,7 @@ namespace WnekoTankMeadow.Sensors
         /// <returns>Current power</returns>
         public float ReadPower()
         {
-            ushort register = ina219.ReadUShort((byte)RegisterAddresses.Power, ByteOrder.BigEndian);
+            ushort register = ina219.ReadUShorts((byte)RegisterAddresses.Power, 1, ByteOrder.BigEndian)[0];
 #if DEBUG
             if (writeDataToConsole)
             {
@@ -271,7 +271,7 @@ namespace WnekoTankMeadow.Sensors
             Console.WriteLine("Enumerating:");
             for (byte i = 0; i <= 5; i++)
             {
-                ushort tmp = ina219.ReadUShort(i, ByteOrder.BigEndian);
+                ushort tmp = ina219.ReadUShorts(i, 1, ByteOrder.BigEndian)[0];
                 Console.WriteLine(Convert.ToString(tmp, 2).PadLeft(16, '0') + " - " + Convert.ToString(tmp, 16) + " - " + tmp);
             }
         }
@@ -302,7 +302,7 @@ namespace WnekoTankMeadow.Sensors
 #if DEBUG
             Console.WriteLine($"Writing configuration:\n{Convert.ToString(config, 16)}\n{Convert.ToString(config, 2).PadLeft(16, '0')}");
 #endif
-            ina219.WriteUShort((byte)RegisterAddresses.Configuration, (ushort)config, ByteOrder.BigEndian);
+            ina219.WriteUShorts((byte)RegisterAddresses.Configuration, new ushort[] { (ushort)config }, ByteOrder.BigEndian);
         }
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace WnekoTankMeadow.Sensors
         /// <param name="config">Configuration data</param>
         public void Configure(ushort config)
         {
-            ina219.WriteUShort((byte)RegisterAddresses.Configuration, (ushort)config, ByteOrder.BigEndian);
+            ina219.WriteUShorts((byte)RegisterAddresses.Configuration, new ushort[] { (ushort)config }, ByteOrder.BigEndian);
         }
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace WnekoTankMeadow.Sensors
         public void ResetToFactory()
         {
             //Configure(new INA219Configuration());
-            ina219.WriteUShort((byte)RegisterAddresses.Configuration, 0b1000000000000000, ByteOrder.BigEndian);
+            ina219.WriteUShorts((byte)RegisterAddresses.Configuration, new ushort[] { 0b1000000000000000 }, ByteOrder.BigEndian);
         }
 
         /// <summary>

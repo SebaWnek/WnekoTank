@@ -21,7 +21,7 @@ namespace WnekoTankMeadow.Drive
         Stopwatch stopwatch = new Stopwatch();
         EventHandler headingChanged;
         private int turnTimeDelta = 100;
-        private int headingCorrection = 180;
+        //private int headingCorrection = 180;
 
         /// <summary>
         /// Basic constructor
@@ -31,7 +31,7 @@ namespace WnekoTankMeadow.Drive
         public BNO055(II2cBus bus, byte address = 40)
         {
             sensor = new Bno055(bus, address);
-            sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
+            sensor.OperatingMode = Bno055.OperatingModes.NINE_DEGREES_OF_FREEDOM;
             bno = new I2cPeripheral(bus, address);
         }
 
@@ -55,7 +55,7 @@ namespace WnekoTankMeadow.Drive
             byte axisSignAddress = 0x42;
             byte newAxisPosition = 0b00_10_00_01;
             byte newAxisSigns = 0b00000_1_0_0;
-            sensor.OperatingMode = Bno055.OperatingModes.ConfigurationMode;
+            sensor.OperatingMode = Bno055.OperatingModes.CONFIGURATION_MODE;
             Thread.Sleep(100);
 #if DEBUG
             Console.WriteLine($"Writing: {Convert.ToString(newAxisPosition, 2)} to {axisPositionAddress:X}");
@@ -64,7 +64,7 @@ namespace WnekoTankMeadow.Drive
             bno.WriteRegister(axisPositionAddress, newAxisPosition);
             bno.WriteRegister(axisSignAddress, newAxisSigns);
             Thread.Sleep(100);
-            sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
+            sensor.OperatingMode = Bno055.OperatingModes.NINE_DEGREES_OF_FREEDOM;
         }
         
         /// <summary>
@@ -105,7 +105,7 @@ namespace WnekoTankMeadow.Drive
             bno.WriteRegister(resetAddress, resetByte);
             Thread.Sleep(sleepTime);
             RemapAxis();
-            sensor.OperatingMode = Bno055.OperatingModes.NineDegreesOfFreedom;
+            sensor.OperatingMode = Bno055.OperatingModes.NINE_DEGREES_OF_FREEDOM;
             for (int i = 0; i < 60; i++) //Timeout after one minute
             {
                 cal = CheckCalibration();

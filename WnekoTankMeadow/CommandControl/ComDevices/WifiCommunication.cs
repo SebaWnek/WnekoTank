@@ -41,7 +41,7 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
         public WifiCommunication()
         {
             Device.InitWiFiAdapter().Wait();
-            ConnectionResult result = Device.WiFiAdapter.Connect("Meadow", "testtest");
+            ConnectionResult result = Device.WiFiAdapter.Connect("Meadow", "testtest").Result;
 
             if (result.ConnectionStatus != ConnectionStatus.Success)
             {

@@ -1,5 +1,6 @@
 ﻿using Meadow.Foundation.Servos;
 using Meadow.Hardware;
+using Meadow.Units;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -23,16 +24,16 @@ namespace WnekoTankMeadow.Others
         IPwmPort verticalPort;
         IPositionSensor sensor;
         CancellationTokenSource source;
-        int verticalAngle = 0;
-        int horizontalAngle = 0;
+        Angle verticalAngle = new Angle(0);
+        Angle horizontalAngle = new Angle(0);
         int stabilizeDeltaTime = 20;
         bool isStabilizing = false;
         bool horizontalStabilization = false;
-        int minAngle = -100, maxAngle = 100;
-        int minServoAngle = 0, maxServoAngle = 200;
-        int angleDelta;
+        Angle minAngle = new Angle(-100), maxAngle = new Angle(100);
+        Angle minServoAngle = new Angle(0), maxServoAngle = new Angle(200);
+        Angle angleDelta;
         int fullCircle = 360, quarterCircle;
-        int lastVerticalChange, lastHorizontalChange;
+        Angle lastVerticalChange, lastHorizontalChange;
         private object locker;
 #if DEBUG
         Stopwatch stopwatch;
@@ -75,7 +76,7 @@ namespace WnekoTankMeadow.Others
             Thread.Sleep(2000);
             SetAngle(maxAngle, maxAngle);
             Thread.Sleep(2000);
-            SetAngle((maxAngle + minAngle) / 2, (maxAngle + minAngle) / 2);
+            SetAngle(new Angle((maxAngle.Degrees + minAngle.Degrees) / 2), new Angle( (maxAngle.Degrees + minAngle.Degrees) / 2));
             Thread.Sleep(2000);
         }
 
@@ -84,7 +85,7 @@ namespace WnekoTankMeadow.Others
         /// </summary>
         /// <param name="verAngle">Pitch</param>
         /// <param name="horAngle">Yaw</param>
-        public void SetAngle(int verAngle, int horAngle)
+        public void SetAngle(Angle verAngle, Angle horAngle)
         {
             lock (locker)
             {
@@ -102,8 +103,8 @@ namespace WnekoTankMeadow.Others
         public void SetAngle(string args)
         {
             string[] arguments = args.Split(';');
-            int vertical = int.Parse(arguments[0]);
-            int horizontal = int.Parse(arguments[1]);
+            Angle vertical = new Angle(int.Parse(arguments[0]));
+            Angle horizontal = new Angle(int.Parse(arguments[1]));
             SetAngle(vertical, horizontal);
         }
 
@@ -119,7 +120,7 @@ namespace WnekoTankMeadow.Others
 #if DEBUG
             Console.WriteLine("Gimbal: " + vertical + " " + horizontal);
 #endif
-            ChangeAngleBy(vertical, horizontal);
+            ChangeAngleBy(new Angle(vertical), new Angle(horizontal));
         }
 
         /// <summary>
@@ -128,7 +129,7 @@ namespace WnekoTankMeadow.Others
         /// </summary>
         /// <param name="verticalChange"></param>
         /// <param name="horizontalChange"></param>
-        private void ChangeAngleBy(int verticalChange, int horizontalChange)
+        private void ChangeAngleBy(Angle verticalChange, Angle horizontalChange)
         {
             lock (locker)
             {
@@ -176,11 +177,11 @@ namespace WnekoTankMeadow.Others
             float pitch = reading[2];
             float roll = reading[1];
             CancellationToken token = source.Token;
-            float tmpAngle = Math.Abs(horizontalAngle); //Absolute value of camera yaw in relation to device to determine proportions between roll and pitch to use
+            float tmpAngle = (float)Math.Abs(horizontalAngle.Degrees); //Absolute value of camera yaw in relation to device to determine proportions between roll and pitch to use
             float meanAngle = roll * (tmpAngle / quarterCircle) + pitch * (1 - tmpAngle / quarterCircle); //Weighted proportional angle of roll and pitch using yaw as weiht
             int sign;
-            float cameraHeading = heading + horizontalAngle, previousHeading = heading; //Absolute camera yaw - device heading + yaw in relation to device
-            int verticalTarget, horizontalTarget = 0, currentHorizontalAngle, previousAngle = horizontalAngle;
+            float cameraHeading = heading + (float)horizontalAngle.Degrees, previousHeading = heading; //Absolute camera yaw - device heading + yaw in relation to device
+            int verticalTarget, horizontalTarget = 0, currentHorizontalAngle, previousAngle = (int)horizontalAngle.Degrees;
             //vertical.RotateTo(verticalAngle + (int)Math.Round(meanAngle) + angleDelta);
             //#if DEBUG
             //            Console.WriteLine($"Angle: {pitch}, {roll}, stabilizing to: {verticalAngle + (int)Math.Round(meanAngle) + angleDelta}");
@@ -201,32 +202,32 @@ namespace WnekoTankMeadow.Others
                     if (horizontalStabilization)
                     {
                         heading = reading[0];
-                        if (heading - previousHeading < minAngle) cameraHeading -= fullCircle; //Corrects heading if went over north - as sudden change of value from 360 to 0, or otherwise, would cause troubles with calculations
-                        if (heading - previousHeading > maxAngle) cameraHeading += fullCircle; //It doesn't matter that value can get >360deg, it's used only internally here
-                        if (previousAngle != horizontalAngle) //Check if new heading requested by controll app
+                        if (heading - previousHeading < minAngle.Degrees) cameraHeading -= fullCircle; //Corrects heading if went over north - as sudden change of value from 360 to 0, or otherwise, would cause troubles with calculations
+                        if (heading - previousHeading > maxAngle.Degrees) cameraHeading += fullCircle; //It doesn't matter that value can get >360deg, it's used only internally here
+                        if (previousAngle != horizontalAngle.Degrees) //Check if new heading requested by controll app
                         {
                             lock (locker) //So we don't have value updated at the same time, as read 
                             {
-                                cameraHeading += lastHorizontalChange; //Turn camera to new heading by last angle delta by control app
+                                cameraHeading += (float)lastHorizontalChange.Degrees; //Turn camera to new heading by last angle delta by control app
                             }
                         }
 
                         currentHorizontalAngle = (int)(heading - cameraHeading); //Camera yaw in relation to device
-                        currentHorizontalAngle = currentHorizontalAngle < minAngle ? minAngle : currentHorizontalAngle > maxAngle ? maxAngle : currentHorizontalAngle; //Clip values if requested angle is beyond limits
-                        horizontalTarget = currentHorizontalAngle + angleDelta; //Calculate servo position, as it is shifted from physical position
-                        horizontal.RotateTo(horizontalTarget); //Rotate servo
+                        currentHorizontalAngle = currentHorizontalAngle < minAngle.Degrees ? (int)minAngle.Degrees : currentHorizontalAngle > maxAngle.Degrees ? (int)maxAngle.Degrees : currentHorizontalAngle; //Clip values if requested angle is beyond limits
+                        horizontalTarget = currentHorizontalAngle + (int)angleDelta.Degrees; //Calculate servo position, as it is shifted from physical position
+                        horizontal.RotateTo(new Angle(horizontalTarget)); //Rotate servo
 
-                        previousAngle = horizontalAngle;
+                        previousAngle = (int)horizontalAngle.Degrees;
                         previousHeading = heading;
                     }
-                    else currentHorizontalAngle = horizontalAngle;
+                    else currentHorizontalAngle = (int)horizontalAngle.Degrees;
 
                     tmpAngle = Math.Abs(currentHorizontalAngle); //Absolute value of camera yaw in relation to device to determine proportions between roll and pitch to use
                     sign = Math.Sign(currentHorizontalAngle);
                     meanAngle = sign * roll * (tmpAngle / quarterCircle) + pitch * (1 - (tmpAngle / quarterCircle));  //Inclination in camera direction as weighted proportional angle of roll and pitch using yaw as weiht
-                    verticalTarget = verticalAngle + (int)Math.Round(meanAngle) + angleDelta; //Change target angle by the value of device inclination
-                    verticalTarget = verticalTarget < minServoAngle ? minServoAngle : verticalTarget > maxServoAngle ? maxServoAngle : verticalTarget; //Clip target to limits
-                    vertical.RotateTo(verticalTarget); //Rotate servo
+                    verticalTarget = (int)verticalAngle.Degrees + (int)Math.Round(meanAngle) + (int)angleDelta.Degrees; //Change target angle by the value of device inclination
+                    verticalTarget = verticalTarget < minServoAngle.Degrees ? (int)minServoAngle.Degrees : verticalTarget > maxServoAngle.Degrees ? (int)maxServoAngle.Degrees : verticalTarget; //Clip target to limits
+                    vertical.RotateTo(new Angle(verticalTarget)); //Rotate servo
 #if DEBUG
                     stopwatch.Stop();
                     Console.WriteLine($"Angle: {heading}, {pitch}, {roll}, {meanAngle}, stabilizing to: {verticalTarget}, {horizontalTarget}\nTime: {stopwatch.ElapsedMilliseconds}ms");
@@ -257,8 +258,8 @@ namespace WnekoTankMeadow.Others
         {
             return new int[]
              {
-                horizontal.Angle - angleDelta,
-                vertical.Angle - angleDelta
+                (int)((Angle)(horizontal.Angle - angleDelta)).Degrees,
+                (int)((Angle)(vertical.Angle - angleDelta)).Degrees
              };
         }
     }

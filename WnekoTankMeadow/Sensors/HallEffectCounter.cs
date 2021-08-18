@@ -39,7 +39,7 @@ namespace WnekoTankMeadow.Drive
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Args</param>
-        private void Port_Changed(object sender, DigitalInputPortEventArgs e)
+        private void Port_Changed(object sender, DigitalPortResult e)
         {
             if (enabled)
             {

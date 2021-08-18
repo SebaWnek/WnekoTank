@@ -257,7 +257,7 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Finishing initialization");
             RegisterMethods();
-            watchdog.StartCheckingMessages();
+            //watchdog.StartCheckingMessages();
 #if DEBUG
             Console.WriteLine("All hardware initialized!");
 #endif
@@ -351,6 +351,7 @@ namespace WnekoTankMeadow
         /// <param name="empty">Incoming parameters, none needed so should me empty</param>
         public void HandShake(string empty)
         {
+            if (!watchdog.IsStarted) watchdog.StartCheckingMessages();
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.Buzz(200);
 #pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
