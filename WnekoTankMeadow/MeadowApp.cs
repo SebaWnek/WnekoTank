@@ -277,6 +277,7 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.setGear, motor.SetGear);
             dict.RegisterMethod(TankCommandList.setLinearSpeed, motor.SetLinearSpeed);
             dict.RegisterMethod(TankCommandList.setTurn, motor.SetTurn);
+            dict.RegisterMethod(TankCommandList.setSpeedWithTurn, motor.SetSpeedAndTurn);
             dict.RegisterMethod(TankCommandList.stop, motor.Break);
             dict.RegisterMethod(TankCommandList.wait, HelperMethods.Wait);
             dict.RegisterMethod(TankCommandList.startInvoking, queue.StartInvoking);

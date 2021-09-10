@@ -18,7 +18,12 @@
         /// <summary>
         /// int speed
         /// </summary>
-        public static string setLinearSpeed = "SPD";        
+        public static string setLinearSpeed = "SPD";
+
+        /// <summary>
+        /// int linear speed ; int turn rate
+        /// </summary>
+        public static string setSpeedWithTurn = "SPT";
 
         /// <summary>
         /// int turn rate

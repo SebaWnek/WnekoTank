@@ -336,6 +336,14 @@ namespace WnekoTankMeadow
             TurnByPid(int.Parse(arguments[0]), int.Parse(arguments[1]), byte.Parse(arguments[2]));
         }
 
+        internal void SetSpeedAndTurn(string obj)
+        {
+            string[] arguments = obj.Split(';');
+
+            SetLinearSpeed(int.Parse(arguments[0]));
+            SetTurn(int.Parse(arguments[1]));
+        }
+
         /// <summary>
         /// Depreciated, replaced by TurnByPid
         /// </summary>

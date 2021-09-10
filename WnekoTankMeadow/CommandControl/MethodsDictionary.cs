@@ -47,5 +47,10 @@ namespace WnekoTankMeadow
             if (methods.ContainsKey(code)) return (methods[code], args);
             else throw new Exception("Method not in dictionary!");
         }
+
+        internal void RegisterMethod(string setSpeedWithTurn, MotorController motor, object setSpeedAndTurn)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

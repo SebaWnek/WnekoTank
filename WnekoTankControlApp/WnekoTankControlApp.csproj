@@ -97,6 +97,7 @@
     <Compile Include="CommandControl\OxyPlots.cs" />
     <Compile Include="MainWindow\MainWindowButtons.cs" />
     <Compile Include="MainWindow\MainWindowCameraCanvas.cs" />
+    <Compile Include="MainWindow\MainWindowControlPad.cs" />
     <Compile Include="MainWindow\MainWindowIncommingData.cs" />
     <Compile Include="MainWindow\MainWindowCamera.cs" />
     <Compile Include="MainWindow\MainWindowSliders.cs" />
