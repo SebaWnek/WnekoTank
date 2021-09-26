@@ -16,7 +16,10 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
     {
         public object locker => new object();
 
+        public bool Connected { get; internal set; }
+
         EventHandler<MessageEventArgs> messageEvent;
+        private string data;
 
         public void SendMessage(string msg)
         {
@@ -50,6 +53,11 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
             }
 
 
+        }
+
+        public WifiCommunication(string data)
+        {
+            this.data = data;
         }
     }
 }

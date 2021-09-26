@@ -25,6 +25,8 @@ namespace WnekoTankMeadow
     public class MeadowApp : App<F7Micro, MeadowApp>
     {
         ITankCommunication com;
+        ITankCommunication serialCom;
+        ITankCommunication ipCom;
         RgbPwmLed onboardLed;
         II2cBus bus;
         MotorController motor;
@@ -110,15 +112,17 @@ namespace WnekoTankMeadow
             Console.WriteLine("Initializing hc12");
 #endif
             displaySmall.Write("Initializing radio");
-            com = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4,
+            serialCom = new HC12Communication(Device.CreateSerialMessagePort(Device.SerialPortNames.Com4,
                                                                        suffixDelimiter: new byte[] { 10 },
                                                                        preserveDelimiter: true, 115200, 8, Parity.None,
                                                                        StopBits.One));
+            com = new CommunicationWrapper(serialCom);
+
 #if DEBUG
             Console.WriteLine("Initializing watchdog");
 #endif
             displaySmall.Write("Initializing watchdog");
-            watchdog = new Watchdog();
+            watchdog = new Watchdog(Watchdog.Type.SerialPort);
             com.RegisterWatchdog(watchdog.MessageReceived);
             watchdog.RegisterSender(com.SendMessage);
             watchdog.RegisterBlockAction(EmergencyDisable);
@@ -356,6 +360,32 @@ namespace WnekoTankMeadow
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.Buzz(200);
 #pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
+        }
+
+        public void SwitchToSerial()
+        {
+            motor.Break();
+            queue.ClearQueue();
+            ipCom = null;
+            (com as CommunicationWrapper).SetCommunication(serialCom);
+            watchdog.ChangeType(Watchdog.Type.SerialPort);
+            com.SendMessage(ReturnCommandList.displayMessage + "Switched to serial communication!");
+            //To be done after WiFi implementation
+        }
+
+        public void SwitchToIP(string data)
+        {
+            motor.Break();
+            queue.ClearQueue();
+            ipCom = new WifiCommunication(data);
+            if ((ipCom as WifiCommunication).Connected)
+            {
+                (com as CommunicationWrapper).SetCommunication(ipCom);
+                watchdog.ChangeType(Watchdog.Type.IP);
+                com.SendMessage(ReturnCommandList.displayMessage + "Switched to IP communication!");
+            }
+            com.SendMessage(ReturnCommandList.exception + "Unable to change communication method!");
+            //To be done after WiFi implementation
         }
     }
 }

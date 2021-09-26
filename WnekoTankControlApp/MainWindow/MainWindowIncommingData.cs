@@ -26,6 +26,12 @@ namespace WnekoTankControlApp
             inQueue.RegisterMethod(ReturnCommandList.lowBattery, LowBatteryReceived);
             inQueue.RegisterMethod(ReturnCommandList.dischargedBattery, DischargedBatteryReceived);
             inQueue.RegisterMethod(ReturnCommandList.handShake, HandshakeReceived);
+            inQueue.RegisterMethod(ReturnCommandList.displayMessage, DisplayMessageBox);
+        }
+
+        private void DisplayMessageBox(string obj)
+        {
+            MessageBox.Show(obj, "New message!", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void HandshakeReceived(string obj)

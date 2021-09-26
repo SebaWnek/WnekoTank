@@ -65,5 +65,10 @@ namespace CommonsLibrary
         /// empty
         /// </summary>
         public static string handShake = "HSK";
+
+        /// <summary>
+        /// message to be displayed
+        /// </summary>
+        public static string displayMessage = "DMS";
     }
 }
