@@ -393,8 +393,11 @@ namespace WnekoTankMeadow
 
         public void SwitchToIP(string data)
         {
+            Console.WriteLine(1);
             motor.Break();
+            Console.WriteLine(2);
             queue.ClearQueue();
+            Console.WriteLine(3);
             ipCom = new WifiUdpCommunication(data, new Action<string>[] { com.SendMessage, displaySmall.Write }); //Waiting for it to return
             if ((ipCom as WifiUdpCommunication).Connected)
             {

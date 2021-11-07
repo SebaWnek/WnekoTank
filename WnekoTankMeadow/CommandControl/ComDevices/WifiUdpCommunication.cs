@@ -31,11 +31,27 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
 
         public WifiUdpCommunication(Action<string>[] showMsg)
         {
+            Console.WriteLine(3);
             foreach (Action<string> a in showMsg) showMessage += a;
+            Console.WriteLine(4);
+            ConnectToWiFi();
+            localEP = new IPEndPoint(IPAddress.Any, 22222);
+            client = new UdpClient(localEP);
+            
+            showMessage.Invoke($"Connected WiFi! {Dns.GetHostEntry(Dns.GetHostName()).AddressList[0]}");
+#if DEBUG
+            Console.WriteLine("Connected to WiFi!");
+#endif
+        }
+
+        private void ConnectToWiFi()
+        {
             showMessage.Invoke("Trying to connect to Wifi...");
 #if DEBUG
+            Console.WriteLine(5);
             Console.WriteLine("Trying to connect to Wifi...");
 #endif
+            Console.WriteLine(6);
             Device.InitWiFiAdapter().Wait();
             ConnectionResult result = Device.WiFiAdapter.Connect("Meadow", "testtest").Result;
 
@@ -48,15 +64,8 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
                 Connected = false;
                 return;
             }
-            
+
             Connected = true;
-            localEP = new IPEndPoint(IPAddress.Any, 22222);
-            client = new UdpClient(localEP);
-            
-            showMessage.Invoke($"Connected WiFi! {Dns.GetHostEntry(Dns.GetHostName()).AddressList[0]}");
-#if DEBUG
-            Console.WriteLine("Connected to WiFi!");
-#endif
         }
 
         /// <summary>
