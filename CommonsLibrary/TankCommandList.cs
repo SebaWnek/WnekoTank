@@ -206,5 +206,10 @@
         /// string IP ; int port
         /// </summary>
         public static string connectUdp = "UDP";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string resetDevice = "RST";
     }
 }

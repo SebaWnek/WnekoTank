@@ -26,7 +26,7 @@ namespace WnekoTankControlApp
         List<IPAddress> iPAddresses;
         string[] serialPorts;
 
-        private void portRefreshButton_Click(object sender, RoutedEventArgs e)
+        private void PortRefreshButton_Click(object sender, RoutedEventArgs e)
         {
             GetSerialPorts();
         }
@@ -86,7 +86,7 @@ namespace WnekoTankControlApp
         {
             foreach (Button btn in connectButtons) btn.IsEnabled = false;
             DisconnectButton.IsEnabled = true;
-            outputBox.Text += "Connecting... \r\n";
+            OutputBox.Text += "Connecting... \r\n";
             outQueue = new OutgoingMessageQueue(communication, DisplayMessage);
             inQueue = new IncommingMessageQueue();
             communication.SubscribeToMessages(inQueue.IncommingMessageHandler);
@@ -100,7 +100,7 @@ namespace WnekoTankControlApp
             Send(TankCommandList.hello);
         }
 
-        private void wifiListRefresh_Click(object sender, RoutedEventArgs e)
+        private void WifiListRefresh_Click(object sender, RoutedEventArgs e)
         {
             GetIPAddresses();
         }
@@ -115,10 +115,9 @@ namespace WnekoTankControlApp
             else MessageBox.Show("No adapter found!", "Can't connect!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private void wifiUdpConnect_Click(object sender, RoutedEventArgs e)
+        private void WifiUdpConnect_Click(object sender, RoutedEventArgs e)
         {
-            int localPort;
-            bool parsed = int.TryParse(localPortBox.Text, out localPort);
+            bool parsed = int.TryParse(localPortBox.Text, out int localPort);
             if (parsed && wifiListBox.Items.Count > 0)
             {
                 string msg = TankCommandList.connectUdp + wifiListBox.SelectedItem.ToString() + ";" + localPort;

@@ -22,7 +22,7 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
         IPEndPoint localEP;
         IPEndPoint clientEP;
         Action<string> showMessage;
-        public object locker => new object();
+        public object Locker => new object();
 
         public bool Connected { get; internal set; }
 
@@ -121,7 +121,7 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
                 while (true)
                 {
                     buffer = client.Receive(ref clientEP);
-                    lock (locker)
+                    lock (Locker)
                     {
                         msg = Encoding.ASCII.GetString(buffer);
 #if DEBUG
@@ -142,7 +142,7 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
 
         public void SendMessage(string msg)
         {
-            lock (locker)
+            lock (Locker)
             {
                 byte[] buffer = Encoding.ASCII.GetBytes(msg);
 #if DEBUG

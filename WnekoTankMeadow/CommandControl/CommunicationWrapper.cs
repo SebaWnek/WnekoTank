@@ -18,7 +18,7 @@ namespace WnekoTankMeadow
             currentCommunication = com;
         }
 
-        public object locker => throw new NotImplementedException();
+        public object Locker => throw new NotImplementedException();
 
         public void RegisterWatchdog(Action<string> action)
         {

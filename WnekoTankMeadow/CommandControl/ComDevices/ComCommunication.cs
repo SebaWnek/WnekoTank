@@ -18,7 +18,7 @@ namespace WnekoTankMeadow
         EventHandler<MessageEventArgs> messageEvent;
         Action<string> signalWatchdog;
 
-        public object locker => new object();
+        public object Locker => new object();
 
         /// <summary>
         /// Main constructor
@@ -40,7 +40,7 @@ namespace WnekoTankMeadow
         private void Port_MessageReceived(object sender, SerialMessageData e)
         {
             string msg;
-            lock (locker)
+            lock (Locker)
             {
                 msg = Encoding.ASCII.GetString(e.Message);
 #if DEBUG
@@ -69,7 +69,7 @@ namespace WnekoTankMeadow
         /// <param name="msg">Message to be sent</param>
         public void SendMessage(string msg)
         {
-            lock (locker)
+            lock (Locker)
             {
                 port.Write(Encoding.ASCII.GetBytes(msg));
             }
@@ -81,7 +81,7 @@ namespace WnekoTankMeadow
         /// <param name="handler">Delegate of method to be registered</param>
         public void SubscribeToMessages(EventHandler<MessageEventArgs> handler)
         {
-            lock (locker)
+            lock (Locker)
             {
                 messageEvent += handler;
             }
@@ -89,7 +89,7 @@ namespace WnekoTankMeadow
 
         public void SendMessage(object sender, string msg)
         {
-            lock (locker)
+            lock (Locker)
             {
 #if DEBUG
                 Console.WriteLine($"Sending: -{msg}-");

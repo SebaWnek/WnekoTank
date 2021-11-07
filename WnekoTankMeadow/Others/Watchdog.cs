@@ -1,4 +1,5 @@
 ﻿using CommonsLibrary;
+using Meadow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace WnekoTankMeadow.Others
         CancellationTokenSource source;
 
         private Action<string> sendMessage;
+        private TimeSpan meadowWatchdogTime = TimeSpan.FromSeconds(30);
+
         public bool IsStarted { get; set; }
         public Watchdog(Type type)
         {
@@ -54,7 +57,7 @@ namespace WnekoTankMeadow.Others
 
         public void RemoveSender(Action<string> sendAction)
         {
-            sendMessage -= sendMessage; 
+            sendMessage -= sendAction; 
         }
 
         public void ResetSender()
@@ -70,12 +73,14 @@ namespace WnekoTankMeadow.Others
         internal void MessageReceived(string obj)
         {
             resetEvent.Set();
+            MeadowOS.CurrentDevice.WatchdogReset();
         }
 
         public void StartCheckingMessages()
         {
             if (!IsStarted)
             {
+                MeadowOS.CurrentDevice.WatchdogEnable(meadowWatchdogTime);
                 IsStarted = true;
                 source = new CancellationTokenSource();
                 switch (watchdogType)

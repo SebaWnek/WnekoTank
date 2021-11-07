@@ -79,7 +79,7 @@ namespace WnekoTankControlApp
         /// <param name="msg">String to be printed</param>
         public void DisplayMessage(string msg)
         {
-            Dispatcher.Invoke(() => outputBox.Text += msg + "\r\n");
+            Dispatcher.Invoke(() => OutputBox.Text += msg + "\r\n");
         }
 
         /// <summary>

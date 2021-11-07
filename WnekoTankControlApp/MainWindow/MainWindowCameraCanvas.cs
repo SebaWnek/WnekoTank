@@ -34,7 +34,7 @@ namespace WnekoTankControlApp
 
         string previousX = "", previousY = "";
 
-        public ObservableCollection<Position> PredefinedPositionsList { get => predefinedPositionsList; set => predefinedPositionsList = value; }
+        private ObservableCollection<Position> PredefinedPositionsList { get => predefinedPositionsList; set => predefinedPositionsList = value; }
 
         private void PrepareCameraCanvas()
         {
@@ -136,7 +136,7 @@ namespace WnekoTankControlApp
             return new int[] { (int)Math.Round(horAngle, 0), (int)Math.Round(verAngle, 0) };
         }
 
-        private void resetCameraCanvas_Click(object sender, RoutedEventArgs e)
+        private void ResetCameraCanvas_Click(object sender, RoutedEventArgs e)
         {
             double left = CameraTargetCanvas.ActualWidth / 2 - CameraTarget.ActualWidth / 2;
             double top = CameraTargetCanvas.ActualHeight / 2 - CameraTarget.ActualHeight / 2;
@@ -150,12 +150,12 @@ namespace WnekoTankControlApp
             Send(msg);
         }
 
-        private void cameraCanvasContinuous_Checked(object sender, RoutedEventArgs e)
+        private void CameraCanvasContinuous_Checked(object sender, RoutedEventArgs e)
         {
             continuous = true;
         }
 
-        private void cameraCanvasContinuous_Unchecked(object sender, RoutedEventArgs e)
+        private void CameraCanvasContinuous_Unchecked(object sender, RoutedEventArgs e)
         {
             continuous = false;
         }
@@ -167,10 +167,9 @@ namespace WnekoTankControlApp
             Canvas.SetTop(CameraTarget, CameraTargetCanvas.ActualHeight / 2 - CameraTarget.ActualHeight / 2);
         }
 
-        private void gimbalDefineAddButton_Click(object sender, RoutedEventArgs e)
+        private void GimbalDefineAddButton_Click(object sender, RoutedEventArgs e)
         {
-            int x = 0;
-            int y = 0;
+            int x, y;
             try
             {
                 x = int.Parse(gimbalDefineXBox.Text);
@@ -190,7 +189,7 @@ namespace WnekoTankControlApp
             PredefinedPositionsList.Add(new Position(x, y, name));
         }
 
-        private void predefinedDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PredefinedDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Position selectedPosition = predefinedDataGrid.SelectedItem as Position;
             string msg = TankCommandList.emergencyPrefix + TankCommandList.setGimbalAngle;
@@ -198,7 +197,7 @@ namespace WnekoTankControlApp
             Send(msg);
         }
 
-        public class Position
+        private class Position
         {
             public int X { get; set; }
             public int Y { get; set; }
