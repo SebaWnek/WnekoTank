@@ -210,6 +210,6 @@
         /// <summary>
         /// empty
         /// </summary>
-        public static string resetDevice = "RST";
+        public static string resetDevice = "RST"; 
     }
 }
