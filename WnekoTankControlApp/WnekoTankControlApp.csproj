@@ -92,12 +92,14 @@
     </Compile>
     <Compile Include="CommandControl\ComDevices\HC12Communication.cs" />
     <Compile Include="CommandControl\ComDevices\MockCommunication.cs" />
-    <Compile Include="CommandControl\ComDevices\WifiCommunication.cs" />
+    <Compile Include="CommandControl\ComDevices\WifiUdpCommunication.cs" />
     <Compile Include="CommandControl\IncommingMessageQueue.cs" />
     <Compile Include="CommandControl\OxyPlots.cs" />
     <Compile Include="MainWindow\MainWindowButtons.cs" />
     <Compile Include="MainWindow\MainWindowCameraCanvas.cs" />
+    <Compile Include="MainWindow\MainWindowConnectionButtons.cs" />
     <Compile Include="MainWindow\MainWindowControlPad.cs" />
+    <Compile Include="MainWindow\MainWindowGeneral.cs" />
     <Compile Include="MainWindow\MainWindowIncommingData.cs" />
     <Compile Include="MainWindow\MainWindowCamera.cs" />
     <Compile Include="MainWindow\MainWindowSliders.cs" />

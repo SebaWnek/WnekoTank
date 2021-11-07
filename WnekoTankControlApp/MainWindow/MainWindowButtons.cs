@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,53 +21,6 @@ namespace WnekoTankControlApp
     /// </summary>
     public partial class MainWindow
     {
-        List<Button> connectButtons;
-        bool shouldQueue = false;
-        private void Send(string msg)
-        {
-            if (shouldQueue)
-            {
-                commandList.Add(msg);
-                return;
-            }
-            try
-            {
-                outQueue.SendMessage(msg);
-            }
-            catch (NullReferenceException)
-            {
-                MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            catch (Exception ex)
-            {                 
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw ex;
-            }
-        }
-
-        private void SendEmergency(string msg)
-        {
-            try
-            {
-                outQueue.SendEmergencyMessage(msg);
-            }
-            catch (NullReferenceException)
-            {
-                MessageBox.Show("Connect first!", "Not connected!", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw ex;
-            }
-        }
-
-
-
-
-
         private void Gear1btn_Click(object sender, RoutedEventArgs e)
         {
             string msg = TankCommandList.setGear + "1";
@@ -165,62 +120,6 @@ namespace WnekoTankControlApp
         {
             string msg = TankCommandList.checkCalibration;
             Send(msg);
-        }
-
-        private void DisconnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (Button btn in connectButtons) btn.IsEnabled = true;
-            DisconnectButton.IsEnabled = false;
-            communication?.ClosePort();
-            communication = null;
-            outQueue = null;
-            inQueue = null;
-        }
-
-        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            string port = PortBox.Text;
-            try
-            {
-                if ((bool)usbComRadio.IsChecked) communication = new ComPortCommunication(port);
-                else communication = new HC12Communication(port);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            await Connect();
-        }
-
-        private async void MockConnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                communication = new MockCommunication();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            await Connect();
-        }
-
-        private async Task Connect()
-        {
-            foreach (Button btn in connectButtons) btn.IsEnabled = false;
-            DisconnectButton.IsEnabled = true;
-            outputBox.Text += "Connecting... \r\n";
-            outQueue = new OutgoingMessageQueue(communication, DisplayMessage);
-            inQueue = new IncommingMessageQueue();
-            communication.SubscribeToMessages(inQueue.IncommingMessageHandler);
-            RegisterMethods();
-
-            await Task.Delay(1000);
-            Send(TankCommandList.handshake);
-            await Task.Delay(1000);
-            Send(TankCommandList.handshake);
         }
 
         private void ClearQueue_Click(object sender, RoutedEventArgs e)

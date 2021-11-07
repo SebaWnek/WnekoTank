@@ -6,6 +6,11 @@
     public static class TankCommandList
     {
         /// <summary>
+        /// DateTime data
+        /// </summary>
+        public static string hello = "HSL";
+
+        /// <summary>
         /// empty
         /// </summary>
         public static string emergencyPrefix = "EMG";  
@@ -184,8 +189,12 @@
         /// <summary>
         /// int brightness
         /// </summary>
-        public static string ledNarrowPower = "LNP";        
+        public static string ledNarrowPower = "LNP";
         //public static string cameraPower = "CAM";         
 
+        /// <summary>
+        /// string IP ; int port
+        /// </summary>
+        public static string connectUdp = "UDP";
     }
 }

@@ -63,6 +63,9 @@ namespace WnekoTankMeadow
             catch (Exception e)
             {
                 com.SendMessage(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+#if DEBUG
+                Console.WriteLine(e.Message + "/n/n" + e.StackTrace);
+#endif
                 displayBig.Write(e.Message);
                 displaySmall.Write(e.Message);
                 queue.StopInvoking();
@@ -123,7 +126,7 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Initializing watchdog");
             watchdog = new Watchdog(Watchdog.Type.SerialPort);
-            com.RegisterWatchdog(watchdog.MessageReceived);
+            serialCom.RegisterWatchdog(watchdog.MessageReceived);
             watchdog.RegisterSender(com.SendMessage);
             watchdog.RegisterBlockAction(EmergencyDisable);
 
@@ -312,7 +315,8 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.fanMotorsState, motorsFans.SetState);
             dict.RegisterMethod(TankCommandList.ledNarrowPower, narrowLed.SetBrightnes);
             dict.RegisterMethod(TankCommandList.ledWidePower, wideLed.SetBrightnes);
-            dict.RegisterMethod(TankCommandList.setElectricDataDelay, ina219s.SetElectricDataDelay);
+            dict.RegisterMethod(TankCommandList.hello, Hello);
+            dict.RegisterMethod(TankCommandList.connectUdp, SwitchToIP);
         }
 
         public void Diangoze(string empty)
@@ -356,36 +360,53 @@ namespace WnekoTankMeadow
         /// <param name="empty">Incoming parameters, none needed so should me empty</param>
         public void HandShake(string empty)
         {
-            if (!watchdog.IsStarted) watchdog.StartCheckingMessages();
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.Buzz(200);
 #pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
+        }
+
+        /// <summary>
+        /// Starts watchdog and sets clock, as RTC not programmed yet, later will be using RTC for that
+        /// </summary>
+        /// <param name="time">DateTime.Now.ToString() from controll app</param>
+        public void Hello(string time)
+        {
+            if (!watchdog.IsStarted) watchdog.StartCheckingMessages();
+            DateTime currentTime = DateTime.Parse(time);
+            Device.SetClock(currentTime);
+            displaySmall.Write("Radio com       received!");
+#if DEBUG
+            Console.WriteLine("Time set to: " + currentTime.ToString());
+#endif
         }
 
         public void SwitchToSerial()
         {
             motor.Break();
             queue.ClearQueue();
+            (ipCom as WifiUdpCommunication).Disconnect();
             ipCom = null;
             (com as CommunicationWrapper).SetCommunication(serialCom);
             watchdog.ChangeType(Watchdog.Type.SerialPort);
             com.SendMessage(ReturnCommandList.displayMessage + "Switched to serial communication!");
-            //To be done after WiFi implementation
         }
 
         public void SwitchToIP(string data)
         {
             motor.Break();
             queue.ClearQueue();
-            ipCom = new WifiCommunication(data);
-            if ((ipCom as WifiCommunication).Connected)
+            ipCom = new WifiUdpCommunication(data, new Action<string>[] { com.SendMessage, displaySmall.Write }); //Waiting for it to return
+            if ((ipCom as WifiUdpCommunication).Connected)
             {
                 (com as CommunicationWrapper).SetCommunication(ipCom);
                 watchdog.ChangeType(Watchdog.Type.IP);
+                ipCom.RegisterWatchdog(watchdog.MessageReceived);
                 com.SendMessage(ReturnCommandList.displayMessage + "Switched to IP communication!");
             }
-            com.SendMessage(ReturnCommandList.exception + "Unable to change communication method!");
-            //To be done after WiFi implementation
+            else
+            {
+                com.SendMessage(ReturnCommandList.exception + "Unable to change communication method!");
+            }
         }
     }
 }

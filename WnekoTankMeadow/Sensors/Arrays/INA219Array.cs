@@ -206,11 +206,5 @@ namespace WnekoTankMeadow.Sensors
         {
             setFanState += fanSetter;
         }
-
-        internal void SetElectricDataDelay(string args)
-        {
-            int d = int.Parse(args);
-            delay = d;
-        }
     }
 }

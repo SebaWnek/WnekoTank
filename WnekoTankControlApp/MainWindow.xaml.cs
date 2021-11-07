@@ -121,7 +121,5 @@ namespace WnekoTankControlApp
                 ScrollView.ScrollToVerticalOffset(ScrollView.ExtentHeight);
             }
         }
-
-
     }
 }

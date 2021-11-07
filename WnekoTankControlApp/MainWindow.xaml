@@ -968,16 +968,42 @@
                         <ColumnDefinition Width="4*"/>
                         <ColumnDefinition x:Name="QueueColumn" Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="10">
+                    <StackPanel Grid.Column="0" Margin="10" Grid.RowSpan="2">
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
                             <Label Width="150">Serial port over USB:</Label>
                             <TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>
                             <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
                             <Label Width="70">Baud rate:</Label>
 
-                            <RadioButton x:Name="usbComRadio" Content="USB cable" IsChecked="True" Margin="5" GroupName="com"/>
-                            <RadioButton x:Name="hc12ComRadio" Content="Radio" Margin="5" GroupName="com"/>
+                            <RadioButton x:Name="usbComRadio" Content="USB cable" IsChecked="False" Margin="5" GroupName="com"/>
+                            <RadioButton x:Name="hc12ComRadio" Content="Radio" IsChecked="True" Margin="5" GroupName="com"/>
                         </StackPanel>
+                        <Separator Margin="10"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <Label Content="UDP over WiFi:"/>
+                                <Button x:Name="wifiUdpConnect" Content="Connect" Click="wifiUdpConnect_Click"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Local port:"/>
+                                    <TextBox x:Name="localPortBox" Text="33333" Width="50" VerticalAlignment="Center"/>
+                                    <Label Content="Rover port:"/>
+                                    <TextBox Width="50" Text="22222" IsReadOnly="True" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <Label Content="Select IP:"/>
+                                <ListBox x:Name="wifiListBox" Height="100"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="wifiListRefresh" Content="Refresh" Click="wifiListRefresh_Click"/>
+                                    <CheckBox x:Name="ipv4box" Content="IPv4" Margin="5" IsChecked="True"/>
+                                    <CheckBox x:Name="ipv6box" Content="IPv4" Margin="5" IsChecked="False"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
                         <Separator Margin="10"/>
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
                             <Label Width="150">Mock:</Label>
@@ -988,14 +1014,7 @@
                             <Button x:Name="handshakeButton" Content="Handshake" Width="100" Click="HandshakeButton_Click" HorizontalAlignment="Left"/>
                             <Button x:Name="DisconnectButton" Content="Disconnect" Click="DisconnectButton_Click" IsEnabled="False" Width="100" HorizontalAlignment="Left"/>
                         </StackPanel>
-                    </StackPanel>
-                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
-                        <Button x:Name="queueStart" Content="Start Queue" Click="QueueStart_Click" Height="30"/>
-                        <Button x:Name="queueStop" Content="Stop Queue" Click="QueueStop_Click" Height="30"/>
-                        <Button x:Name="listQueue" Content="Enumerate Queue" Click="ListQueue_Click" Height="30"/>
-                        <Button x:Name="clearQueue" Content="Clear Queue" Click="ClearQueue_Click" Height="30"/>
-                    </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="10">
+                    <StackPanel Margin="10">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"/>
@@ -1076,6 +1095,13 @@
                         </Grid>
                         <Separator Margin="10"/>
 
+                    </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="10">
+                        <Button x:Name="queueStart" Content="Start Queue" Click="QueueStart_Click" Height="30"/>
+                        <Button x:Name="queueStop" Content="Stop Queue" Click="QueueStop_Click" Height="30"/>
+                        <Button x:Name="listQueue" Content="Enumerate Queue" Click="ListQueue_Click" Height="30"/>
+                        <Button x:Name="clearQueue" Content="Clear Queue" Click="ClearQueue_Click" Height="30"/>
                     </StackPanel>
                     <Grid Grid.Row="1" Grid.Column="1">
                         <Grid.RowDefinitions>
