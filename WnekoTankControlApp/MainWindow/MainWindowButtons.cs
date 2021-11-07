@@ -291,5 +291,23 @@ namespace WnekoTankControlApp
             Send(msg);
 
         }
+
+        private void CheckClockBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = TankCommandList.checkClock;
+            Send(msg);
+        }
+
+        private void SetClockBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = TankCommandList.setClock + DateTime.Now.ToString();
+            Send(msg);
+        }
+
+        private void ResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = TankCommandList.emergencyPrefix + TankCommandList.resetDevice;
+            SendEmergency(msg);
+        }
     }
 }

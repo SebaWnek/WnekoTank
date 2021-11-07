@@ -51,7 +51,7 @@ namespace WnekoTankMeadow.Others
             for(byte i = 0; i < rows; i++)
             {
                 if (msg.Length > columns * (i + 1)) display.WriteLine(msg.Substring(columns * i, columns), i);
-                else if (msg.Length > columns * i && msg.Length <= columns * (i + 1)) display.WriteLine(msg.Substring(columns * i), i);
+                else if (msg.Length > columns * i && msg.Length <= columns * (i + 1)) display.WriteLine(msg[(columns * i)..], i);
                 else return;
             }
         }

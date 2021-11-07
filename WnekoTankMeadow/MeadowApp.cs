@@ -22,7 +22,7 @@ namespace WnekoTankMeadow
     /// <summary>
     /// Main class
     /// </summary>
-    public class MeadowApp : App<F7Micro, MeadowApp>
+    public partial class MeadowApp : App<F7Micro, MeadowApp>
     {
         ITankCommunication com;
         ITankCommunication serialCom;
@@ -51,6 +51,7 @@ namespace WnekoTankMeadow
         LedLamp narrowLed;
         Camera camera;
         Watchdog watchdog;
+        Rtc clock;
         public MeadowApp()
         {
             try
@@ -120,6 +121,13 @@ namespace WnekoTankMeadow
                                                                        preserveDelimiter: true, 115200, 8, Parity.None,
                                                                        StopBits.One));
             com = new CommunicationWrapper(serialCom);
+
+#if DEBUG
+            Console.WriteLine("Initializing RTC");
+#endif
+            displaySmall.Write("Initializing RTC");
+            clock = new Rtc(bus, com.SendMessage, SetClock);
+            clock.SetClockFromRtc();
 
 #if DEBUG
             Console.WriteLine("Initializing watchdog");
@@ -286,7 +294,7 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.setTurn, motor.SetTurn);
             dict.RegisterMethod(TankCommandList.setSpeedWithTurn, motor.SetSpeedAndTurn);
             dict.RegisterMethod(TankCommandList.stop, motor.Break);
-            dict.RegisterMethod(TankCommandList.wait, HelperMethods.Wait);
+            dict.RegisterMethod(TankCommandList.wait, Wait);
             dict.RegisterMethod(TankCommandList.startInvoking, queue.StartInvoking);
             dict.RegisterMethod(TankCommandList.stopInvoking, queue.StopInvoking);
             dict.RegisterMethod(TankCommandList.enumerateQueue, queue.EnumerateQueue);
@@ -317,99 +325,9 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.ledWidePower, wideLed.SetBrightnes);
             dict.RegisterMethod(TankCommandList.hello, Hello);
             dict.RegisterMethod(TankCommandList.connectUdp, SwitchToIP);
-        }
-
-        public void Diangoze(string empty)
-        {
-            Process currentProcess = Process.GetCurrentProcess();
-#if DEBUG
-            Console.WriteLine(currentProcess.Id);
-            //Console.WriteLine(currentProcess.ProcessName);
-            Console.WriteLine(currentProcess.Threads.Count);
-#endif
-            ProcessThreadCollection currentThreads = currentProcess.Threads;
-
-            foreach (ProcessThread thread in currentThreads)
-            {
-#if DEBUG
-                Console.WriteLine(thread.Id.ToString());
-#endif
-                //com.SendMessage(thread.Id.ToString());
-                Thread.Sleep(20);
-            }
-        }
-
-
-        /// <summary>
-        /// Lock device from performing any action, either in emergency situation, or when battery is discharged too much
-        /// </summary>
-        private void EmergencyDisable()
-        {
-            motor.Break();
-            queue.LockQueue();
-            onboardLed.SetColor(Color.Red);
-#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-            buzzer.BuzzPulse(100, 100, int.MaxValue);
-#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-            displaySmall.Write("!!!EMERGENDY DISABLE  ENGAGED!!!");
-        }
-
-        /// <summary>
-        /// Reaction to hand shake message from controll app
-        /// </summary>
-        /// <param name="empty">Incoming parameters, none needed so should me empty</param>
-        public void HandShake(string empty)
-        {
-#pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-            buzzer.Buzz(200);
-#pragma warning restore CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
-        }
-
-        /// <summary>
-        /// Starts watchdog and sets clock, as RTC not programmed yet, later will be using RTC for that
-        /// </summary>
-        /// <param name="time">DateTime.Now.ToString() from controll app</param>
-        public void Hello(string time)
-        {
-            if (!watchdog.IsStarted) watchdog.StartCheckingMessages();
-            DateTime currentTime = DateTime.Parse(time);
-            Device.SetClock(currentTime);
-            displaySmall.Write("Radio com       received!");
-#if DEBUG
-            Console.WriteLine("Time set to: " + currentTime.ToString());
-#endif
-        }
-
-        public void SwitchToSerial()
-        {
-            motor.Break();
-            queue.ClearQueue();
-            (ipCom as WifiUdpCommunication).Disconnect();
-            ipCom = null;
-            (com as CommunicationWrapper).SetCommunication(serialCom);
-            watchdog.ChangeType(Watchdog.Type.SerialPort);
-            com.SendMessage(ReturnCommandList.displayMessage + "Switched to serial communication!");
-        }
-
-        public void SwitchToIP(string data)
-        {
-            Console.WriteLine(1);
-            motor.Break();
-            Console.WriteLine(2);
-            queue.ClearQueue();
-            Console.WriteLine(3);
-            ipCom = new WifiUdpCommunication(data, new Action<string>[] { com.SendMessage, displaySmall.Write }); //Waiting for it to return
-            if ((ipCom as WifiUdpCommunication).Connected)
-            {
-                (com as CommunicationWrapper).SetCommunication(ipCom);
-                watchdog.ChangeType(Watchdog.Type.IP);
-                ipCom.RegisterWatchdog(watchdog.MessageReceived);
-                com.SendMessage(ReturnCommandList.displayMessage + "Switched to IP communication!");
-            }
-            else
-            {
-                com.SendMessage(ReturnCommandList.exception + "Unable to change communication method!");
-            }
+            dict.RegisterMethod(TankCommandList.setClock, clock.SetClockFromPc);
+            dict.RegisterMethod(TankCommandList.checkClock, clock.CheckClock);
+            dict.RegisterMethod(TankCommandList.resetDevice, ResetDevice);
         }
     }
 }

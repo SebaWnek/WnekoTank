@@ -294,11 +294,11 @@ namespace WnekoTankMeadow.Sensors
         public void Configure()
         {
             int config = 0;
-            config = config | (byte)configuration.Mode;
-            config = config | ((byte)configuration.ShuntADC << 3);
-            config = config | ((byte)configuration.BusADC << 7);
-            config = config | ((byte)configuration.Pga << 11);
-            config = config | ((byte)configuration.BusVoltageRange << 13);
+            config |= (byte)configuration.Mode;
+            config |= (byte)configuration.ShuntADC << 3;
+            config |= (byte)configuration.BusADC << 7;
+            config |= (byte)configuration.Pga << 11;
+            config |= (byte)configuration.BusVoltageRange << 13;
 #if DEBUG
             Console.WriteLine($"Writing configuration:\n{Convert.ToString(config, 16)}\n{Convert.ToString(config, 2).PadLeft(16, '0')}");
 #endif

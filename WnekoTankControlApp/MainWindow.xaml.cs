@@ -66,6 +66,8 @@ namespace WnekoTankControlApp
             electricPlotModel = new ElectricPlotModel();
             electricPlot.Model = electricPlotModel.DataModel;
             startTime = DateTime.Now;
+            GetSerialPorts();
+            GetIPAddresses();
             //mjpegRight = new MjpegDecoder();
             //mjpegRight.FrameReady += MjpegRight_FrameReady;
             //mjpegRight.Error += MjpegRight_Error;
@@ -77,7 +79,7 @@ namespace WnekoTankControlApp
         /// <param name="msg">String to be printed</param>
         public void DisplayMessage(string msg)
         {
-            Dispatcher.Invoke(() => outputBox.Text += msg + "\r\n");
+            Dispatcher.Invoke(() => OutputBox.Text += msg + "\r\n");
         }
 
         /// <summary>

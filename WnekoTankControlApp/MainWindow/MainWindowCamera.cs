@@ -44,7 +44,7 @@ namespace WnekoTankControlApp
         //    "Home"
         //};
         int w,h;
-        double horAngle = 128, verAngle = 96;
+        double horAngle = 128; //verAngle = 96;
         double angularResolution;
 
         string baseAddress;
@@ -59,7 +59,7 @@ namespace WnekoTankControlApp
             leftCameraImage.Source = e.BitmapImage;
         }
 
-        private async void browserLeftButton_Click(object sender, RoutedEventArgs e)
+        private async void BrowserLeftButton_Click(object sender, RoutedEventArgs e)
         {
             baseAddress = browserLeftAddress.Text;
             client = new HttpClient();
@@ -71,14 +71,14 @@ namespace WnekoTankControlApp
             resolutionLabel.Content = $"{w}x{h}px";
         }
 
-        private void browserLeftStopButton_Click(object sender, RoutedEventArgs e)
+        private void BrowserLeftStopButton_Click(object sender, RoutedEventArgs e)
         {
             client.Dispose();
             wbListBox.ItemsSource = null;
             mjpegLeft.StopStream();
         }
 
-        private async void resolutionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private async void ResolutionSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
             value = SelectResolution(value);
@@ -105,45 +105,45 @@ namespace WnekoTankControlApp
 
         }
 
-        private void qualitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void QualitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
             string address = baseAddress + controlSuffix + var + quality + val + value;
             client?.GetAsync(address);
         }
 
-        private void saturationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void SaturationSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
             string address = baseAddress + controlSuffix + var + saturation + val + value;
             client?.GetAsync(address);
         }
 
-        private void brightnesSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void BrightnesSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
             string address = baseAddress + controlSuffix + var + brightness + val + value;
             client?.GetAsync(address);
         }
 
-        private void contrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ContrastSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
             string address = baseAddress + controlSuffix + var + contrast + val + value;
             client?.GetAsync(address);
         }
 
-        private void wbListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void WbListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             int value = wbListBox.SelectedIndex;
             string address = baseAddress + controlSuffix + var + wb_mode + val + value;
             client?.GetAsync(address);
         }
 
-        private void leftCameraImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void LeftCameraImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             angularResolution = w / horAngle;
-            string msg = "";
+            string msg;
             switch (clickMode)
             {
                 case ClickMode.rotateCamera:
@@ -211,7 +211,7 @@ namespace WnekoTankControlApp
         }
 
 
-        private void moveByClickButton_Click(object sender, RoutedEventArgs e)
+        private void MoveByClickButton_Click(object sender, RoutedEventArgs e)
         {
             moveByClickButton.IsEnabled = false;
             turnByClickButton.IsEnabled = false;
@@ -220,7 +220,7 @@ namespace WnekoTankControlApp
             imageArea.Cursor = Cursors.Cross;
         }
 
-        private void turnByClickButton_Click(object sender, RoutedEventArgs e)
+        private void TurnByClickButton_Click(object sender, RoutedEventArgs e)
         {
             moveByClickButton.IsEnabled = false;
             turnByClickButton.IsEnabled = false;
@@ -229,7 +229,7 @@ namespace WnekoTankControlApp
             imageArea.Cursor = Cursors.Cross;
         }
 
-        private void cancelClickButton_Click(object sender, RoutedEventArgs e)
+        private void CancelClickButton_Click(object sender, RoutedEventArgs e)
         {
             moveByClickButton.IsEnabled = true;
             turnByClickButton.IsEnabled = true;

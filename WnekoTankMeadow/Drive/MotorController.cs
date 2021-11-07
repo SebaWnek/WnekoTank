@@ -286,8 +286,8 @@ namespace WnekoTankMeadow
             float absDist = Math.Abs(distance);
             int turns = (int)Math.Round(absDist * 1000 / circumference);
             rightCounter.SetTarget(turns - slowdownTurns);
-            leftCounter.SetTarget(turns - 2);
-            SetLinearSpeedSoft(speed);
+            leftCounter.SetTarget(turns - slowdownTurns);
+            SetLinearSpeed(direction > 0 ? speed : -1 * speed);
             moveForwardResetEventLeft.WaitOne();
             moveForwardResetEventRight.WaitOne();
             SetGear(1);

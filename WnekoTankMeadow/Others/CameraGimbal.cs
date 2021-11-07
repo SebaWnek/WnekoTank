@@ -156,7 +156,7 @@ namespace WnekoTankMeadow.Others
 #if DEBUG
             Console.WriteLine(args);
 #endif
-            horizontalStabilization = args[2] == '1' ? true : false;
+            horizontalStabilization = args[2] == '1';
             if (args[0] == '1' && !isStabilizing) StartStabilizing();
             else if (args[0] == '0' && isStabilizing) StopStabilizing();
         }

@@ -109,7 +109,7 @@ namespace WnekoTankMeadow.Drive
             for (int i = 0; i < 60; i++) //Timeout after one minute
             {
                 cal = CheckCalibration();
-                sendMessage($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
+                sendMessage(ReturnCommandList.calibrationData + $"{cal[0]};{cal[1]};{cal[2]};{cal[3]}");
                 displayMessage($"S:{cal[0]} G:{cal[1]} A: {cal[2]} M:{cal[3]}");
 #if DEBUG
                 Console.WriteLine($"S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
@@ -117,8 +117,8 @@ namespace WnekoTankMeadow.Drive
                 if (cal[1] == 3 && cal[2] == 3 && cal[3] == 3)
                 {
                     Thread.Sleep(100);
-                    sendMessage($"Done! S: {cal[0]}, G: {cal[1]}, A: {cal[2]}, M: {cal[3]}");
-                    displayMessage($"OK! S:{cal[0]}G:{cal[1]}A:{cal[2]}M:{cal[3]}");
+                    sendMessage(ReturnCommandList.calibrationData + $"{cal[0]};{cal[1]};{cal[2]};{cal[3]}");
+                    displayMessage($"OK! S:{cal[0]}, G:{cal[1]}, A:{cal[2]}, M:{cal[3]}");
                     Task task = new Task(async () =>
                     {
                         await Task.Delay(5000);
@@ -132,7 +132,7 @@ namespace WnekoTankMeadow.Drive
                 }
                 Thread.Sleep(1000);
             }
-            sendMessage("Not calibrated!");
+            sendMessage(ReturnCommandList.displayMessage + "Not calibrated!");
 #if DEBUG
             Console.WriteLine("Not calibrated!");
 #endif

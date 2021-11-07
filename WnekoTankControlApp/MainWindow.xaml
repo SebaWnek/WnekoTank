@@ -663,7 +663,7 @@
                     </StackPanel>-->
                     <Border x:Name="imageArea" BorderBrush="Black" BorderThickness="2" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Margin="1,40,1,10" Padding="5">
                         <Grid>
-                            <Image x:Name="leftCameraImage" MouseLeftButtonDown="leftCameraImage_MouseLeftButtonDown" />
+                            <Image x:Name="leftCameraImage" MouseLeftButtonDown="LeftCameraImage_MouseLeftButtonDown" />
                             <Canvas>
                                 <Label x:Name="resolutionLabel" Content="0x0px" Canvas.Bottom="10" Canvas.Right="10" Background="White"/>
                                 <Label x:Name="infoLabel" Content="" Canvas.Top="50" Canvas.Left="50" FontSize="30" Foreground="Red"/>
@@ -734,10 +734,10 @@
                                                 <Label Grid.Row="1" Margin="5">Vertical angle:</Label>
                                                 <TextBox Grid.Row="0" Grid.Column="1" Margin="5" x:Name="gimbalHorAngCanvasBox" Text="0" IsEnabled="False"/>
                                                 <TextBox Grid.Row="1" Grid.Column="1" Margin="5" x:Name="gimbalVerAngCanvasBox" Text="0" IsEnabled="False"/>
-                                                <Button x:Name="resetCameraCanvas" Content="Reset" Grid.Row="2" Click="resetCameraCanvas_Click"/>
+                                                <Button x:Name="resetCameraCanvas" Content="Reset" Grid.Row="2" Click="ResetCameraCanvas_Click"/>
                                                 <CheckBox x:Name="cameraCanvasContinuous" Content="Continuous?" IsChecked="False" 
                                                   Grid.Row="2" Grid.Column="1" Margin="5,12"
-                                                  Checked="cameraCanvasContinuous_Checked" Unchecked="cameraCanvasContinuous_Unchecked"/>
+                                                  Checked="CameraCanvasContinuous_Checked" Unchecked="CameraCanvasContinuous_Unchecked"/>
                                             </Grid>
                                         </TabItem>
                                         <TabItem Header="Predefined">
@@ -760,9 +760,9 @@
                                                 <TextBox x:Name="gimbalDefineXBox" Grid.Row="1" Grid.Column="0" Margin="5" Text="0"/>
                                                 <TextBox x:Name="gimbalDefineYBox" Grid.Row="1" Grid.Column="1" Margin="5" Text="0"/>
                                                 <TextBox x:Name="gimbalDefineNameBox" Grid.Row="1" Grid.Column="2" Margin="5"/>
-                                                <Button x:Name="gimbalDefineAddButton" Grid.Row="1" Content="Add" Grid.Column="3" Click="gimbalDefineAddButton_Click"/>
+                                                <Button x:Name="gimbalDefineAddButton" Grid.Row="1" Content="Add" Grid.Column="3" Click="GimbalDefineAddButton_Click"/>
                                                 <DataGrid x:Name="predefinedDataGrid" Grid.Row="2" Grid.ColumnSpan="5" ItemsSource="{Binding PredefinedPositionsList}" 
-                                              AutoGenerateColumns="False" SelectionChanged="predefinedDataGrid_SelectionChanged">
+                                              AutoGenerateColumns="False" SelectionChanged="PredefinedDataGrid_SelectionChanged">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Binding="{Binding Path=X}" Header="Horizontal angle" Width="100"/>
                                                         <DataGridTextColumn Binding="{Binding Path=Y}" Header="Vertical angle" Width="100"/>
@@ -780,8 +780,8 @@
                             <TabItem Header="Camera settings">
                                 <StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
-                                        <Button x:Name="browserLeftButton" Content="Start camera" Height="30" Width="100" Click="browserLeftButton_Click"/>
-                                        <Button x:Name="browserLeftStopButton" Content="Stop camera" Height="30" Width="100" Click="browserLeftStopButton_Click" Margin="20,0"/>
+                                        <Button x:Name="browserLeftButton" Content="Start camera" Height="30" Width="100" Click="BrowserLeftButton_Click"/>
+                                        <Button x:Name="browserLeftStopButton" Content="Stop camera" Height="30" Width="100" Click="BrowserLeftStopButton_Click" Margin="20,0"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <Label Width="100" Margin="12">Camera address:</Label>
@@ -792,7 +792,7 @@
                                         <StackPanel Orientation="Horizontal">
                                             <Label Width="100" Margin="2">Resolution:</Label>
                                             <Slider x:Name="resolutionSlider" Maximum="6" Minimum="1" TickFrequency="1" Value="13" 
-                                        ValueChanged="resolutionSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
+                                        ValueChanged="ResolutionSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
                                             <TextBox Text="{Binding ElementName=resolutionSlider, Path=Value}" Margin="20,2" Padding="2" Width="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                                         </StackPanel>
                                     </StackPanel>
@@ -801,7 +801,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Label Width="100" Margin="2">Quality:</Label>
                                         <Slider x:Name="qualitySlider" Maximum="63" Minimum="1" TickFrequency="1" Value="25" 
-                                        ValueChanged="qualitySlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
+                                        ValueChanged="QualitySlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
                                         <TextBox Text="{Binding ElementName=qualitySlider, Path=Value}" Margin="20,2" Padding="2" Width="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                                     </StackPanel>
 
@@ -809,7 +809,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Label Width="100" Margin="2">Contrast:</Label>
                                         <Slider x:Name="contrastSlider" Maximum="2" Minimum="-2" TickFrequency="1" Value="0" 
-                                        ValueChanged="contrastSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
+                                        ValueChanged="ContrastSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
                                         <TextBox Text="{Binding ElementName=contrastSlider, Path=Value}" Margin="20,2" Padding="2" Width="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                                     </StackPanel>
 
@@ -817,7 +817,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Label Width="100" Margin="2">Brightnes:</Label>
                                         <Slider x:Name="brightnesSlider" Maximum="2" Minimum="-2" TickFrequency="1" Value="0" 
-                                        ValueChanged="brightnesSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
+                                        ValueChanged="BrightnesSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
                                         <TextBox Text="{Binding ElementName=brightnesSlider, Path=Value}" Margin="20,2" Padding="2" Width="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                                     </StackPanel>
 
@@ -825,14 +825,14 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Label Width="100" Margin="2">Saturation:</Label>
                                         <Slider x:Name="saturationSlider" Maximum="2" Minimum="-2" TickFrequency="1" Value="0" 
-                                        ValueChanged="saturationSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
+                                        ValueChanged="SaturationSlider_ValueChanged" Width="250" IsSnapToTickEnabled="True"/>
                                         <TextBox Text="{Binding ElementName=saturationSlider, Path=Value}" Margin="20,2" Padding="2" Width="40" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
                                     </StackPanel>
 
                                     <Separator Margin="10"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Label Width="100" Margin="2">WB mode:</Label>
-                                        <ListBox x:Name="wbListBox" Width="100" SelectionChanged="wbListBox_SelectionChanged" SelectedIndex="0">
+                                        <ListBox x:Name="wbListBox" Width="100" SelectionChanged="WbListBox_SelectionChanged" SelectedIndex="0">
                                             <ListBoxItem>Auto</ListBoxItem>
                                             <ListBoxItem>Sunny</ListBoxItem>
                                             <ListBoxItem>Cloudy</ListBoxItem>
@@ -939,8 +939,8 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="stopEmergencyBtn" Grid.Column="0" Grid.Row="0" Content="STOP" Click="StopEmergencyBtn_Click"/>
-                        <Button x:Name="proxReset" Grid.Column="2" Content="Reset" Click="ProxReset_Click"/>
+                        <Button x:Name="StopEmergencyBtn" Grid.Column="0" Grid.Row="0" Content="STOP" Click="StopEmergencyBtn_Click"/>
+                        <Button x:Name="ProxReset" Grid.Column="2" Content="Reset" Click="ProxReset_Click"/>
                     </Grid>
 
                     <Grid Grid.Row="0" Grid.Column="2" Margin="10,40,10,10">
@@ -949,9 +949,9 @@
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="moveByClickButton" Content="Move by click" Click="moveByClickButton_Click" Grid.Column="0"/>
-                        <Button x:Name="turnByClickButton" Content="TurnByClick" Click="turnByClickButton_Click" Grid.Column="1"/>
-                        <Button x:Name="cancelClickButton" Content="Cancel" Click="cancelClickButton_Click" Grid.Column="2"/>
+                        <Button x:Name="moveByClickButton" Content="Move by click" Click="MoveByClickButton_Click" Grid.Column="0"/>
+                        <Button x:Name="turnByClickButton" Content="TurnByClick" Click="TurnByClickButton_Click" Grid.Column="1"/>
+                        <Button x:Name="cancelClickButton" Content="Cancel" Click="CancelClickButton_Click" Grid.Column="2"/>
                     </Grid>
 
                 </Grid>
@@ -971,7 +971,9 @@
                     <StackPanel Grid.Column="0" Margin="10" Grid.RowSpan="2">
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
                             <Label Width="150">Serial port over USB:</Label>
-                            <TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>
+                            <ComboBox x:Name="portBox" Width="100" Height="25" VerticalAlignment="Top" Padding="3" Margin="0,0,10,0"/>
+                            <Button x:Name="portRefreshButton" Content="Refresh" Margin="0,0,20,0" Click="PortRefreshButton_Click"/>
+                            <!--<TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>-->
                             <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
                             <Label Width="70">Baud rate:</Label>
 
@@ -986,7 +988,7 @@
                             </Grid.ColumnDefinitions>
                             <StackPanel>
                                 <Label Content="UDP over WiFi:"/>
-                                <Button x:Name="wifiUdpConnect" Content="Connect" Click="wifiUdpConnect_Click"/>
+                                <Button x:Name="wifiUdpConnect" Content="Connect" Click="WifiUdpConnect_Click"/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Local port:"/>
                                     <TextBox x:Name="localPortBox" Text="33333" Width="50" VerticalAlignment="Center"/>
@@ -996,11 +998,11 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <Label Content="Select IP:"/>
-                                <ListBox x:Name="wifiListBox" Height="100"/>
+                                <ComboBox x:Name="wifiListBox" Margin="5"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <Button x:Name="wifiListRefresh" Content="Refresh" Click="wifiListRefresh_Click"/>
+                                    <Button x:Name="wifiListRefresh" Content="Refresh" Click="WifiListRefresh_Click"/>
                                     <CheckBox x:Name="ipv4box" Content="IPv4" Margin="5" IsChecked="True"/>
-                                    <CheckBox x:Name="ipv6box" Content="IPv4" Margin="5" IsChecked="False"/>
+                                    <CheckBox x:Name="ipv6box" Content="IPv6" Margin="5" IsChecked="False"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -1172,7 +1174,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="DiagnozeBtn_Click"/>
-
+                                <Button x:Name="resetButton" Content="Reset device" Height="30" Click="ResetButton_Click"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -1286,7 +1288,27 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-
+                            <StackPanel Margin="10">
+                                <Label Content="Clock:" Margin="5"/>
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Button x:Name="CheckClockBtn" Content="Check onboard clock" Click="CheckClockBtn_Click"/>
+                                    <Button x:Name="SetClockBtn" Content="Set onboard clock" Click="SetClockBtn_Click" Grid.Column="1"/>
+                                    <Label Content="PC Time:" Grid.Row="1"/>
+                                    <TextBox x:Name="PcTimeBox" Grid.Row="1" Grid.Column="1"/>
+                                    <Label Content="Rover Time:" Grid.Row="2"/>
+                                    <TextBox x:Name="RoverTimeBox" Grid.Row="2" Grid.Column="1"/>
+                                </Grid>
+                                <Separator Margin="10"/>
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </Grid>
@@ -1297,9 +1319,9 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button x:Name="sendQueueClearBtn" Grid.Row="0" Content="Clear queue" Click="SendQueueClearBtn_Click"/>
+            <Button x:Name="SendQueueClearBtn" Grid.Row="0" Content="Clear queue" Click="SendQueueClearBtn_Click"/>
             <ScrollViewer x:Name="ScrollView" Grid.Row="1" ScrollChanged="ScrollViewer_ScrollChanged">
-                <TextBlock x:Name="outputBox" />
+                <TextBlock x:Name="OutputBox" />
             </ScrollViewer>
         </Grid>
     </Grid>

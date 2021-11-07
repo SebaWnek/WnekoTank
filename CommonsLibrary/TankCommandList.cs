@@ -6,9 +6,19 @@
     public static class TankCommandList
     {
         /// <summary>
-        /// DateTime data
+        /// empty
         /// </summary>
         public static string hello = "HSL";
+
+        /// <summary>
+        /// DateTime string data
+        /// </summary>
+        public static string setClock = "CLK";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string checkClock = "CCK";
 
         /// <summary>
         /// empty
@@ -196,5 +206,10 @@
         /// string IP ; int port
         /// </summary>
         public static string connectUdp = "UDP";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string resetDevice = "RST";
     }
 }

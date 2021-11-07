@@ -70,5 +70,10 @@ namespace CommonsLibrary
         /// message to be displayed
         /// </summary>
         public static string displayMessage = "DMS";
+
+        /// <summary>
+        /// DateTime data
+        /// </summary>
+        public static string time = "TIM";
     }
 }
