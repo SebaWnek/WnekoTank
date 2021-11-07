@@ -291,5 +291,15 @@ namespace WnekoTankControlApp
             Send(msg);
 
         }
+
+        private void checkClock_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void setClockBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

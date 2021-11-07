@@ -971,7 +971,9 @@
                     <StackPanel Grid.Column="0" Margin="10" Grid.RowSpan="2">
                         <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top">
                             <Label Width="150">Serial port over USB:</Label>
-                            <TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>
+                            <ComboBox x:Name="portBox" Width="100" Height="25" VerticalAlignment="Top" Padding="3" Margin="0,0,10,0"/>
+                            <Button x:Name="portRefreshButton" Content="Refresh" Margin="0,0,20,0" Click="portRefreshButton_Click"/>
+                            <!--<TextBox x:Name="PortBox" Text="COM3" Width="100" Height="25" VerticalAlignment="Top" Padding="3"/>-->
                             <Button x:Name="ConnectButton" Content="Connect" Click="ConnectButton_Click"/>
                             <Label Width="70">Baud rate:</Label>
 
@@ -996,11 +998,11 @@
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <Label Content="Select IP:"/>
-                                <ListBox x:Name="wifiListBox" Height="100"/>
+                                <ComboBox x:Name="wifiListBox" Margin="5"/>
                                 <StackPanel Orientation="Horizontal">
                                     <Button x:Name="wifiListRefresh" Content="Refresh" Click="wifiListRefresh_Click"/>
                                     <CheckBox x:Name="ipv4box" Content="IPv4" Margin="5" IsChecked="True"/>
-                                    <CheckBox x:Name="ipv6box" Content="IPv4" Margin="5" IsChecked="False"/>
+                                    <CheckBox x:Name="ipv6box" Content="IPv6" Margin="5" IsChecked="False"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -1286,7 +1288,27 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-
+                            <StackPanel Margin="10">
+                                <Label Content="Clock:" Margin="5"/>
+                                <Grid Margin="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Button x:Name="checkClockBtn" Content="Check onboard clock" Click="checkClockBtn_Click"/>
+                                    <Button x:Name="setClockBtn" Content="Set onboard clock" Click="setClockBtn_Click" Grid.Column="1"/>
+                                    <Label Content="PC Time:" Grid.Row="1"/>
+                                    <TextBox x:Name="pcTimeBox" Grid.Row="1" Grid.Column="1"/>
+                                    <Label Content="Rover Time:" Grid.Row="2"/>
+                                    <TextBox x:Name="roverTimeBox" Grid.Row="2" Grid.Column="1"/>
+                                </Grid>
+                                <Separator Margin="10"/>
+                            </StackPanel>
                         </Grid>
                     </StackPanel>
                 </Grid>

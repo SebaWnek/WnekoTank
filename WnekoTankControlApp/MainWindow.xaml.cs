@@ -66,6 +66,8 @@ namespace WnekoTankControlApp
             electricPlotModel = new ElectricPlotModel();
             electricPlot.Model = electricPlotModel.DataModel;
             startTime = DateTime.Now;
+            GetSerialPorts();
+            GetIPAddresses();
             //mjpegRight = new MjpegDecoder();
             //mjpegRight.FrameReady += MjpegRight_FrameReady;
             //mjpegRight.Error += MjpegRight_Error;

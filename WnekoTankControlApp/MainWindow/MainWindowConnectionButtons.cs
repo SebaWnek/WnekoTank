@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -23,6 +24,19 @@ namespace WnekoTankControlApp
     {
         List<Button> connectButtons;
         List<IPAddress> iPAddresses;
+        string[] serialPorts;
+
+        private void portRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            GetSerialPorts();
+        }
+
+        private void GetSerialPorts()
+        {
+            serialPorts = SerialPort.GetPortNames().Distinct().ToArray();
+            portBox.ItemsSource = serialPorts;
+            if (serialPorts.Length > 0) portBox.SelectedItem = portBox.Items[0];
+        }
 
         private void DisconnectButton_Click(object sender, RoutedEventArgs e)
         {
@@ -40,7 +54,7 @@ namespace WnekoTankControlApp
 
         private async void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
-            string port = PortBox.Text;
+            string port = portBox.SelectedItem.ToString();
             try
             {
                 if ((bool)usbComRadio.IsChecked) communication = new ComPortCommunication(port);
@@ -83,14 +97,19 @@ namespace WnekoTankControlApp
             await Task.Delay(1000);
             Send(TankCommandList.handshake);
             await Task.Delay(500);
-            Send(TankCommandList.hello + DateTime.Now.ToString());
+            Send(TankCommandList.hello);
         }
 
         private void wifiListRefresh_Click(object sender, RoutedEventArgs e)
         {
+            GetIPAddresses();
+        }
+
+        private void GetIPAddresses()
+        {
             iPAddresses = Dns.GetHostAddresses(Dns.GetHostName()).
-                Where(x => ((bool)ipv4box.IsChecked && x.AddressFamily == AddressFamily.InterNetwork) ||
-                ((bool)ipv6box.IsChecked && x.AddressFamily == AddressFamily.InterNetworkV6)).ToList();
+                            Where(x => ((bool)ipv4box.IsChecked && x.AddressFamily == AddressFamily.InterNetwork) ||
+                            ((bool)ipv6box.IsChecked && x.AddressFamily == AddressFamily.InterNetworkV6)).ToList();
             wifiListBox.ItemsSource = iPAddresses;
             if (iPAddresses.Count > 0) wifiListBox.SelectedItem = wifiListBox.Items[0];
             else MessageBox.Show("No adapter found!", "Can't connect!", MessageBoxButton.OK, MessageBoxImage.Error);

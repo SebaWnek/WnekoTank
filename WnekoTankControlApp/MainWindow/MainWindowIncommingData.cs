@@ -27,6 +27,13 @@ namespace WnekoTankControlApp
             inQueue.RegisterMethod(ReturnCommandList.dischargedBattery, DischargedBatteryReceived);
             inQueue.RegisterMethod(ReturnCommandList.handShake, HandshakeReceived);
             inQueue.RegisterMethod(ReturnCommandList.displayMessage, DisplayMessageBox);
+            inQueue.RegisterMethod(ReturnCommandList.time, CompareTime);
+        }
+
+        private void CompareTime(string obj)
+        {
+            roverTimeBox.Text = obj;
+            pcTimeBox.Text = DateTime.Now.ToString();
         }
 
         private void DisplayMessageBox(string obj)

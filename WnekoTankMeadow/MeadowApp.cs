@@ -51,6 +51,7 @@ namespace WnekoTankMeadow
         LedLamp narrowLed;
         Camera camera;
         Watchdog watchdog;
+        Rtc clock;
         public MeadowApp()
         {
             try
@@ -120,6 +121,13 @@ namespace WnekoTankMeadow
                                                                        preserveDelimiter: true, 115200, 8, Parity.None,
                                                                        StopBits.One));
             com = new CommunicationWrapper(serialCom);
+
+#if DEBUG
+            Console.WriteLine("Initializing RTC");
+#endif
+            displaySmall.Write("Initializing RTC");
+            clock = new Rtc(bus, com.SendMessage, SetClock);
+            clock.SetClockFromRtc();
 
 #if DEBUG
             Console.WriteLine("Initializing watchdog");
@@ -317,6 +325,8 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.ledWidePower, wideLed.SetBrightnes);
             dict.RegisterMethod(TankCommandList.hello, Hello);
             dict.RegisterMethod(TankCommandList.connectUdp, SwitchToIP);
+            dict.RegisterMethod(TankCommandList.setClock, clock.SetClockFromPc);
+            dict.RegisterMethod(TankCommandList.checkClock, clock.CheckClock);
         }
 
         public void Diangoze(string empty)
@@ -372,12 +382,7 @@ namespace WnekoTankMeadow
         public void Hello(string time)
         {
             if (!watchdog.IsStarted) watchdog.StartCheckingMessages();
-            DateTime currentTime = DateTime.Parse(time);
-            Device.SetClock(currentTime);
             displaySmall.Write("Radio com       received!");
-#if DEBUG
-            Console.WriteLine("Time set to: " + currentTime.ToString());
-#endif
         }
 
         public void SwitchToSerial()
@@ -407,6 +412,14 @@ namespace WnekoTankMeadow
             {
                 com.SendMessage(ReturnCommandList.exception + "Unable to change communication method!");
             }
+        }
+
+        public void SetClock(DateTime time)
+        {
+            Device.SetClock(time);
+#if DEBUG
+            Console.WriteLine("Time set to: " + time.ToString());
+#endif
         }
     }
 }
