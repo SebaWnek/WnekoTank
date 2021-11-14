@@ -211,5 +211,15 @@
         /// empty
         /// </summary>
         public static string resetDevice = "RST";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string checkWiFiStatus = "CWF";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string connectToWiFi = "CKW";
     }
 }

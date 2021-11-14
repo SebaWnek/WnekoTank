@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -300,7 +301,7 @@ namespace WnekoTankControlApp
 
         private void SetClockBtn_Click(object sender, RoutedEventArgs e)
         {
-            string msg = TankCommandList.setClock + DateTime.Now.ToString();
+            string msg = TankCommandList.setClock + DateTime.Now.ToString(new CultureInfo("pl-PL"));
             Send(msg);
         }
 

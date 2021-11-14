@@ -56,8 +56,8 @@ namespace WnekoTankMeadow
         /// </summary>
         private void EmergencyDisable()
         {
-            motor.Break();
-            queue.LockQueue();
+            motor?.Break();
+            queue?.LockQueue();
             onboardLed.SetColor(Color.Red);
 #pragma warning disable CS4014 // To wywołanie nie jest oczekiwane, dlatego wykonywanie bieżącej metody będzie kontynuowane do czasu ukończenia wywołania
             buzzer.BuzzPulse(100, 100, int.MaxValue);
@@ -84,6 +84,8 @@ namespace WnekoTankMeadow
         {
             if (!watchdog.IsStarted) watchdog.StartCheckingMessages();
             displaySmall.Write("Radio com       received!");
+            CheckWiFiStatus("");
+            if(com.CommunicationType != Type.Serial && com.CommunicationType != Type.RF) SwitchToSerial();
         }
 
         public void SwitchToSerial()
@@ -91,28 +93,43 @@ namespace WnekoTankMeadow
             motor.Break();
             queue.ClearQueue();
             (ipCom as WifiUdpCommunication).Disconnect();
-            ipCom = null;
             (com as CommunicationWrapper).SetCommunication(serialCom);
             watchdog.ChangeType(Watchdog.Type.SerialPort);
+            com.SendMessage(ReturnCommandList.switchToSerial);
             com.SendMessage(ReturnCommandList.displayMessage + "Switched to serial communication!");
         }
 
-        public void SwitchToIP(string data)
+        public void SwitchToUdp(string data)
         {
             motor.Break();
             queue.ClearQueue();
-            ipCom = new WifiUdpCommunication(data, new Action<string>[] { com.SendMessage, displaySmall.Write }); //Waiting for it to return
-            if ((ipCom as WifiUdpCommunication).Connected)
+            //watchdog.Stop();
+            //ipCom = new WifiUdpCommunication(data, new Action<string>[] { com.SendMessage, displaySmall.Write }); //Waiting for it to return
+            if(!(ipCom as WifiUdpCommunication).ConnectedToWiFi) (ipCom as WifiUdpCommunication).ConnectToWiFi();
+            CheckWiFiStatus("");
+            (ipCom as WifiUdpCommunication).Connect(data);
+            if ((ipCom as WifiUdpCommunication).ConnectedToWiFi && (ipCom as WifiUdpCommunication).ConnectedToClient)
             {
+                com.SendMessage(ReturnCommandList.switchToUdp);
                 (com as CommunicationWrapper).SetCommunication(ipCom);
                 watchdog.ChangeType(Watchdog.Type.IP);
-                ipCom.RegisterWatchdog(watchdog.MessageReceived);
+                //ipCom.RegisterWatchdog(watchdog.MessageReceived);
+                Thread.Sleep(200);
+                com.SendMessage(ReturnCommandList.acknowledge);
+                Thread.Sleep(100);
                 com.SendMessage(ReturnCommandList.displayMessage + "Switched to IP communication!");
+#if DEBUG
+                Console.WriteLine("Switched to IP communication!");
+#endif
             }
             else
             {
                 com.SendMessage(ReturnCommandList.exception + "Unable to change communication method!");
+#if DEBUG
+                Console.WriteLine("Unable to change communication method!");
+#endif
             }
+            //watchdog.StartCheckingMessages();
         }
 
         public static void SetClock(DateTime time)
@@ -126,6 +143,17 @@ namespace WnekoTankMeadow
         public static void ResetDevice(string empty)
         {
             MeadowOS.CurrentDevice.Reset();
+        }
+
+        private void CheckWiFiStatus(string obj)
+        {
+            com.SendMessage(ReturnCommandList.wifiConnected + ((ipCom as WifiUdpCommunication).ConnectedToWiFi ? 1 : 0));
+        }
+
+        private void ConnectToWiFi(string obj)
+        {
+            (ipCom as WifiUdpCommunication).ConnectToWiFi();
+            CheckWiFiStatus("");
         }
     }
 }

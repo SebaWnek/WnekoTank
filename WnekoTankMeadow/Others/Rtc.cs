@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using CommonsLibrary;
 using Meadow;
@@ -13,6 +14,8 @@ namespace WnekoTankMeadow.Others
         Action<DateTime> setTime;
         Action<string> sendMessage;
         Ds1307 clock;
+        int repeatCounter;
+        int repeatLimit = 3;
         public Rtc(II2cBus bus)
         {
             clock = new Ds1307(bus);
@@ -29,15 +32,30 @@ namespace WnekoTankMeadow.Others
             DateTime time = clock.GetTime();
             setTime.Invoke(time);
 #if DEBUG
-            Console.WriteLine("Time set from RTC: " + time.ToString());
+            Console.WriteLine("Time set from RTC: " + time.ToString(new CultureInfo("pl-PL")));
 #endif
         }
 
         public void SetClockFromPc(string time)
         {
-            DateTime currentTime = DateTime.Parse(time);
-            clock.SetTime(currentTime);
-            setTime.Invoke(currentTime);
+            DateTime currentTime;
+            //bool success = DateTime.TryParse(time, out currentTime);
+            bool success = DateTime.TryParse(time, new CultureInfo("pl-PL"), DateTimeStyles.None, out currentTime);
+            if (success)
+            {
+                clock.SetTime(currentTime);
+                setTime.Invoke(currentTime);
+                repeatCounter = 0;
+            }
+            else
+            {
+                repeatCounter++;
+                if(repeatCounter >= repeatLimit)
+                {
+                    sendMessage.Invoke(ReturnCommandList.displayMessage + "Unable to set clock!");
+                }
+                sendMessage.Invoke(ReturnCommandList.repeatTime);
+            }
         }
 
         public void RegisterSetTime(Action<DateTime> action)
@@ -52,7 +70,8 @@ namespace WnekoTankMeadow.Others
 
         internal void CheckClock(string obj)
         {
-            string msg = ReturnCommandList.time + DateTime.Now.ToString();
+            string msg = ReturnCommandList.time + DateTime.Now.ToString(new CultureInfo("pl-PL"));
+            Console.WriteLine(msg);
             sendMessage.Invoke(msg);
         }
     }

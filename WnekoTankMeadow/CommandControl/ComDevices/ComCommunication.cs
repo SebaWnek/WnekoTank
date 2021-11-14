@@ -1,5 +1,4 @@
-﻿using Cairo;
-using Meadow.Hardware;
+﻿using Meadow.Hardware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +15,12 @@ namespace WnekoTankMeadow
     {
         ISerialMessagePort port;
         EventHandler<MessageEventArgs> messageEvent;
-        Action<string> signalWatchdog;
+        //Action<string> signalWatchdog;
 
-        public object Locker => new object();
+        private object locker;
+
+        protected Type communicationType = Type.Serial;
+        public Type CommunicationType => communicationType;
 
         /// <summary>
         /// Main constructor
@@ -26,6 +28,7 @@ namespace WnekoTankMeadow
         /// <param name="p">Serial port to use for communication</param>
         public ComCommunication(ISerialMessagePort p)
         {
+            locker = new object();
             port = p;
             port.Open();
             port.MessageReceived += Port_MessageReceived;
@@ -40,7 +43,7 @@ namespace WnekoTankMeadow
         private void Port_MessageReceived(object sender, SerialMessageData e)
         {
             string msg;
-            lock (Locker)
+            lock (locker)
             {
                 msg = Encoding.ASCII.GetString(e.Message);
 #if DEBUG
@@ -58,7 +61,7 @@ namespace WnekoTankMeadow
                 port.Write(Encoding.ASCII.GetBytes($"{ReturnCommandList.acknowledge}{msg}"));
 
 
-                signalWatchdog?.Invoke(msg);
+                //signalWatchdog?.Invoke(msg);
             }
             messageEvent.Invoke(this, new MessageEventArgs(msg));
         }
@@ -69,7 +72,7 @@ namespace WnekoTankMeadow
         /// <param name="msg">Message to be sent</param>
         public void SendMessage(string msg)
         {
-            lock (Locker)
+            lock (locker)
             {
                 port.Write(Encoding.ASCII.GetBytes(msg));
             }
@@ -81,15 +84,12 @@ namespace WnekoTankMeadow
         /// <param name="handler">Delegate of method to be registered</param>
         public void SubscribeToMessages(EventHandler<MessageEventArgs> handler)
         {
-            lock (Locker)
-            {
-                messageEvent += handler;
-            }
+            messageEvent += handler;
         }
 
         public void SendMessage(object sender, string msg)
         {
-            lock (Locker)
+            lock (locker)
             {
 #if DEBUG
                 Console.WriteLine($"Sending: -{msg}-");
@@ -98,9 +98,14 @@ namespace WnekoTankMeadow
             }
         }
 
-        public void RegisterWatchdog(Action<string> action)
+        //public void RegisterWatchdog(Action<string> action)
+        //{
+        //    signalWatchdog = action;
+        //}
+
+        public void UnsubscribeMessages()
         {
-            signalWatchdog += action;
+            messageEvent = null;
         }
     }
 }

@@ -123,6 +123,27 @@ namespace WnekoTankMeadow
             com = new CommunicationWrapper(serialCom);
 
 #if DEBUG
+            Console.WriteLine("Initializing WiFi");
+#endif
+            displaySmall.Write("Initializing WiFi");
+            ipCom = new WifiUdpCommunication(Device.WiFiAdapter, new Action<string>[] { com.SendMessage, displaySmall.Write });
+            //Trying to connect at startup to speed process up, but router might be still booting so in that case will try again when requested
+            Task.Run(()=> 
+            {
+                try
+                {
+                    ConnectToWiFi("");
+                }
+                catch (Exception e)
+                {
+                    com.SendMessage(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+#if DEBUG
+                    Console.WriteLine(e.Message + "/n/n" + e.StackTrace);
+#endif
+                }
+            }); 
+
+#if DEBUG
             Console.WriteLine("Initializing RTC");
 #endif
             displaySmall.Write("Initializing RTC");
@@ -134,12 +155,18 @@ namespace WnekoTankMeadow
 #endif
             displaySmall.Write("Initializing watchdog");
             watchdog = new Watchdog(Watchdog.Type.SerialPort);
-            serialCom.RegisterWatchdog(watchdog.MessageReceived);
+            //serialCom.RegisterWatchdog(watchdog.MessageReceived);
+            //ipCom.RegisterWatchdog(watchdog.MessageReceived);
             watchdog.RegisterSender(com.SendMessage);
             watchdog.RegisterBlockAction(EmergencyDisable);
+            watchdog.RegisterSwitchToSerial(SwitchToSerial);
 
             dict = new MethodsDictionary();
             queue = new MethodsQueue(com, dict);
+            ipCom.SubscribeToMessages(queue.MessageReceived);
+            ipCom.SubscribeToMessages(watchdog.MessageReceived);
+            serialCom.SubscribeToMessages(queue.MessageReceived);
+            serialCom.SubscribeToMessages(watchdog.MessageReceived);
 
 #if DEBUG
             Console.WriteLine("Initializing pca @1600Hz");
@@ -324,10 +351,12 @@ namespace WnekoTankMeadow
             dict.RegisterMethod(TankCommandList.ledNarrowPower, narrowLed.SetBrightnes);
             dict.RegisterMethod(TankCommandList.ledWidePower, wideLed.SetBrightnes);
             dict.RegisterMethod(TankCommandList.hello, Hello);
-            dict.RegisterMethod(TankCommandList.connectUdp, SwitchToIP);
+            dict.RegisterMethod(TankCommandList.connectUdp, SwitchToUdp);
             dict.RegisterMethod(TankCommandList.setClock, clock.SetClockFromPc);
             dict.RegisterMethod(TankCommandList.checkClock, clock.CheckClock);
             dict.RegisterMethod(TankCommandList.resetDevice, ResetDevice);
+            dict.RegisterMethod(TankCommandList.checkWiFiStatus, CheckWiFiStatus);
+            dict.RegisterMethod(TankCommandList.connectToWiFi, ConnectToWiFi);
         }
     }
 }

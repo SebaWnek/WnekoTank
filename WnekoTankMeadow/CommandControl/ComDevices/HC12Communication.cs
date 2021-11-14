@@ -11,6 +11,7 @@ namespace WnekoTankMeadow.CommandControl.ComDevices
     {
         public HC12Communication(ISerialMessagePort p) : base(p)
         {
+            communicationType = Type.RF;
         }
     }
 }

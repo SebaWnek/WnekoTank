@@ -18,24 +18,27 @@ namespace WnekoTankMeadow.Others
         }
 
         int waitTime = 10000;
-        int repeatTime = 2000;
+        int repeatTime = 3000;
         int repeatCount = 3;
-        AutoResetEvent resetEvent;
+        AutoResetEvent ipResetEvent;
+        AutoResetEvent serialResetEvent;
         Action blockAction;
         Action switchToSerial;
         Func<int, Task> buzzer;
         Type watchdogType;
-        CancellationTokenSource source;
+        CancellationTokenSource udpSource;
+        CancellationTokenSource serialSource;
 
         private Action<string> sendMessage;
-        private TimeSpan meadowWatchdogTime = TimeSpan.FromSeconds(30);
+        private TimeSpan meadowWatchdogTime = TimeSpan.FromMilliseconds(32767);
+        private bool meadowWatchdogStarted = false;
 
         public bool IsStarted { get; set; }
         public Watchdog(Type type)
         {
             watchdogType = type;
-            resetEvent = new AutoResetEvent(false);
-            source = new CancellationTokenSource();
+            serialResetEvent = new AutoResetEvent(false);
+            ipResetEvent = new AutoResetEvent(false);
         }
 
         public void ChangeType(Type type)
@@ -70,25 +73,34 @@ namespace WnekoTankMeadow.Others
             blockAction = stopAction;
         }
 
-        internal void MessageReceived(string obj)
+        internal void MessageReceived(object sender, MessageEventArgs msg)
         {
-            resetEvent.Set();
             MeadowOS.CurrentDevice.WatchdogReset();
+#if DEBUG
+            Console.WriteLine($"Message received by watchdog from {(sender as ITankCommunication).CommunicationType}, current type: {watchdogType}");
+#endif
+            if (watchdogType == Type.IP) ipResetEvent?.Set();
+            else serialResetEvent?.Set();
         }
 
         public void StartCheckingMessages()
         {
             if (!IsStarted)
             {
-                MeadowOS.CurrentDevice.WatchdogEnable(meadowWatchdogTime);
+                if (!meadowWatchdogStarted)
+                {
+                    MeadowOS.CurrentDevice.WatchdogEnable(meadowWatchdogTime);
+                    meadowWatchdogStarted = true;
+                }
                 IsStarted = true;
-                source = new CancellationTokenSource();
                 switch (watchdogType)
                 {
                     case Type.SerialPort:
+                        serialSource = new CancellationTokenSource();
                         StartCheckingMessagesSerial();
                         break;
                     case Type.IP:
+                        udpSource = new CancellationTokenSource();
                         StartCheckingMessagesIP();
                         break;
                 } 
@@ -98,40 +110,63 @@ namespace WnekoTankMeadow.Others
         private void StartCheckingMessagesIP()
         {
 #if DEBUG
-            Console.WriteLine("Starting watchdog - serial comunication mode!");
+            Console.WriteLine("Starting watchdog - IP comunication mode!");
 #endif
             Thread watchdogThread = new Thread(() =>
             {
-                CancellationToken token = source.Token;
-                bool signaled = true;
-                while (true)
+                try
                 {
-                    if (token.IsCancellationRequested) return;
-                    signaled = resetEvent.WaitOne(waitTime);
-#if DEBUG
-                    Console.WriteLine($"Watchdog signaled: {signaled}");
-#endif
-                    if (signaled) continue;
-                    for (int i = 0; i < repeatCount; i++)
+                    CancellationToken token = udpSource.Token;
+                    bool signaled = true;
+                    while (true)
                     {
+                        if (token.IsCancellationRequested)
+                        {
+#if DEBUG
+                            Console.WriteLine($"IP Watchdog cancelled!");
+#endif
+                            return;
+                        }
+                        signaled = ipResetEvent.WaitOne(waitTime);
+#if DEBUG
+                        Console.WriteLine($"IP Watchdog signaled: {signaled}");
+#endif
+                        if (signaled) continue;
+                        for (int i = 0; i < repeatCount; i++)
+                        {
 
 #if DEBUG
-                        Console.WriteLine($"Watchdog not signaled, repeat: {i}");
+                            Console.WriteLine($"IP Watchdog not signaled, repeat: {i}");
 #endif
-                        buzzer(100);
-                        sendMessage.Invoke(ReturnCommandList.handShake);
-                        signaled = resetEvent.WaitOne(repeatTime);
-                        if (signaled) break;
-                    }
-                    if (!signaled)
-                    {
+                            sendMessage.Invoke(ReturnCommandList.handShake);
+                            buzzer(100);
+                            signaled = ipResetEvent.WaitOne(repeatTime);
+                            if (signaled) break;
+                        }
+                        if (!signaled)
+                        {
+                            if (token.IsCancellationRequested)
+                            {
 #if DEBUG
-                        Console.WriteLine($"Watchdog not signaled, blocking!");
+                                Console.WriteLine($"IP Watchdog cancelled!");
 #endif
-                        switchToSerial();
-                        ChangeType(Type.SerialPort);
-                        return;
+                                return;
+                            }
+#if DEBUG
+                            Console.WriteLine($"IP Watchdog not signaled, switching to serial!");
+#endif
+                            switchToSerial();
+                            ChangeType(Type.SerialPort);
+                            return;
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    sendMessage.Invoke(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+#if DEBUG
+                    Console.WriteLine(e.Message + "/n/n" + e.StackTrace);
+#endif
                 }
             });
             watchdogThread.Start();
@@ -144,35 +179,58 @@ namespace WnekoTankMeadow.Others
 #endif
             Thread watchdogThread = new Thread(() =>
             {
-                CancellationToken token = source.Token;
-                bool signaled = true;
-                while (true)
+                try
                 {
-                    if (token.IsCancellationRequested) return;
-                    signaled = resetEvent.WaitOne(waitTime);
-#if DEBUG
-                    Console.WriteLine($"Watchdog signaled: {signaled}");
-#endif
-                    if (signaled) continue;
-                    for (int i = 0; i < repeatCount; i++)
+                    CancellationToken token = serialSource.Token;
+                    bool signaled = true;
+                    while (true)
                     {
+                        if (token.IsCancellationRequested)
+                        {
+#if DEBUG
+                            Console.WriteLine($"Serial Watchdog cancelled!");
+#endif
+                            return;
+                        }
+                        signaled = serialResetEvent.WaitOne(waitTime);
+#if DEBUG
+                        Console.WriteLine($"Serial Watchdog signaled: {signaled}");
+#endif
+                        if (signaled) continue;
+                        for (int i = 0; i < repeatCount; i++)
+                        {
 
 #if DEBUG
-                        Console.WriteLine($"Watchdog not signaled, repeat: {i}");
+                            Console.WriteLine($"Serial Watchdog not signaled, repeat: {i}");
 #endif
-                        buzzer(100);
-                        sendMessage.Invoke(ReturnCommandList.handShake);
-                        signaled = resetEvent.WaitOne(repeatTime);
-                        if (signaled) break;
-                    }
-                    if (!signaled)
-                    {
+                            sendMessage.Invoke(ReturnCommandList.handShake);
+                            buzzer(100);
+                            signaled = serialResetEvent.WaitOne(repeatTime);
+                            if (signaled) break;
+                        }
+                        if (!signaled)
+                        {
+                            if (token.IsCancellationRequested)
+                            {
 #if DEBUG
-                        Console.WriteLine($"Watchdog not signaled, blocking!");
+                                Console.WriteLine($"Serial Watchdog cancelled!");
 #endif
-                        blockAction();
-                        return;
+                                return;
+                            }
+#if DEBUG
+                            Console.WriteLine($"Serial Watchdog not signaled, blocking!");
+#endif
+                            blockAction();
+                            return;
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    sendMessage.Invoke(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+#if DEBUG
+                    Console.WriteLine(e.Message + "/n/n" + e.StackTrace);
+#endif
                 }
             });
             watchdogThread.Start();
@@ -182,7 +240,10 @@ namespace WnekoTankMeadow.Others
         {
             if (IsStarted)
             {
-                source.Cancel();
+                udpSource?.Cancel();
+                serialSource?.Cancel();
+                ipResetEvent.Set();
+                serialResetEvent.Set();
                 IsStarted = false;
             }
         }

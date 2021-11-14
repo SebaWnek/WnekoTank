@@ -75,5 +75,25 @@ namespace CommonsLibrary
         /// DateTime data
         /// </summary>
         public static string time = "TIM";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string switchToSerial = "SWS";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string switchToUdp = "SUD";
+        
+        /// <summary>
+        /// 0 - false, 1 true
+        /// </summary>
+        public static string wifiConnected = "WCT";
+
+        /// <summary>
+        /// empty
+        /// </summary>
+        public static string repeatTime = "RCL";
     }
 }

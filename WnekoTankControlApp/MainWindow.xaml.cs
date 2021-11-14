@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using CommonsLibrary;
 using MjpegProcessor;
 using WnekoTankControlApp.CommandControl;
+using WnekoTankControlApp.CommandControl.ComDevices;
 
 namespace WnekoTankControlApp
 {
@@ -30,6 +31,8 @@ namespace WnekoTankControlApp
     {
         //CommandsList comList = new CommandsList();
         ICommunication communication;
+        ICommunication udpCom;
+        ICommunication serialCom;
         OutgoingMessageQueue outQueue;
         IncommingMessageQueue inQueue;
         ObservableCollection<string> commandList = new ObservableCollection<string>();
@@ -68,6 +71,7 @@ namespace WnekoTankControlApp
             startTime = DateTime.Now;
             GetSerialPorts();
             GetIPAddresses();
+            communication = new CommunicationWrapper();
             //mjpegRight = new MjpegDecoder();
             //mjpegRight.FrameReady += MjpegRight_FrameReady;
             //mjpegRight.Error += MjpegRight_Error;

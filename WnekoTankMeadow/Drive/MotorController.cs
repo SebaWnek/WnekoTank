@@ -41,8 +41,8 @@ namespace WnekoTankMeadow
         private int stabilizeTurnRate = 20;
         private int defaultTurnRate = 50;
         private int defaultSpeed = 40;
-        private float cameraHeigth = 0.4f; //m, from ground level
-        private float cameraPosition = -0.3f; //m, from center 
+        private float cameraHeigth = 0.40f; //m, from ground level
+        private float cameraPosition = -0.25f; //m, from center 
         private int fullCircle = 360;
         private int quarterCircle, halfCircle;
         private byte defaultGear = 1;

@@ -44,7 +44,12 @@ namespace WnekoTankControlApp
                 Thread.Sleep(50);
             }
             string message = port.ReadExisting();
-            messageEvent?.Invoke(this, new MessageEventArgs(message));
+            if (message.Contains("\n"))
+            {
+                string[] messages = message.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach(string msg in messages) messageEvent?.Invoke(this, new MessageEventArgs(msg));
+            }
+            else messageEvent?.Invoke(this, new MessageEventArgs(message));
         }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace WnekoTankControlApp
         /// <param name="handler"></param>
         public void SubscribeToMessages(EventHandler<MessageEventArgs> handler)
         {
-            messageEvent += handler;
+            messageEvent = handler;
         }
 
         /// <summary>

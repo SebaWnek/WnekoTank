@@ -52,5 +52,10 @@ namespace WnekoTankMeadow
         {
             throw new NotImplementedException();
         }
+
+        internal void RegisterMethod(object connectToWiFi1, Action connectToWiFi2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

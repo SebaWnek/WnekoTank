@@ -29,7 +29,7 @@ namespace WnekoTankMeadow
         public MethodsQueue(ITankCommunication com, MethodsDictionary d)
         {
             communication = com;
-            communication.SubscribeToMessages(MessageReceived);
+            //communication.SubscribeToMessages(MessageReceived);
             dict = d;
             StartInvoking();
         }
@@ -43,8 +43,11 @@ namespace WnekoTankMeadow
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Message passed from communicaiton device</param>
-        private void MessageReceived(object sender, MessageEventArgs e)
+        public void MessageReceived(object sender, MessageEventArgs e)
         {
+#if DEBUG
+            Console.WriteLine($"Message received by Message Queue from {(sender as ITankCommunication).CommunicationType}");
+#endif
             if (e.Message.StartsWith(TankCommandList.emergencyPrefix)) EmergencyInvoke(e.Message.Substring(3));
             else Enqueue(dict.ReturnMethod(e.Message));
         }
@@ -129,12 +132,22 @@ namespace WnekoTankMeadow
             isWorking = true;
             Thread worker = new Thread(() =>
             {
-                CancellationToken token = tokenSource.Token;
-                while (true)
+                try
                 {
-                    if (token.IsCancellationRequested) break;
-                    (Action<string>, string) method = queue.Take();
-                    method.Item1.Invoke(method.Item2);
+                    CancellationToken token = tokenSource.Token;
+                    while (true)
+                    {
+                        if (token.IsCancellationRequested) break;
+                        (Action<string>, string) method = queue.Take();
+                        method.Item1.Invoke(method.Item2);
+                    }
+                }
+                catch (Exception e)
+                {
+                    communication.SendMessage(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+#if DEBUG
+                    Console.WriteLine(e.Message + "/n/n" + e.StackTrace);
+#endif
                 }
             });
             worker.Start();

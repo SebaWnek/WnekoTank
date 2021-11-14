@@ -995,6 +995,11 @@
                                     <Label Content="Rover port:"/>
                                     <TextBox Width="50" Text="22222" IsReadOnly="True" VerticalAlignment="Center" />
                                 </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="CheckWiFiBtn" Content="Check WiFi" Click="CheckWiFiBtn_Click" Width="100" Margin="0,0,10,0"/>
+                                    <Button x:Name="ConnectToWiFiBtn" Content="Connect to WiFi" Click="ConnectToWiFiBtn_Click" Width="100" Margin="0,0,10,0"/>
+                                    <TextBox x:Name="WiFiStatusBox" Padding="5,0,5,0" Text="Unknown" IsReadOnly="True" Width="100" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Height="20"/>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel Grid.Column="1">
                                 <Label Content="Select IP:"/>
@@ -1174,7 +1179,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <Button x:Name="diagnozeBtn" Content="Diagnostics data" Height="30" Click="DiagnozeBtn_Click"/>
-                                <Button x:Name="resetButton" Content="Reset device" Height="30" Click="ResetButton_Click"/>
+                                <Button x:Name="resetButton" Content="Reset device" Height="30" Click="ResetButton_Click" Grid.Column="1"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -1303,9 +1308,9 @@
                                     <Button x:Name="CheckClockBtn" Content="Check onboard clock" Click="CheckClockBtn_Click"/>
                                     <Button x:Name="SetClockBtn" Content="Set onboard clock" Click="SetClockBtn_Click" Grid.Column="1"/>
                                     <Label Content="PC Time:" Grid.Row="1"/>
-                                    <TextBox x:Name="PcTimeBox" Grid.Row="1" Grid.Column="1"/>
+                                    <TextBox x:Name="PcTimeBox" Grid.Row="1" Grid.Column="1" IsReadOnly="True"/>
                                     <Label Content="Rover Time:" Grid.Row="2"/>
-                                    <TextBox x:Name="RoverTimeBox" Grid.Row="2" Grid.Column="1"/>
+                                    <TextBox x:Name="RoverTimeBox" Grid.Row="2" Grid.Column="1" IsReadOnly="True"/>
                                 </Grid>
                                 <Separator Margin="10"/>
                             </StackPanel>

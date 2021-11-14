@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using CommonsLibrary;
 using WnekoTankControlApp.CommandControl;
@@ -41,9 +42,12 @@ namespace WnekoTankControlApp
         private void DisconnectButton_Click(object sender, RoutedEventArgs e)
         {
             foreach (Button btn in connectButtons) btn.IsEnabled = true;
+            WiFiStatusBox.Text = "Unknown";
+            WiFiStatusBox.Background = Brushes.Transparent;
+            outQueue.StopSending();
             DisconnectButton.IsEnabled = false;
-            communication?.ClosePort();
-            communication = null;
+            serialCom?.ClosePort();
+            udpCom?.ClosePort();
             outQueue = null;
             inQueue = null;
             wifiUdpConnect.IsEnabled = true;
@@ -57,8 +61,10 @@ namespace WnekoTankControlApp
             string port = portBox.SelectedItem.ToString();
             try
             {
-                if ((bool)usbComRadio.IsChecked) communication = new ComPortCommunication(port);
-                else communication = new HC12Communication(port);
+                if ((bool)usbComRadio.IsChecked) serialCom = new ComPortCommunication(port);
+                else serialCom = new HC12Communication(port);
+                communication = new CommunicationWrapper();
+                (communication as CommunicationWrapper).Com = serialCom;
             }
             catch (Exception ex)
             {
@@ -72,7 +78,7 @@ namespace WnekoTankControlApp
         {
             try
             {
-                communication = new MockCommunication();
+                (communication as CommunicationWrapper).Com = new MockCommunication();
             }
             catch (Exception ex)
             {
@@ -89,6 +95,7 @@ namespace WnekoTankControlApp
             OutputBox.Text += "Connecting... \r\n";
             outQueue = new OutgoingMessageQueue(communication, DisplayMessage);
             inQueue = new IncommingMessageQueue();
+            communication.SubscribeToMessages(outQueue.DataReceived);
             communication.SubscribeToMessages(inQueue.IncommingMessageHandler);
             RegisterMethods();
 
@@ -98,6 +105,43 @@ namespace WnekoTankControlApp
             Send(TankCommandList.handshake);
             await Task.Delay(500);
             Send(TankCommandList.hello);
+        }
+
+        public void SwitchToUdp()
+        {
+            try
+            {
+                string localIp = wifiListBox.SelectedItem.ToString();
+                int localPort = int.Parse(localPortBox.Text);
+                IPEndPoint lp = new IPEndPoint(IPAddress.Parse(localIp), localPort);
+                //Keeping serial port open as emergency way
+                //communication.ClosePort();
+                udpCom = new WifiUdpCommunication(lp);
+                (communication as CommunicationWrapper).Com = udpCom;
+                //communication.SubscribeToMessages(inQueue.IncommingMessageHandler);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "\n\n" + ex.StackTrace, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+        }
+
+        public void SwitchToSerial()
+        {
+            string port = portBox.SelectedItem.ToString();
+            try
+            {
+                //if ((bool)usbComRadio.IsChecked) serialCom = new ComPortCommunication(port);
+                //else serialCom = new HC12Communication(port);
+                communication.ClosePort();
+                (communication as CommunicationWrapper).Com = serialCom;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
 
         private void WifiListRefresh_Click(object sender, RoutedEventArgs e)
@@ -118,7 +162,7 @@ namespace WnekoTankControlApp
         private void WifiUdpConnect_Click(object sender, RoutedEventArgs e)
         {
             bool parsed = int.TryParse(localPortBox.Text, out int localPort);
-            if (parsed && wifiListBox.Items.Count > 0)
+            if (parsed && wifiListBox.Items.Count > 0 && ConnectButton.IsEnabled == false)
             {
                 string msg = TankCommandList.connectUdp + wifiListBox.SelectedItem.ToString() + ";" + localPort;
                 Send(msg);
@@ -129,6 +173,18 @@ namespace WnekoTankControlApp
             }
             else if (wifiListBox.Items.Count == 0) MessageBox.Show("No IP selected!", "Can't connect!", MessageBoxButton.OK, MessageBoxImage.Error);
             else MessageBox.Show("Incorrect port value!", "Can't connect!", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void CheckWiFiBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = TankCommandList.checkWiFiStatus;
+            Send(msg);
+        }
+
+        private void ConnectToWiFiBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string msg = TankCommandList.connectToWiFi;
+            Send(msg);
         }
     }
 }

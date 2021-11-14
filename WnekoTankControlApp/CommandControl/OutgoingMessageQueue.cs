@@ -19,9 +19,8 @@ namespace WnekoTankControlApp
         private ICommunication comPort;
         Action<string> DisplayMessage;
         BlockingCollection<string> queue = new BlockingCollection<string>();
-        Thread sender;
         CancellationTokenSource source;
-        private int waitInterval = 1000;
+        private int waitInterval = 2000;
 
         /// <summary>
         /// Main constructor
@@ -31,11 +30,9 @@ namespace WnekoTankControlApp
         public OutgoingMessageQueue(ICommunication com, Action<string> display)
         {
             comPort = com;
-            comPort.SubscribeToMessages(DataReceived);
             DisplayMessage = display;
             source = new CancellationTokenSource();
-            sender = new Thread(SendMessagesFromQueue);
-            sender.Start();
+            StartSending();
         }
 
         /// <summary>
@@ -43,7 +40,7 @@ namespace WnekoTankControlApp
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Message from communication device</param>
-        private void DataReceived(object sender, MessageEventArgs e)
+        public void DataReceived(object sender, MessageEventArgs e)
         {
             string msg = e.Message;
             if (msg.Contains("ACK"))
@@ -94,32 +91,48 @@ namespace WnekoTankControlApp
         /// If messages are present, sends first and waits for acknowledgement,
         /// If no messages are present waits for new one
         /// </summary>
-        private void SendMessagesFromQueue()
+        private void StartSending()
         {
-            CancellationToken token = source.Token;
-            bool acknowledged = false;
-            while (true)
+            source?.Dispose();
+            source = new CancellationTokenSource();
+            Thread sender = new Thread(() =>
             {
-                if (token.IsCancellationRequested) return;
-                while (!(acknowledged = canTransmit.WaitOne(waitInterval)))
+                try
                 {
-                    comPort.SendMessage(TankCommandList.handshake);
-                    DisplayMessage.Invoke("Timed out, sending handshake!");
+                    CancellationToken token = source.Token;
+                    bool acknowledged = false;
+                    while (true)
+                    {
+                        if (token.IsCancellationRequested) return;
+                        while (!(acknowledged = canTransmit.WaitOne(waitInterval)))
+                        {
+                            if (token.IsCancellationRequested) return;
+                            comPort.SendMessage(TankCommandList.handshake);
+                            DisplayMessage.Invoke("Timed out, sending handshake!");
+                        }
+                        string msg = queue.Take();
+                        DisplayMessage.Invoke("Sending: " + msg);
+                        comPort.SendMessage(msg);
+                    }
                 }
-                string msg = queue.Take();
-                DisplayMessage.Invoke("Sending: " + msg);
-                comPort.SendMessage(msg);
-            }
+                catch (Exception e)
+                {
+                    DisplayMessage.Invoke(ReturnCommandList.exception + e.Message + ReturnCommandList.exceptionTrace + e.StackTrace);
+                }
+            });
+            sender.Start();
+        }
+
+        public void StopSending()
+        {
+            source.Cancel();
         }
 
         public void ClearQueue()
         {
-            source.Cancel();
-            source.Dispose();
-            source = new CancellationTokenSource();
+            StopSending();
             queue = new BlockingCollection<string>();
-            sender = new Thread(SendMessagesFromQueue);
-            sender.Start();
+            StartSending();
             DisplayMessage.Invoke("----------\nQUEUE CLEARED\n----------");
             canTransmit.Set();
         }

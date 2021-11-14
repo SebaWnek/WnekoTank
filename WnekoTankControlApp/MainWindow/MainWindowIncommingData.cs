@@ -28,12 +28,55 @@ namespace WnekoTankControlApp
             inQueue.RegisterMethod(ReturnCommandList.handShake, HandshakeReceived);
             inQueue.RegisterMethod(ReturnCommandList.displayMessage, DisplayMessageBox);
             inQueue.RegisterMethod(ReturnCommandList.time, CompareTime);
+            inQueue.RegisterMethod(ReturnCommandList.switchToSerial, SwitchToSerial);
+            inQueue.RegisterMethod(ReturnCommandList.switchToUdp, SwitchToUdp);
+            inQueue.RegisterMethod(ReturnCommandList.wifiConnected, ShowWiFiConnected);
+            inQueue.RegisterMethod(ReturnCommandList.repeatTime, RepeatTimeSetting);
+        }
+
+        private void RepeatTimeSetting(string obj)
+        {
+            string msg = TankCommandList.setClock + DateTime.Now.ToString(new CultureInfo("pl-PL"));
+            Send(msg);
+        }
+
+        private void ShowWiFiConnected(string obj)
+        {
+            if(obj == "1")
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    WiFiStatusBox.Text = "Connected!";
+                    WiFiStatusBox.Background = Brushes.Green;
+                });
+            }
+            else
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    WiFiStatusBox.Text = "Not connected!";
+                    WiFiStatusBox.Background = Brushes.Red;
+                });
+            }
+        }
+
+        private void SwitchToUdp(string empty)
+        {
+            Dispatcher.Invoke(SwitchToUdp);
+        }
+
+        private void SwitchToSerial(string empty)
+        {
+            Dispatcher.Invoke(SwitchToSerial);
         }
 
         private void CompareTime(string obj)
         {
-            roverTimeBox.Text = obj;
-            pcTimeBox.Text = DateTime.Now.ToString();
+            Dispatcher.Invoke(() =>
+            {
+                RoverTimeBox.Text = obj;
+                PcTimeBox.Text = DateTime.Now.ToString();
+            });
         }
 
         private void DisplayMessageBox(string obj)
@@ -69,19 +112,33 @@ namespace WnekoTankControlApp
 
         private void ExceptionReceived(string obj)
         {
-            int tracePosition = obj.IndexOf(ReturnCommandList.exceptionTrace);
-            string exception = obj.Substring(0, tracePosition);
-            string trace = obj.Substring(tracePosition + 3);
-            MessageBox.Show(exception + "\n\n" + trace, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
+            if (obj.Contains(ReturnCommandList.exceptionTrace))
+            {
+                int tracePosition = obj.IndexOf(ReturnCommandList.exceptionTrace);
+                string exception = obj.Substring(0, tracePosition);
+                string trace = obj.Substring(tracePosition + 3);
+                MessageBox.Show(exception + "\n\n" + trace, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                MessageBox.Show(obj, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void AtmosphericDataReceived(string obj)
         {
             string[] data = obj.Split(';');
             DateTime time = DateTime.Now;
-            Dispatcher.Invoke(() => tempBox.Text = data[0]);
-            Dispatcher.Invoke(() => humBox.Text = data[1]);
-            Dispatcher.Invoke(() => tempTimeBox.Text = time.ToLongTimeString());
+            try
+            {
+                Dispatcher.Invoke(() => tempBox.Text = Math.Round(double.Parse(data[0], CultureInfo.InvariantCulture), 2).ToString());
+                Dispatcher.Invoke(() => humBox.Text = Math.Round(double.Parse(data[1], CultureInfo.InvariantCulture) * 100, 0).ToString());
+                Dispatcher.Invoke(() => tempTimeBox.Text = time.ToLongTimeString());
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message + "\n\n" + e.StackTrace, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ElectricDataReceived(string obj)
@@ -94,7 +151,8 @@ namespace WnekoTankControlApp
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message + "\n\n" + e.StackTrace, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
+                DisplayMessage("Corrupted data received: " + obj);
+                //MessageBox.Show(e.Message + "\n\n" + e.StackTrace, "Exception!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
